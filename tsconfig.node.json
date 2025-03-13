@@ -2,8 +2,9 @@
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
   "include": ["electron.vite.config.*", "src/main/**/*", "src/preload/**/*"],
   "compilerOptions": {
+    "outDir": "./out",
     "composite": true,
     "moduleResolution": "bundler",
-    "types": ["electron-vite/node"]
+    "types": ["electron-vite/node","./src/preload/index"]
   }
 }

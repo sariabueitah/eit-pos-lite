@@ -2,8 +2,8 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-
-import Database from 'better-sqlite3'
+import { setupDB } from '../main/db/main'
+import { getAllUsers } from '../main/db/users'
 
 function createWindow(): void {
   // Create the browser window.
@@ -36,8 +36,11 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  const db = new Database('./resources/db.db')
-  db.pragma('journal_mode = WAL')
+  const db = setupDB()
+
+  ipcMain.handle('getAllUserData', () => {
+    return getAllUsers(db)
+  })
 }
 
 // This method will be called when Electron has finished
@@ -74,6 +77,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
