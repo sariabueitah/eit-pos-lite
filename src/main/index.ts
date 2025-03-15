@@ -3,7 +3,9 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { setupDB } from '../main/db/main'
-import { getAllUsers } from '../main/db/users'
+import { getAllUsers, createUser, deleteUser } from '../main/db/users'
+
+let db
 
 function createWindow(): void {
   // Create the browser window.
@@ -36,11 +38,7 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  const db = setupDB()
-
-  ipcMain.handle('getAllUserData', () => {
-    return getAllUsers(db)
-  })
+  db = setupDB()
 }
 
 // This method will be called when Electron has finished
@@ -76,4 +74,16 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+ipcMain.handle('getAllUserData', () => {
+  return getAllUsers(db)
+})
+
+ipcMain.handle('addNewUser', (_, payload) => {
+  return createUser(db, payload)
+})
+
+ipcMain.handle('deleteUser', (_, payload) => {
+  return deleteUser(db, payload)
 })

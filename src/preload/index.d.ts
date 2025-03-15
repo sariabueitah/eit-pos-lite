@@ -16,8 +16,6 @@ declare global {
 
   interface Window {
     electron: ElectronAPI
-    api: {
-      getAllUserData: () => Promise<[User]>
-    }
+    api: unknown
   }
 }

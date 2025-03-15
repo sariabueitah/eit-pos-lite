@@ -2,7 +2,34 @@ import { useState, useEffect } from 'react'
 import UserRow from './componants/UserRow'
 
 export default function Users(): JSX.Element {
-  const userData = useUserData()
+  const [userData, setUserData] = useState<User[]>([])
+
+  useEffect(() => {
+    window.electron.ipcRenderer
+      .invoke('getAllUserData')
+      .then((result) => {
+        console.log('success')
+        setUserData(result)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }, [])
+
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>, id: number): void => {
+    window.electron.ipcRenderer
+      .invoke('deleteUser', id)
+      .then((result) => {
+        console.log(result)
+        setUserData((l) => (l ? l.filter((item) => item.id !== id) : []))
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    console.log(e)
+    console.log(id)
+  }
+
   return (
     <>
       <h1>Users Page</h1>
@@ -28,22 +55,18 @@ export default function Users(): JSX.Element {
               </th>
             </tr>
           </thead>
-          <tbody>{userData && userData.map((object, i) => <UserRow obj={object} key={i} />)}</tbody>
+          <tbody>
+            {userData &&
+              userData.map((object) => (
+                <UserRow
+                  onDelete={(e) => handleDelete(e, object.id)}
+                  user={object}
+                  key={object.id}
+                />
+              ))}
+          </tbody>
         </table>
       </div>
     </>
   )
-}
-
-function useUserData(): [User] | undefined {
-  const [userData, setUserData] = useState<[User]>()
-
-  useEffect(() => {
-    async function fetchData(): Promise<void> {
-      setUserData(await window.api.getAllUserData())
-    }
-    fetchData()
-  }, [])
-
-  return userData
 }
