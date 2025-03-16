@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
-export default function AddUser(): JSX.Element {
+export default function EditUser(): JSX.Element {
+  const { id } = useParams()
   const navigate = useNavigate()
   const [user, setUser] = useState({
     name: '',
@@ -10,6 +11,18 @@ export default function AddUser(): JSX.Element {
     role: 'USER',
     password: ''
   })
+
+  useEffect(() => {
+    window.electron.ipcRenderer
+      .invoke('getUserbyId', id)
+      .then((result) => {
+        console.log(result)
+        setUser((prevUser) => ({ ...prevUser, ...result }))
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }, [id])
 
   const [confirmPassword, setConfirmPassword] = useState('')
 
@@ -26,7 +39,7 @@ export default function AddUser(): JSX.Element {
     event.preventDefault()
     try {
       await window.electron.ipcRenderer
-        .invoke('createUser', user)
+        .invoke('updateUser', id, user)
         .then((result) => {
           console.log('success')
           console.log(result)
@@ -51,7 +64,7 @@ export default function AddUser(): JSX.Element {
     <>
       <div>
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-          <h1>Add User</h1>
+          <h1>Edit User</h1>
           <div className="mb-5">
             <label className="block mb-2 text-sm font-medium text-gray-900">Name</label>
             <input

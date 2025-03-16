@@ -1,4 +1,5 @@
 import { confirmAlert } from 'react-confirm-alert'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {
   user: User
@@ -78,6 +79,10 @@ export default function UserRow(props: Props): JSX.Element {
       }
     })
   }
+  const navigate = useNavigate()
+  const handleEdit = (): void => {
+    navigate('/users/edit/' + props.user.id, { replace: true })
+  }
 
   return (
     <tr className="bg-white border-b border-gray-200">
@@ -89,7 +94,7 @@ export default function UserRow(props: Props): JSX.Element {
       <td className="px-6 py-4">{props.user.phone_number}</td>
       <td className="px-6 py-4">{props.user.role}</td>
       <td className="px-6 py-4">
-        <button>Edit</button>
+        <button onClick={handleEdit}>Edit</button>
         <button onClick={submit}>Delete</button>
       </td>
     </tr>

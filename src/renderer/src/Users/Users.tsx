@@ -6,7 +6,7 @@ export default function Users(): JSX.Element {
 
   useEffect(() => {
     window.electron.ipcRenderer
-      .invoke('getAllUserData')
+      .invoke('getAllUsers')
       .then((result) => {
         console.log('success')
         setUserData(result)

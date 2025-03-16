@@ -11,7 +11,7 @@ function NavBar(): JSX.Element {
           <NavLink to="/users">Users</NavLink>
         </li>
         <li className="cursor-pointer mx-2 hover:text-blue-600">
-          <NavLink to="/addUser">Add User</NavLink>
+          <NavLink to="/users/new">Add User</NavLink>
         </li>
       </ul>
     </nav>

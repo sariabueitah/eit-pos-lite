@@ -3,7 +3,15 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { setupDB } from '../main/db/main'
-import { getAllUsers, createUser, deleteUser } from '../main/db/users'
+import {
+  getAllUsers,
+  getUserbyId,
+  getUserbyUserName,
+  authenticateUser,
+  createUser,
+  updateUser,
+  deleteUser
+} from '../main/db/users'
 
 let db
 
@@ -76,14 +84,30 @@ app.on('window-all-closed', () => {
   }
 })
 
-ipcMain.handle('getAllUserData', () => {
+ipcMain.handle('getAllUsers', () => {
   return getAllUsers(db)
 })
 
-ipcMain.handle('addNewUser', (_, payload) => {
-  return createUser(db, payload)
+ipcMain.handle('getUserbyId', (_, id) => {
+  return getUserbyId(db, id)
 })
 
-ipcMain.handle('deleteUser', (_, payload) => {
-  return deleteUser(db, payload)
+ipcMain.handle('getUserbyUserName', (_, user_name) => {
+  return getUserbyUserName(db, user_name)
+})
+
+ipcMain.handle('authenticateUser', (_, user_name, password) => {
+  return authenticateUser(db, user_name, password)
+})
+
+ipcMain.handle('createUser', (_, user) => {
+  return createUser(db, user)
+})
+
+ipcMain.handle('updateUser', (_, id, user) => {
+  return updateUser(db, id, user)
+})
+
+ipcMain.handle('deleteUser', (_, id) => {
+  return deleteUser(db, id)
 })

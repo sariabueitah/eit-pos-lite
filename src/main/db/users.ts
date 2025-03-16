@@ -45,18 +45,21 @@ export function setupUsersTable(db: DatabaseType): void {
 }
 
 export function getAllUsers(db: DatabaseType): [User] {
-  return db.prepare('SELECT * FROM users').all() as [User]
+  return db.prepare('SELECT id,name,user_name,phone_number,role FROM users').all() as [User]
 }
 
-export function getUserbyId(db: DatabaseType, id: string): unknown {
-  return db.prepare('SELECT * FROM users WHERE id = ?').get(id)
+export function getUserbyId(db: DatabaseType, id: number): unknown {
+  return db.prepare('SELECT id,name,user_name,phone_number,role FROM users WHERE id = ?').get(id)
 }
 
 export function getUserbyUserName(db: DatabaseType, user_name: string): unknown {
-  return db.prepare('SELECT * FROM users WHERE user_name = ?').get(user_name)
+  return db
+    .prepare('SELECT id,name,user_name,phone_number,role FROM users WHERE user_name = ?')
+    .get(user_name)
 }
 
 export function authenticateUser(db: DatabaseType, user_name: string, password: string): unknown {
+  //return true or false instead
   return db
     .prepare('SELECT * FROM users WHERE user_name = ? AND password = ?')
     .get([user_name, password])

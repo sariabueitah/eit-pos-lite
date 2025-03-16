@@ -5,7 +5,7 @@ declare global {
     id: number
     name: string
     user_name: string
-    password: string
+    password?: string
     phone_number: string
     role: 'ADMIN' | 'USER'
   }
