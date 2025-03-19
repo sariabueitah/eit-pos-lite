@@ -6,6 +6,7 @@ import EditUser from './Users/EditUser'
 import NavBar from './components/NavBar'
 import { SessionContext } from './components/SessionContext'
 import { useState, useEffect } from 'react'
+import { HashRouter } from 'react-router-dom'
 
 function App(): JSX.Element {
   const [session, setSession] = useState(undefined)
@@ -24,13 +25,15 @@ function App(): JSX.Element {
 
   return (
     <SessionContext.Provider value={session}>
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/users/new" element={<AddUser />} />
-        <Route path="/users/edit/:id" element={<EditUser />} />
-      </Routes>
+      <HashRouter basename={'/'}>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/new" element={<AddUser />} />
+          <Route path="/users/edit/:id" element={<EditUser />} />
+        </Routes>
+      </HashRouter>
     </SessionContext.Provider>
   )
 }
