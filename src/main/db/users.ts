@@ -59,10 +59,11 @@ export function getUserbyUserName(db: DatabaseType, user_name: string): unknown 
 }
 
 export function authenticateUser(db: DatabaseType, user_name: string, password: string): unknown {
-  //return true or false instead
-  return db
-    .prepare('SELECT * FROM users WHERE user_name = ? AND password = ?')
+  const result = db
+    .prepare('SELECT id,name,user_name,role FROM users WHERE user_name = ? AND password = ?')
     .get([user_name, password])
+
+  return result
 }
 
 export function createUser(db: DatabaseType, user: User): void {

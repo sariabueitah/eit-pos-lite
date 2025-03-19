@@ -10,6 +10,13 @@ declare global {
     role: 'ADMIN' | 'USER'
   }
 
+  type Session = {
+    id: number
+    name: string
+    user_name: string
+    role: 'ADMIN' | 'USER'
+  }
+
   type EventPayloadMapping = {
     getAllUserData: User
   }

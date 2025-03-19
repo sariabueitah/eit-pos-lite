@@ -14,6 +14,7 @@ import {
 } from '../main/db/users'
 
 let db
+let session
 
 function createWindow(): void {
   // Create the browser window.
@@ -45,8 +46,33 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-
+  //setup on Start db operations
   db = setupDB()
+  //setup session
+  session = undefined
+  mainWindow.webContents.send('userSession', undefined)
+  //create a session for users
+
+  ipcMain.handle('login', (_, loginData) => {
+    let success = false
+    const authUser = authenticateUser(db, loginData.userName, loginData.password)
+    if (authUser !== undefined) {
+      session = authUser
+      mainWindow.webContents.send('userSession', authUser)
+      success = true
+    }
+    return success
+  })
+
+  ipcMain.handle('logout', () => {
+    session = undefined
+    mainWindow.webContents.send('userSession', undefined)
+    return true
+  })
+
+  ipcMain.handle('getSession', () => {
+    return session
+  })
 }
 
 // This method will be called when Electron has finished
@@ -94,10 +120,6 @@ ipcMain.handle('getUserbyId', (_, id) => {
 
 ipcMain.handle('getUserbyUserName', (_, user_name) => {
   return getUserbyUserName(db, user_name)
-})
-
-ipcMain.handle('authenticateUser', (_, user_name, password) => {
-  return authenticateUser(db, user_name, password)
 })
 
 ipcMain.handle('createUser', (_, user) => {
