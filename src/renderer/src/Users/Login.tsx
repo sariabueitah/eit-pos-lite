@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import AlertContext from '../contexts/AlertContext'
+import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Login(): JSX.Element {
   const navigate = useNavigate()
+  const { setAlertContext } = useContext(AlertContext)
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
@@ -14,6 +16,8 @@ export default function Login(): JSX.Element {
     })
     if (x) {
       navigate('/users', { replace: true })
+    } else {
+      setAlertContext({ error: true, message: 'Invalid username or password' })
     }
   }
   return (
