@@ -24,7 +24,13 @@ export default function AddUser(): JSX.Element {
     let success = false
     try {
       await window.electron.ipcRenderer
-        .invoke('createUser', data)
+        .invoke('createUser', {
+          name: data.name,
+          user_name: data.user_name,
+          phone_number: data.phone_number,
+          role: data.role,
+          password: data.password
+        })
         .then(() => {
           success = true
         })
@@ -94,6 +100,8 @@ export default function AddUser(): JSX.Element {
                     .then((result) => {
                       if (result) {
                         return 'Username already exists'
+                      } else {
+                        return true
                       }
                     })
                 }
