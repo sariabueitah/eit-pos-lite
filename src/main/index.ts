@@ -55,7 +55,7 @@ function createWindow(): void {
 
   ipcMain.handle('login', (_, loginData) => {
     let success = false
-    const authUser = authenticateUser(db, loginData.userName, loginData.password)
+    const authUser = authenticateUser(db, loginData.user_name, loginData.password)
     if (authUser !== undefined) {
       session = authUser
       mainWindow.webContents.send('userSession', authUser)

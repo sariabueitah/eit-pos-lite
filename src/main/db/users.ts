@@ -48,22 +48,22 @@ export function getAllUsers(db: DatabaseType): [User] {
   return db.prepare('SELECT id,name,user_name,phone_number,role FROM users').all() as [User]
 }
 
-export function getUserbyId(db: DatabaseType, id: number): unknown {
-  return db.prepare('SELECT id,name,user_name,phone_number,role FROM users WHERE id = ?').get(id)
+export function getUserbyId(db: DatabaseType, id: number): User {
+  return db
+    .prepare('SELECT id,name,user_name,phone_number,role FROM users WHERE id = ?')
+    .get(id) as User
 }
 
-export function getUserbyUserName(db: DatabaseType, user_name: string): unknown {
+export function getUserbyUserName(db: DatabaseType, user_name: string): User {
   return db
     .prepare('SELECT id,name,user_name,phone_number,role FROM users WHERE user_name = ?')
-    .get(user_name)
+    .get(user_name) as User
 }
 
-export function authenticateUser(db: DatabaseType, user_name: string, password: string): unknown {
-  const result = db
+export function authenticateUser(db: DatabaseType, user_name: string, password: string): Session {
+  return db
     .prepare('SELECT id,name,user_name,role FROM users WHERE user_name = ? AND password = ?')
-    .get([user_name, password])
-
-  return result
+    .get([user_name, password]) as Session
 }
 
 export function createUser(db: DatabaseType, user: User): void {

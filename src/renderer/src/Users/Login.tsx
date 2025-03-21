@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import FormAlerts from '../components/FormAlerts'
 
 interface IFormInput {
-  userName: string
+  user_name: string
   password: string
 }
 
@@ -17,7 +17,7 @@ export default function Login(): JSX.Element {
     setError
   } = useForm<IFormInput>()
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    const userCheck = await window.electron.ipcRenderer.invoke('getUserbyUserName', data.userName)
+    const userCheck = await window.electron.ipcRenderer.invoke('getUserbyUserName', data.user_name)
     if (userCheck) {
       const loginCheck = await window.electron.ipcRenderer.invoke('login', data)
       if (loginCheck) {
@@ -26,7 +26,7 @@ export default function Login(): JSX.Element {
         setError('password', { type: 'manual', message: 'Invalid password' })
       }
     } else {
-      setError('userName', { type: 'manual', message: 'Invalid Username' })
+      setError('user_name', { type: 'manual', message: 'Invalid Username' })
     }
   }
   return (
@@ -38,7 +38,7 @@ export default function Login(): JSX.Element {
           <div className="mb-5">
             <label
               className={
-                errors.userName
+                errors.user_name
                   ? 'block mb-2 text-sm font-medium text-red-900'
                   : 'block mb-2 text-sm font-medium text-gray-900'
               }
@@ -46,12 +46,12 @@ export default function Login(): JSX.Element {
               Username
             </label>
             <input
-              {...register('userName', { required: 'Username is required' })}
-              name="userName"
+              {...register('user_name', { required: 'Username is required' })}
+              name="user_name"
               type="text"
-              id="userName"
+              id="user_name"
               className={
-                errors.userName
+                errors.user_name
                   ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
                   : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
               }

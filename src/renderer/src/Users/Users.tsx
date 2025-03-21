@@ -8,7 +8,6 @@ export default function Users(): JSX.Element {
     window.electron.ipcRenderer
       .invoke('getAllUsers')
       .then((result) => {
-        console.log('success')
         setUserData(result)
       })
       .catch((error) => {
@@ -16,18 +15,15 @@ export default function Users(): JSX.Element {
       })
   }, [])
 
-  const handleDelete = (e: React.MouseEvent<HTMLButtonElement>, id: number): void => {
+  const handleDelete = (id: number): void => {
     window.electron.ipcRenderer
       .invoke('deleteUser', id)
-      .then((result) => {
-        console.log(result)
+      .then(() => {
         setUserData((l) => (l ? l.filter((item) => item.id !== id) : []))
       })
       .catch((error) => {
         console.log(error)
       })
-    console.log(e)
-    console.log(id)
   }
 
   return (
@@ -58,11 +54,7 @@ export default function Users(): JSX.Element {
           <tbody>
             {userData &&
               userData.map((object) => (
-                <UserRow
-                  onDelete={(e) => handleDelete(e, object.id)}
-                  user={object}
-                  key={object.id}
-                />
+                <UserRow onDelete={() => handleDelete(object.id)} user={object} key={object.id} />
               ))}
           </tbody>
         </table>

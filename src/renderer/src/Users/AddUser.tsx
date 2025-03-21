@@ -1,128 +1,219 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import FormAlerts from '../components/FormAlerts'
+
+interface IFormInput {
+  name: string
+  user_name: string
+  phone_number: string
+  role: 'ADMIN' | 'USER'
+  password: string
+  confirm_password: string
+}
 
 export default function AddUser(): JSX.Element {
   const navigate = useNavigate()
-  const [user, setUser] = useState({
-    name: '',
-    user_name: '',
-    phone_number: '',
-    role: 'USER',
-    password: ''
-  })
 
-  const [confirmPassword, setConfirmPassword] = useState('')
-
-  const handleChange = (event): void => {
-    setUser({ ...user, [event.target.name]: event.target.value })
-  }
-
-  const handleConfirmPassword = (event): void => {
-    setConfirmPassword(event.target.value)
-  }
-
-  const handleSubmit = async (event): Promise<void> => {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    setError
+  } = useForm<IFormInput>()
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     let success = false
-    event.preventDefault()
     try {
       await window.electron.ipcRenderer
-        .invoke('createUser', user)
-        .then((result) => {
-          console.log('success')
-          console.log(result)
+        .invoke('createUser', data)
+        .then(() => {
           success = true
         })
         .catch((error) => {
-          console.log('error')
-          console.log(error)
+          setError('root', { type: 'manual', message: error })
         })
-    } catch (e) {
-      console.log('error catch')
-      console.log(e)
+    } catch (error) {
+      let message = 'Unknown Error'
+      if (error instanceof Error) message = error.message
+      setError('root', { type: 'manual', message: message })
     }
     if (success) {
       navigate('/users', { replace: true })
     } else {
-      console.log('error')
+      setError('root', { type: 'manual', message: 'createUser request was not successfull' })
     }
   }
 
   return (
     <>
       <div>
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
           <h1>Add User</h1>
+          <FormAlerts alerts={errors} />
           <div className="mb-5">
-            <label className="block mb-2 text-sm font-medium text-gray-900">Name</label>
+            <label
+              className={
+                errors.name
+                  ? 'block mb-2 text-sm font-medium text-red-900'
+                  : 'block mb-2 text-sm font-medium text-gray-900'
+              }
+            >
+              Name
+            </label>
             <input
+              {...register('name', { required: 'Name is required' })}
               type="text"
               name="name"
               id="name"
-              onChange={handleChange}
-              value={user.name}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
+              className={
+                errors.name
+                  ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+              }
             />
           </div>
           <div className="mb-5">
-            <label className="block mb-2 text-sm font-medium text-gray-900">Username</label>
+            <label
+              className={
+                errors.user_name
+                  ? 'block mb-2 text-sm font-medium text-red-900'
+                  : 'block mb-2 text-sm font-medium text-gray-900'
+              }
+            >
+              Username
+            </label>
             <input
+              {...register('user_name', {
+                required: 'Username is required',
+                minLength: {
+                  value: 5,
+                  message: 'Username must be at least 5 characters'
+                },
+                validate: (value) => {
+                  return window.electron.ipcRenderer
+                    .invoke('getUserbyUserName', value)
+                    .then((result) => {
+                      if (result) {
+                        return 'Username already exists'
+                      }
+                    })
+                }
+              })}
               type="text"
               name="user_name"
               id="user_name"
-              onChange={handleChange}
-              value={user.user_name}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
+              className={
+                errors.user_name
+                  ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+              }
             />
           </div>
           <div className="mb-5">
-            <label className="block mb-2 text-sm font-medium text-gray-900">Phone Number</label>
+            <label
+              className={
+                errors.phone_number
+                  ? 'block mb-2 text-sm font-medium text-red-900'
+                  : 'block mb-2 text-sm font-medium text-gray-900'
+              }
+            >
+              Phone Number
+            </label>
             <input
+              {...register('phone_number', {
+                required: 'Phone Number is required',
+                minLength: {
+                  value: 10,
+                  message: 'Phone number must be at least 10 characters'
+                }
+              })}
               type="text"
               id="phone_number"
               name="phone_number"
-              onChange={handleChange}
-              value={user.phone_number}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
+              className={
+                errors.phone_number
+                  ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+              }
             />
           </div>
           <div className="mb-5">
-            <label className="block mb-2 text-sm font-medium text-gray-900">Role</label>
+            <label
+              className={
+                errors.role
+                  ? 'block mb-2 text-sm font-medium text-red-900'
+                  : 'block mb-2 text-sm font-medium text-gray-900'
+              }
+            >
+              Role
+            </label>
             <select
+              {...register('role', { required: 'Role is required' })}
               name="role"
-              onChange={handleChange}
-              value={user.role}
               id="role"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              className={
+                errors.role
+                  ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+              }
             >
               <option value="USER">User</option>
               <option value="ADMIN">Admin</option>
             </select>
           </div>
           <div className="mb-5">
-            <label className="block mb-2 text-sm font-medium text-gray-900">Password</label>
+            <label
+              className={
+                errors.password
+                  ? 'block mb-2 text-sm font-medium text-red-900'
+                  : 'block mb-2 text-sm font-medium text-gray-900'
+              }
+            >
+              Password
+            </label>
             <input
+              {...register('password', {
+                required: 'Password is required',
+                pattern: {
+                  value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/,
+                  message:
+                    'Password must contain at least 6 characters, including letters and numbers'
+                }
+              })}
               type="password"
               id="password"
               name="password"
-              onChange={handleChange}
-              value={user.password}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
+              className={
+                errors.password
+                  ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+              }
             />
           </div>
           <div className="mb-5">
-            <label className="block mb-2 text-sm font-medium text-gray-900">Confirm Password</label>
+            <label
+              className={
+                errors.confirm_password
+                  ? 'block mb-2 text-sm font-medium text-red-900'
+                  : 'block mb-2 text-sm font-medium text-gray-900'
+              }
+            >
+              Confirm Password
+            </label>
             <input
+              {...register('confirm_password', {
+                required: 'Confirm password is required',
+                validate: (value, data) => {
+                  return value === data.password || 'The passwords do not match'
+                }
+              })}
               type="password"
               id="confirm_password"
               name="confirm_password"
-              onChange={handleConfirmPassword}
-              value={confirmPassword}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              required
+              className={
+                errors.confirm_password
+                  ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                  : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+              }
             />
           </div>
           <button
