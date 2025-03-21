@@ -10,6 +10,20 @@ declare global {
     role: 'ADMIN' | 'USER'
   }
 
+  type Item = {
+    id: number
+    name: string
+    description: string
+    barcode: string
+    unit: 'Grams' | 'Kilograms' | 'Liters' | 'Milliliters' | 'Units'
+    cost: number
+    price: number
+    tax: number
+    image: string
+    category: string
+    supplier: string
+  }
+
   type Session = {
     id: number
     name: string

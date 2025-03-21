@@ -1,6 +1,7 @@
 import { is } from '@electron-toolkit/utils'
 import Database, { Database as DatabaseType } from 'better-sqlite3'
 import { setupUsersTable } from './users'
+import { setupItemsTable } from './items'
 import path from 'path'
 import { app } from 'electron'
 
@@ -13,6 +14,7 @@ export function setupDB(): DatabaseType {
   db.pragma('journal_mode = WAL')
 
   setupUsersTable(db)
+  setupItemsTable(db)
 
   return db
 }

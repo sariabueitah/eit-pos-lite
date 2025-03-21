@@ -47,7 +47,7 @@ export default function EditUser(): JSX.Element {
     if (success) {
       navigate('/users', { replace: true })
     } else {
-      setError('root', { type: 'manual', message: 'createUser request was not successfull' })
+      setError('root', { type: 'manual', message: 'updateUser request was not successfull' })
     }
   }
 

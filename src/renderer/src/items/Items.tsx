@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react'
-import UserRow from './componants/UserRow'
+import { useEffect, useState } from 'react'
+import ItemRow from './componants/ItemRow'
 
-export default function Users(): JSX.Element {
-  const [userData, setUserData] = useState<User[]>([])
-
+export default function Items(): JSX.Element {
+  const [itemData, seItemData] = useState<Item[]>([])
   useEffect(() => {
     window.electron.ipcRenderer
-      .invoke('getAllUsers')
+      .invoke('getAllItems')
       .then((result) => {
-        setUserData(result)
+        seItemData(result)
       })
       .catch((error) => {
         console.log(error)
@@ -17,9 +16,9 @@ export default function Users(): JSX.Element {
 
   const handleDelete = (id: number): void => {
     window.electron.ipcRenderer
-      .invoke('deleteUser', id)
+      .invoke('deleteItem', id)
       .then(() => {
-        setUserData((l) => (l ? l.filter((item) => item.id !== id) : []))
+        seItemData((l) => (l ? l.filter((item) => item.id !== id) : []))
       })
       .catch((error) => {
         console.log(error)
@@ -28,7 +27,7 @@ export default function Users(): JSX.Element {
 
   return (
     <>
-      <h1>Users Page</h1>
+      <h1>Items Page</h1>
 
       <div className="">
         <table className="w-full text-sm text-left text-gray-500">
@@ -41,13 +40,25 @@ export default function Users(): JSX.Element {
                 Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Username
+                Description
               </th>
               <th scope="col" className="px-6 py-3">
-                Phone Number
+                barcode
               </th>
               <th scope="col" className="px-6 py-3">
-                Role
+                unit
+              </th>
+              <th scope="col" className="px-6 py-3">
+                cost
+              </th>
+              <th scope="col" className="px-6 py-3">
+                price
+              </th>
+              <th scope="col" className="px-6 py-3">
+                tax
+              </th>
+              <th scope="col" className="px-6 py-3">
+                category
               </th>
               <th scope="col" className="px-6 py-3">
                 Actions
@@ -55,9 +66,9 @@ export default function Users(): JSX.Element {
             </tr>
           </thead>
           <tbody>
-            {userData &&
-              userData.map((object) => (
-                <UserRow onDelete={() => handleDelete(object.id)} user={object} key={object.id} />
+            {itemData &&
+              itemData.map((object) => (
+                <ItemRow onDelete={() => handleDelete(object.id)} item={object} key={object.id} />
               ))}
           </tbody>
         </table>

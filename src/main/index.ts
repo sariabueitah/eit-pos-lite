@@ -12,6 +12,15 @@ import {
   updateUser,
   deleteUser
 } from '../main/db/users'
+import {
+  getAllItems,
+  getItemByBarcode,
+  getItemById,
+  getItemByName,
+  insertItem,
+  updateItem,
+  deleteItem
+} from './db/items'
 
 let db
 let session
@@ -132,4 +141,32 @@ ipcMain.handle('updateUser', (_, id, user) => {
 
 ipcMain.handle('deleteUser', (_, id) => {
   return deleteUser(db, id)
+})
+
+ipcMain.handle('getAllItems', () => {
+  return getAllItems(db)
+})
+
+ipcMain.handle('getItemById', (_, id) => {
+  return getItemById(db, id)
+})
+
+ipcMain.handle('getItemByBarcode', (_, barcode) => {
+  return getItemByBarcode(db, barcode)
+})
+
+ipcMain.handle('getItemByName', (_, name) => {
+  return getItemByName(db, name)
+})
+
+ipcMain.handle('insertItem', (_, item) => {
+  return insertItem(db, item)
+})
+
+ipcMain.handle('updateItem', (_, id, item) => {
+  return updateItem(db, id, item)
+})
+
+ipcMain.handle('deleteItem', (_, id) => {
+  return deleteItem(db, id)
 })
