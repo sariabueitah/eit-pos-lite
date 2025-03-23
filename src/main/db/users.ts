@@ -1,39 +1,41 @@
 import { Database as DatabaseType } from 'better-sqlite3'
-import { tableExists } from './main'
+import { tableExists } from './index'
 
 export function setupUsersTable(db: DatabaseType): void {
   if (!tableExists(db, 'users')) {
     const createTable = `CREATE TABLE IF NOT EXISTS users(
         'id' INTEGER PRIMARY KEY,
         'name' TEXT,
-        'user_name' TEXT,
+        'userName' TEXT,
         'password' TEXT,
-        'phone_number' TEXT,
-        'role' TEXT
+        'phoneNumber' TEXT,
+        'role' TEXT,
+        'deleted' INTEGER DEFAULT 0
       );`
 
     db.exec(createTable)
 
     db.exec('CREATE UNIQUE INDEX idx_users_id ON users (id);')
-    db.exec('CREATE UNIQUE INDEX idx_users_user_name ON users (user_name);')
+    db.exec('CREATE UNIQUE INDEX idx_users_userName ON users (userName);')
+    db.exec('CREATE INDEX idx_users_deleted ON users (deleted);')
 
     const inserUsers = db.prepare(
-      'INSERT INTO users (name, user_name, password, phone_number,role) VALUES (:name,:user_name,:password,:phone_number,:role);'
+      'INSERT INTO users (name, userName, password, phoneNumber,role) VALUES (:name,:userName,:password,:phoneNumber,:role);'
     )
 
     const defualtUsers = [
       {
         name: 'admin',
-        user_name: 'admin',
+        userName: 'admin',
         password: 'Admin#1',
-        phone_number: '000000000',
+        phoneNumber: '0000000000',
         role: 'ADMIN'
       },
       {
         name: 'user1',
-        user_name: 'user1',
+        userName: 'user1',
         password: 'User#1',
-        phone_number: '000000000',
+        phoneNumber: '0000000000',
         role: 'USER'
       }
     ]
@@ -45,32 +47,42 @@ export function setupUsersTable(db: DatabaseType): void {
 }
 
 export function getAllUsers(db: DatabaseType): [User] {
-  return db.prepare('SELECT id,name,user_name,phone_number,role FROM users').all() as [User]
+  return db
+    .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE deleted = 0')
+    .all() as [User]
+}
+
+export function getAllDeletedUsers(db: DatabaseType): [User] {
+  return db
+    .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE deleted = 1')
+    .all() as [User]
 }
 
 export function getUserbyId(db: DatabaseType, id: number): User {
   return db
-    .prepare('SELECT id,name,user_name,phone_number,role FROM users WHERE id = ?')
+    .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE id = ?')
     .get(id) as User
 }
 
-export function getUserbyUserName(db: DatabaseType, user_name: string): User {
+export function getUserbyUserName(db: DatabaseType, userName: string): User {
   return db
-    .prepare('SELECT id,name,user_name,phone_number,role FROM users WHERE user_name = ?')
-    .get(user_name) as User
+    .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE userName = ?')
+    .get(userName) as User
 }
 
-export function authenticateUser(db: DatabaseType, user_name: string, password: string): Session {
+export function authenticateUser(db: DatabaseType, userName: string, password: string): Session {
   return db
-    .prepare('SELECT id,name,user_name,role FROM users WHERE user_name = ? AND password = ?')
-    .get([user_name, password]) as Session
+    .prepare(
+      'SELECT id,name,userName,role FROM users WHERE userName = ? AND password = ? AND deleted = 0'
+    )
+    .get([userName, password]) as Session
 }
 
-export function createUser(db: DatabaseType, user: User): void {
+export function addUser(db: DatabaseType, user: User): void {
   const insertUser = db.prepare(
-    'INSERT INTO users (name, user_name, password, phone_number, role) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO users (name, userName, password, phoneNumber, role) VALUES (?, ?, ?, ?, ?)'
   )
-  insertUser.run(user.name, user.user_name, user.password, user.phone_number, user.role)
+  insertUser.run(user.name, user.userName, user.password, user.phoneNumber, user.role)
 }
 
 export function updateUser(db: DatabaseType, id: number, user: Partial<User>): void {
@@ -85,6 +97,5 @@ export function updateUser(db: DatabaseType, id: number, user: Partial<User>): v
 }
 
 export function deleteUser(db: DatabaseType, id: number): void {
-  const deleteUser = db.prepare('DELETE FROM users WHERE id = ?')
-  deleteUser.run(id)
+  db.prepare('UPDATE users SET deleted = 1 WHERE id = ?;').run(id)
 }

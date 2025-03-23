@@ -90,8 +90,8 @@ export default function UserRow(props: Props): JSX.Element {
         {props.user.id}
       </th>
       <td className="px-6 py-4">{props.user.name}</td>
-      <td className="px-6 py-4">{props.user.user_name}</td>
-      <td className="px-6 py-4">{props.user.phone_number}</td>
+      <td className="px-6 py-4">{props.user.userName}</td>
+      <td className="px-6 py-4">{props.user.phoneNumber}</td>
       <td className="px-6 py-4">{props.user.role}</td>
       <td className="px-6 py-4">
         <button onClick={handleEdit}>Edit</button>

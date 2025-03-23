@@ -1,29 +1,14 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { Database as DataBaseType } from 'better-sqlite3'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { setupDB } from '../main/db/main'
-import {
-  getAllUsers,
-  getUserbyId,
-  getUserbyUserName,
-  authenticateUser,
-  createUser,
-  updateUser,
-  deleteUser
-} from '../main/db/users'
-import {
-  getAllItems,
-  getItemByBarcode,
-  getItemById,
-  getItemByName,
-  insertItem,
-  updateItem,
-  deleteItem
-} from './db/items'
+import { setupDB } from './db'
+import { authenticateUser } from './db/users'
+import { defineIcpHandlers } from './IcpMainHandlers/index'
 
-let db
-let session
+let db: DataBaseType
+let session: Session | undefined
 
 function createWindow(): void {
   // Create the browser window.
@@ -60,11 +45,10 @@ function createWindow(): void {
   //setup session
   session = undefined
   mainWindow.webContents.send('userSession', undefined)
-  //create a session for users
 
-  ipcMain.handle('login', (_, loginData) => {
+  ipcMain.handle('login', (_, loginData: { userName: string; password: string }) => {
     let success = false
-    const authUser = authenticateUser(db, loginData.user_name, loginData.password)
+    const authUser = authenticateUser(db, loginData.userName, loginData.password)
     if (authUser !== undefined) {
       session = authUser
       mainWindow.webContents.send('userSession', authUser)
@@ -82,6 +66,8 @@ function createWindow(): void {
   ipcMain.handle('getSession', () => {
     return session
   })
+
+  defineIcpHandlers(db)
 }
 
 // This method will be called when Electron has finished
@@ -117,56 +103,4 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
-})
-
-ipcMain.handle('getAllUsers', () => {
-  return getAllUsers(db)
-})
-
-ipcMain.handle('getUserbyId', (_, id) => {
-  return getUserbyId(db, id)
-})
-
-ipcMain.handle('getUserbyUserName', (_, user_name) => {
-  return getUserbyUserName(db, user_name)
-})
-
-ipcMain.handle('createUser', (_, user) => {
-  return createUser(db, user)
-})
-
-ipcMain.handle('updateUser', (_, id, user) => {
-  return updateUser(db, id, user)
-})
-
-ipcMain.handle('deleteUser', (_, id) => {
-  return deleteUser(db, id)
-})
-
-ipcMain.handle('getAllItems', () => {
-  return getAllItems(db)
-})
-
-ipcMain.handle('getItemById', (_, id) => {
-  return getItemById(db, id)
-})
-
-ipcMain.handle('getItemByBarcode', (_, barcode) => {
-  return getItemByBarcode(db, barcode)
-})
-
-ipcMain.handle('getItemByName', (_, name) => {
-  return getItemByName(db, name)
-})
-
-ipcMain.handle('insertItem', (_, item) => {
-  return insertItem(db, item)
-})
-
-ipcMain.handle('updateItem', (_, id, item) => {
-  return updateItem(db, id, item)
-})
-
-ipcMain.handle('deleteItem', (_, id) => {
-  return deleteItem(db, id)
 })

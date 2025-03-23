@@ -11,8 +11,8 @@ interface IFormInput {
   price: number
   tax: number
   image: string
-  category: string
-  supplier: string
+  categoryId: string
+  supplierId: string
 }
 
 export default function AddItems(): JSX.Element {
@@ -28,7 +28,7 @@ export default function AddItems(): JSX.Element {
     let success = false
     try {
       await window.electron.ipcRenderer
-        .invoke('insertItem', {
+        .invoke('addItem', {
           name: data.name,
           description: data.description,
           barcode: data.barcode,
@@ -37,8 +37,8 @@ export default function AddItems(): JSX.Element {
           price: data.price,
           tax: data.tax,
           image: data.image,
-          category: data.category,
-          supplier: data.supplier
+          categoryId: data.categoryId,
+          supplierId: data.supplierId
         })
         .then(() => {
           success = true
@@ -242,7 +242,7 @@ export default function AddItems(): JSX.Element {
         <div className="mb-5">
           <label
             className={
-              errors.category
+              errors.categoryId
                 ? 'block mb-2 text-sm font-medium text-red-900'
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
@@ -250,12 +250,12 @@ export default function AddItems(): JSX.Element {
             Category
           </label>
           <input
-            {...register('category', { required: 'Category is required' })}
+            {...register('categoryId', { required: 'Category is required' })}
             type="text"
-            name="category"
-            id="category"
+            name="categoryId"
+            id="categoryId"
             className={
-              errors.category
+              errors.categoryId
                 ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }
@@ -264,7 +264,7 @@ export default function AddItems(): JSX.Element {
         <div className="mb-5">
           <label
             className={
-              errors.supplier
+              errors.supplierId
                 ? 'block mb-2 text-sm font-medium text-red-900'
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
@@ -272,12 +272,12 @@ export default function AddItems(): JSX.Element {
             Supplier
           </label>
           <input
-            {...register('supplier', { required: 'Supplier is required' })}
+            {...register('supplierId', { required: 'Supplier is required' })}
             type="text"
-            name="supplier"
-            id="supplier"
+            name="supplierId"
+            id="supplierId"
             className={
-              errors.supplier
+              errors.supplierId
                 ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }

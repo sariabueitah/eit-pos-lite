@@ -95,7 +95,8 @@ export default function ItemRow(props: Props): JSX.Element {
       <td className="px-6 py-4">{props.item.cost}</td>
       <td className="px-6 py-4">{props.item.price}</td>
       <td className="px-6 py-4">{props.item.tax}</td>
-      <td className="px-6 py-4">{props.item.category}</td>
+      <td className="px-6 py-4">{props.item.categoryId}</td>
+      <td className="px-6 py-4">{props.item.supplierId}</td>
       <td className="px-6 py-4">
         <button onClick={handleEdit}>Edit</button>
         <button onClick={submit}>Delete</button>

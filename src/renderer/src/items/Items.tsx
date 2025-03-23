@@ -61,6 +61,9 @@ export default function Items(): JSX.Element {
                 category
               </th>
               <th scope="col" className="px-6 py-3">
+                supplier
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Actions
               </th>
             </tr>

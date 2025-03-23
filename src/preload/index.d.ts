@@ -4,9 +4,9 @@ declare global {
   type User = {
     id: number
     name: string
-    user_name: string
+    userName: string
     password?: string
-    phone_number: string
+    phoneNumber: string
     role: 'ADMIN' | 'USER'
   }
 
@@ -20,14 +20,61 @@ declare global {
     price: number
     tax: number
     image: string
-    category: string
-    supplier: string
+    categoryId: string
+    supplierId: string
+  }
+
+  type Supplier = {
+    id: number
+    name: string
+    phoneNumber: string
+  }
+
+  type Category = {
+    id: number
+    name: string
+  }
+
+  type PurchaseInvoice = {
+    id: number
+    supplierId: number
+    date: string
+    status: 'PAID' | 'UNPAID' | 'PARTIAL'
+    paid: number
+  }
+
+  type PurchaseInvoiceItem = {
+    id: number
+    itemId: number
+    purchaseInvoiceId: number
+    quantity: number
+    price: number
+    tax: number
+  }
+
+  type SaleInvoice = {
+    id: number
+    userId: number
+    date: string
+    customer: string
+    status: 'PAID' | 'UNPAID' | 'HOLD' | 'CANCELED'
+    paymentMethod: 'CASH' | 'CREDIT'
+  }
+
+  type SaleInvoiceItem = {
+    id: number
+    itemId: number
+    saleInvoiceId: number
+    quantity: number
+    price: number
+    cost: number
+    tax: number
   }
 
   type Session = {
     id: number
     name: string
-    user_name: string
+    userName: string
     role: 'ADMIN' | 'USER'
   }
 

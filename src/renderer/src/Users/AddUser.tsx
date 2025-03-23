@@ -4,11 +4,11 @@ import FormAlerts from '../components/FormAlerts'
 
 interface IFormInput {
   name: string
-  user_name: string
-  phone_number: string
+  userName: string
+  phoneNumber: string
   role: 'ADMIN' | 'USER'
   password: string
-  confirm_password: string
+  confirmPassword: string
 }
 
 export default function AddUser(): JSX.Element {
@@ -24,10 +24,10 @@ export default function AddUser(): JSX.Element {
     let success = false
     try {
       await window.electron.ipcRenderer
-        .invoke('createUser', {
+        .invoke('addUser', {
           name: data.name,
-          user_name: data.user_name,
-          phone_number: data.phone_number,
+          userName: data.userName,
+          phoneNumber: data.phoneNumber,
           role: data.role,
           password: data.password
         })
@@ -79,7 +79,7 @@ export default function AddUser(): JSX.Element {
         <div className="mb-5">
           <label
             className={
-              errors.user_name
+              errors.userName
                 ? 'block mb-2 text-sm font-medium text-red-900'
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
@@ -87,7 +87,7 @@ export default function AddUser(): JSX.Element {
             Username
           </label>
           <input
-            {...register('user_name', {
+            {...register('userName', {
               required: 'Username is required',
               minLength: {
                 value: 5,
@@ -106,10 +106,10 @@ export default function AddUser(): JSX.Element {
               }
             })}
             type="text"
-            name="user_name"
-            id="user_name"
+            name="userName"
+            id="userName"
             className={
-              errors.user_name
+              errors.userName
                 ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }
@@ -118,7 +118,7 @@ export default function AddUser(): JSX.Element {
         <div className="mb-5">
           <label
             className={
-              errors.phone_number
+              errors.phoneNumber
                 ? 'block mb-2 text-sm font-medium text-red-900'
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
@@ -126,7 +126,7 @@ export default function AddUser(): JSX.Element {
             Phone Number
           </label>
           <input
-            {...register('phone_number', {
+            {...register('phoneNumber', {
               required: 'Phone Number is required',
               minLength: {
                 value: 10,
@@ -134,10 +134,10 @@ export default function AddUser(): JSX.Element {
               }
             })}
             type="text"
-            id="phone_number"
-            name="phone_number"
+            id="phoneNumber"
+            name="phoneNumber"
             className={
-              errors.phone_number
+              errors.phoneNumber
                 ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }
@@ -199,7 +199,7 @@ export default function AddUser(): JSX.Element {
         <div className="mb-5">
           <label
             className={
-              errors.confirm_password
+              errors.confirmPassword
                 ? 'block mb-2 text-sm font-medium text-red-900'
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
@@ -207,17 +207,17 @@ export default function AddUser(): JSX.Element {
             Confirm Password
           </label>
           <input
-            {...register('confirm_password', {
+            {...register('confirmPassword', {
               required: 'Confirm password is required',
               validate: (value, data) => {
                 return value === data.password || 'The passwords do not match'
               }
             })}
             type="password"
-            id="confirm_password"
-            name="confirm_password"
+            id="confirmPassword"
+            name="confirmPassword"
             className={
-              errors.confirm_password
+              errors.confirmPassword
                 ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }

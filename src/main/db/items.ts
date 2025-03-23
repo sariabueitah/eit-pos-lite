@@ -1,5 +1,5 @@
 import { Database as DatabaseType } from 'better-sqlite3'
-import { tableExists } from './main'
+import { tableExists } from './index'
 
 export function setupItemsTable(db: DatabaseType): void {
   if (!tableExists(db, 'items')) {
@@ -12,23 +12,36 @@ export function setupItemsTable(db: DatabaseType): void {
         'cost' REAL,
         'price' REAL,
         'tax' REAL,
-        'image' TEXT,
-        'category' TEXT,
-        'supplier' TEXT
+        'image' TEXT DEFAULT '',
+        'categoryId' INTEGER,
+        'supplierId' INTEGER,
+        'deleted' INTEGER DEFAULT 0,
+        FOREIGN KEY('categoryId') REFERENCES 'categories'('id'),
+        FOREIGN KEY('supplierId') REFERENCES 'suppliers'('id')
+        
     );`
 
     db.exec(createTable)
 
     db.exec('CREATE UNIQUE INDEX idx_items_id ON items (id);')
     db.exec('CREATE UNIQUE INDEX idx_items_barcode ON items (barcode);')
-    db.exec('CREATE UNIQUE INDEX idx_items_name ON items (name);')
+    db.exec('CREATE INDEX idx_items_name ON items (name);')
+    db.exec('CREATE INDEX idx_items_deleted ON items (deleted);')
   }
 }
 
 export function getAllItems(db: DatabaseType): [Item] {
   return db
     .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,category,supplier FROM items'
+      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE deleted = 0'
+    )
+    .all() as [Item]
+}
+
+export function getAllDeletedItems(db: DatabaseType): [Item] {
+  return db
+    .prepare(
+      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE deleted = 1'
     )
     .all() as [Item]
 }
@@ -36,7 +49,7 @@ export function getAllItems(db: DatabaseType): [Item] {
 export function getItemById(db: DatabaseType, id: number): Item {
   return db
     .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,category,supplier FROM items WHERE id = ?'
+      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE id = ?'
     )
     .get(id) as Item
 }
@@ -44,22 +57,22 @@ export function getItemById(db: DatabaseType, id: number): Item {
 export function getItemByBarcode(db: DatabaseType, barcode: string): Item {
   return db
     .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,category,supplier FROM items WHERE barcode = ?'
+      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE barcode = ?'
     )
     .get(barcode) as Item
 }
 
-export function getItemByName(db: DatabaseType, name: string): Item {
+export function getItemsByName(db: DatabaseType, name: string): [Item] {
   return db
     .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,category,supplier FROM items WHERE name = ?'
+      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE name = ?'
     )
-    .get(name) as Item
+    .get(name) as [Item]
 }
 
-export function insertItem(db: DatabaseType, item: Item): void {
+export function addItem(db: DatabaseType, item: Item): void {
   db.prepare(
-    'INSERT INTO items (name,description,barcode,unit,cost,price,tax,image,category,supplier) VALUES (@name,@description,@barcode,@unit,@cost,@price,@tax,@image,@category,@supplier)'
+    'INSERT INTO items (name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId) VALUES (@name,@description,@barcode,@unit,@cost,@price,@tax,@image,@categoryId,@supplierId)'
   ).run(item)
 }
 
@@ -75,6 +88,5 @@ export function updateItem(db: DatabaseType, id: number, item: Partial<Item>): v
 }
 
 export function deleteItem(db: DatabaseType, id: number): void {
-  const deleteItem = db.prepare('DELETE FROM items WHERE id = ?')
-  deleteItem.run(id)
+  db.prepare('UPDATE items SET deleted = 1 WHERE id = ?;').run(id)
 }
