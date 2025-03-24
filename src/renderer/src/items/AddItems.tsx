@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom'
+import PageContext from '../contexts/PageContext'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import FormAlerts from '../components/FormAlerts'
+import { useContext, useEffect } from 'react'
 
 interface IFormInput {
   name: string
@@ -17,6 +19,10 @@ interface IFormInput {
 
 export default function AddItems(): JSX.Element {
   const navigate = useNavigate()
+  const { setPageContext } = useContext(PageContext)
+  useEffect(() => {
+    setPageContext({ pageTitle: 'Items' })
+  }, [setPageContext])
 
   const {
     register,
@@ -285,7 +291,7 @@ export default function AddItems(): JSX.Element {
         </div>
         <button
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center"
         >
           Submit
         </button>

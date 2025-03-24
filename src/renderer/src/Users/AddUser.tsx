@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom'
+import PageContext from '../contexts/PageContext'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import FormAlerts from '../components/FormAlerts'
+import { useContext, useEffect } from 'react'
 
 interface IFormInput {
   name: string
@@ -13,6 +15,10 @@ interface IFormInput {
 
 export default function AddUser(): JSX.Element {
   const navigate = useNavigate()
+  const { setPageContext } = useContext(PageContext)
+  useEffect(() => {
+    setPageContext({ pageTitle: 'Add User' })
+  }, [setPageContext])
 
   const {
     register,
@@ -52,7 +58,6 @@ export default function AddUser(): JSX.Element {
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
-        <h1>Add User</h1>
         <FormAlerts alerts={errors} />
         <div className="mb-5">
           <label
@@ -225,7 +230,7 @@ export default function AddUser(): JSX.Element {
         </div>
         <button
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          className="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
         >
           Submit
         </button>

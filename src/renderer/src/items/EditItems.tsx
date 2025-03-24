@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import PageContext from '../contexts/PageContext'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import FormAlerts from '../components/FormAlerts'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 
 interface IFormInput {
   name: string
@@ -19,6 +20,11 @@ interface IFormInput {
 export default function EditItems(): JSX.Element {
   const { id } = useParams()
   const navigate = useNavigate()
+
+  const { setPageContext } = useContext(PageContext)
+  useEffect(() => {
+    setPageContext({ pageTitle: 'Edit Item' })
+  }, [setPageContext])
 
   const {
     register,
