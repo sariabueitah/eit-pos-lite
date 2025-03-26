@@ -17,7 +17,7 @@ export default function Login(): JSX.Element {
     setError
   } = useForm<IFormInput>()
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    const userCheck = await window.electron.ipcRenderer.invoke('getUserbyUserName', data.userName)
+    const userCheck = await window.electron.ipcRenderer.invoke('getUserByUserName', data.userName)
     if (userCheck) {
       const loginCheck = await window.electron.ipcRenderer.invoke('login', data)
       if (loginCheck) {

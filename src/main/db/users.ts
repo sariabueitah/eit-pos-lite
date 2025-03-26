@@ -58,13 +58,13 @@ export function getAllDeletedUsers(db: DatabaseType): [User] {
     .all() as [User]
 }
 
-export function getUserbyId(db: DatabaseType, id: number): User {
+export function getUserById(db: DatabaseType, id: number): User {
   return db
     .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE id = ?')
     .get(id) as User
 }
 
-export function getUserbyUserName(db: DatabaseType, userName: string): User {
+export function getUserByUserName(db: DatabaseType, userName: string): User {
   return db
     .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE userName = ?')
     .get(userName) as User

@@ -3,8 +3,8 @@ import { Database as DatabaseType } from 'better-sqlite3'
 import {
   getAllUsers,
   getAllDeletedUsers,
-  getUserbyId,
-  getUserbyUserName,
+  getUserById,
+  getUserByUserName,
   addUser,
   updateUser,
   deleteUser
@@ -19,12 +19,12 @@ export function userHandlers(db: DatabaseType): void {
     return getAllDeletedUsers(db)
   })
 
-  ipcMain.handle('getUserbyId', (_, id: number) => {
-    return getUserbyId(db, id)
+  ipcMain.handle('getUserById', (_, id: number) => {
+    return getUserById(db, id)
   })
 
-  ipcMain.handle('getUserbyUserName', (_, userName: string) => {
-    return getUserbyUserName(db, userName)
+  ipcMain.handle('getUserByUserName', (_, userName: string) => {
+    return getUserByUserName(db, userName)
   })
 
   ipcMain.handle('addUser', (_, user: User) => {

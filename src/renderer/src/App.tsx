@@ -21,18 +21,19 @@ import EditSupplier from './suppliers/EditSupplier'
 import NotFound from './NotFound'
 
 function App(): JSX.Element {
-  const [sessionContext, setSessionContext] = useState<Session | undefined>(undefined)
+  const [sessionContext, setSessionContext] = useState<Session | undefined>()
   const [pageContext, setPageContext] = useState({ pageTitle: '' })
 
-  window.electron.ipcRenderer.invoke('getSession').then((sessionData) => {
-    setSessionContext(sessionData)
-  })
+  useEffect(() => {
+    window.electron.ipcRenderer.invoke('getSession').then((sessionData) => {
+      setSessionContext(sessionData)
+    })
+  }, [])
 
   useEffect(() => {
     const unsub = window.electron.ipcRenderer.on('userSession', (_, sessionData) => {
       setSessionContext(sessionData)
     })
-
     return unsub
   }, [])
   return (

@@ -58,7 +58,7 @@ export default function EditUser(): JSX.Element {
 
   useEffect(() => {
     window.electron.ipcRenderer
-      .invoke('getUserbyId', id)
+      .invoke('getUserById', id)
       .then((result) => {
         setValue('name', result.name)
         setValue('userName', result.userName)

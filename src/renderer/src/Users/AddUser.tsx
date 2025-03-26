@@ -99,7 +99,7 @@ export default function AddUser(): JSX.Element {
             },
             validate: (value) => {
               return window.electron.ipcRenderer
-                .invoke('getUserbyUserName', value)
+                .invoke('getUserByUserName', value)
                 .then((result) => {
                   if (result) {
                     return 'Username already exists'

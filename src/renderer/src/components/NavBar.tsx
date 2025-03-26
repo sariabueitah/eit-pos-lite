@@ -25,7 +25,7 @@ function NavBar(): JSX.Element {
             </div>
           </NavLink>
           <div className="align-middle">
-            <h1>{pageContext.pageTitle}</h1>
+            <h1>{pageContext?.pageTitle}</h1>
           </div>
           <div>
             <NavLink to="/" onClick={() => window.electron.ipcRenderer.invoke('logout')}>

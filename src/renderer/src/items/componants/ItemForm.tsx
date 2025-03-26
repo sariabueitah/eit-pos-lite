@@ -83,7 +83,20 @@ export default function ItemForm({
             Barcode
           </label>
           <input
-            {...register('barcode', { required: 'Barcode is required' })}
+            {...register('barcode', {
+              required: 'Barcode is required',
+              validate: (value) => {
+                return window.electron.ipcRenderer
+                  .invoke('getItemByBarcode', value)
+                  .then((result) => {
+                    if (result) {
+                      return 'Barcode matches another item'
+                    } else {
+                      return true
+                    }
+                  })
+              }
+            })}
             type="text"
             name="barcode"
             id="barcode"
