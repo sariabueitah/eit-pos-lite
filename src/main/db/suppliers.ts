@@ -19,7 +19,7 @@ export function setupSuppliersTable(db: DatabaseType): void {
     db.exec('CREATE INDEX idx_suppliers_deleted ON suppliers (deleted);')
 
     const inserSupplier = db.prepare(
-      'INSERT INTO suppliers (name, phoneNumber) VALUES (:name,:phoneNumber);'
+      'INSERT INTO suppliers (name, phoneNumber, taxNumber) VALUES (:name,:phoneNumber,:taxNumber);'
     )
 
     const defualtUsers = [

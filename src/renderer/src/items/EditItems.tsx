@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import PageContext from '../contexts/PageContext'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import FormAlerts from '../components/FormAlerts'
 import { useContext, useEffect } from 'react'
+import ItemForm from './componants/ItemForm'
 
 interface IFormInput {
   name: string
@@ -79,8 +79,10 @@ export default function EditItems(): JSX.Element {
         setValue('price', result.price)
         setValue('tax', result.tax)
         setValue('image', result.image)
-        setValue('categoryId', result.categoryId)
-        setValue('supplierId', result.supplierId)
+        setTimeout(() => {
+          setValue('categoryId', result.categoryId)
+          setValue('supplierId', result.supplierId)
+        }, 100)
       })
       .catch((error) => {
         console.log('error')
@@ -89,237 +91,14 @@ export default function EditItems(): JSX.Element {
   }, [id, setValue])
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
-        <h1>Add Items</h1>
-        <FormAlerts alerts={errors} />
-        <div className="mb-5">
-          <label
-            className={
-              errors.name
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Name
-          </label>
-          <input
-            {...register('name', { required: 'Name is required' })}
-            type="text"
-            name="name"
-            id="name"
-            className={
-              errors.name
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.description
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Description
-          </label>
-          <input
-            {...register('description', { required: 'Description is required' })}
-            type="text"
-            name="description"
-            id="description"
-            className={
-              errors.description
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.barcode
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Barcode
-          </label>
-          <input
-            {...register('barcode', { required: 'Barcode is required' })}
-            type="text"
-            name="barcode"
-            id="barcode"
-            className={
-              errors.barcode
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.unit
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Unit
-          </label>
-          <input
-            {...register('unit', { required: 'Unit is required' })}
-            type="text"
-            name="unit"
-            id="unit"
-            className={
-              errors.unit
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.cost
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Cost
-          </label>
-          <input
-            {...register('cost', { required: 'Cost is required' })}
-            type="text"
-            name="cost"
-            id="cost"
-            className={
-              errors.cost
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.price
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Price
-          </label>
-          <input
-            {...register('price', { required: 'Price is required' })}
-            type="text"
-            name="price"
-            id="price"
-            className={
-              errors.price
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.tax
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Tax
-          </label>
-          <input
-            {...register('tax', { required: 'Tax is required' })}
-            type="text"
-            name="tax"
-            id="tax"
-            className={
-              errors.tax
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.image
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Image
-          </label>
-          <input
-            {...register('image', { required: 'Image is required' })}
-            type="text"
-            name="image"
-            id="image"
-            className={
-              errors.image
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.categoryId
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Category
-          </label>
-          <input
-            {...register('categoryId', { required: 'Category is required' })}
-            type="text"
-            name="categoryId"
-            id="categoryId"
-            className={
-              errors.categoryId
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <div className="mb-5">
-          <label
-            className={
-              errors.supplierId
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Supplier
-          </label>
-          <input
-            {...register('supplierId', { required: 'Supplier is required' })}
-            type="text"
-            name="supplierId"
-            id="supplierId"
-            className={
-              errors.supplierId
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
+    <ItemForm
+      errors={errors}
+      register={register}
+      handleSubmit={handleSubmit}
+      onSubmit={onSubmit}
+      onBack={() => {
+        navigate('/items', { replace: true })
+      }}
+    />
   )
 }

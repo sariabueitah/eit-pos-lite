@@ -1,18 +1,24 @@
 import { Routes, Route } from 'react-router-dom'
-import Login from './users/Login'
-import Users from './users/Users'
-import AddUser from './users/AddUser'
-import EditUser from './users/EditUser'
-import NavBar from './components/NavBar'
-import Home from './home/Home'
-import NotFound from './NotFound'
 import SessionContext from './contexts/SessionContext'
 import PageContext from './contexts/PageContext'
 import { useState, useEffect } from 'react'
 
+import NavBar from './components/NavBar'
+import Home from './home/Home'
+import Login from './users/Login'
+import Users from './users/Users'
+import AddUser from './users/AddUser'
+import EditUser from './users/EditUser'
 import Items from './items/Items'
 import AddItems from './items/AddItems'
 import EditItems from './items/EditItems'
+import Category from './categories/Categories'
+import AddCategory from './categories/AddCategory'
+import EditCategory from './categories/EditCategory'
+import Supplier from './suppliers/Suppliers'
+import AddSupplier from './suppliers/AddSupplier'
+import EditSupplier from './suppliers/EditSupplier'
+import NotFound from './NotFound'
 
 function App(): JSX.Element {
   const [sessionContext, setSessionContext] = useState<Session | undefined>(undefined)
@@ -29,12 +35,11 @@ function App(): JSX.Element {
 
     return unsub
   }, [])
-
   return (
     <SessionContext.Provider value={{ sessionContext, setSessionContext }}>
       <PageContext.Provider value={{ pageContext, setPageContext }}>
         <NavBar />
-        <div className="m-2.5">
+        <div className="m-3">
           <Routes>
             {sessionContext === undefined && <Route path="*" element={<Login />} />}
             {sessionContext && sessionContext.role === 'ADMIN' && (
@@ -51,6 +56,12 @@ function App(): JSX.Element {
                 <Route path="/items" element={<Items />} />
                 <Route path="/items/new" element={<AddItems />} />
                 <Route path="/items/edit/:id" element={<EditItems />} />
+                <Route path="/categories" element={<Category />} />
+                <Route path="/categories/new" element={<AddCategory />} />
+                <Route path="/categories/edit/:id" element={<EditCategory />} />
+                <Route path="/suppliers" element={<Supplier />} />
+                <Route path="/suppliers/new" element={<AddSupplier />} />
+                <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
               </>
             )}
           </Routes>

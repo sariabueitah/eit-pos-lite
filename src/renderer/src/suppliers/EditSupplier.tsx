@@ -1,50 +1,39 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import PageContext from '../contexts/PageContext'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useContext, useEffect } from 'react'
-import ItemForm from './componants/ItemForm'
+import SupplierForm from './componants/SupplierForm'
 
 interface IFormInput {
   name: string
-  description: string
-  barcode: string
-  unit: 'Grams' | 'Kilograms' | 'Liters' | 'Milliliters' | 'Units'
-  cost: number
-  price: number
-  tax: number
-  image: string
-  categoryId: string
-  supplierId: string
+  phoneNumber: string
+  taxNumber: string
 }
 
-export default function AddItems(): JSX.Element {
+export default function EditSupplier(): JSX.Element {
+  const { id } = useParams()
   const navigate = useNavigate()
+
   const { setPageContext } = useContext(PageContext)
   useEffect(() => {
-    setPageContext({ pageTitle: 'Add Item' })
+    setPageContext({ pageTitle: 'Edit Supplier' })
   }, [setPageContext])
 
   const {
     register,
     formState: { errors },
     handleSubmit,
-    setError
+    setError,
+    setValue
   } = useForm<IFormInput>()
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     let success = false
     try {
       await window.electron.ipcRenderer
-        .invoke('addItem', {
+        .invoke('updateSupplier', id, {
           name: data.name,
-          description: data.description,
-          barcode: data.barcode,
-          unit: data.unit,
-          cost: data.cost,
-          price: data.price,
-          tax: data.tax,
-          image: '',
-          categoryId: data.categoryId,
-          supplierId: data.supplierId
+          phoneNumber: data.phoneNumber,
+          taxNumber: data.taxNumber
         })
         .then(() => {
           success = true
@@ -58,20 +47,34 @@ export default function AddItems(): JSX.Element {
       setError('root', { type: 'manual', message: message })
     }
     if (success) {
-      navigate('/items', { replace: true })
+      navigate('/suppliers', { replace: true })
     } else {
-      setError('root', { type: 'manual', message: 'insertItem request was not successfull' })
+      setError('root', { type: 'manual', message: 'updateSupplier request was not successfull' })
     }
   }
 
+  useEffect(() => {
+    window.electron.ipcRenderer
+      .invoke('getSupplierById', id)
+      .then((result) => {
+        setValue('name', result.name)
+        setValue('phoneNumber', result.phoneNumber)
+        setValue('taxNumber', result.taxNumber)
+      })
+      .catch((error) => {
+        console.log('error')
+        console.log(error)
+      })
+  }, [id, setValue])
+
   return (
-    <ItemForm
+    <SupplierForm
       errors={errors}
       register={register}
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       onBack={() => {
-        navigate('/items', { replace: true })
+        navigate('/suppliers', { replace: true })
       }}
     />
   )

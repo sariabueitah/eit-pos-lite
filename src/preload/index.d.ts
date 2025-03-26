@@ -28,6 +28,7 @@ declare global {
     id: number
     name: string
     phoneNumber: string
+    taxNumber: string
   }
 
   type Category = {
