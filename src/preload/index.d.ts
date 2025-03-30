@@ -58,7 +58,7 @@ declare global {
     userId: number
     date: string
     customer: string
-    status: 'PAID' | 'UNPAID' | 'HOLD' | 'CANCELED'
+    status: 'PAID' | 'UNPAID' | 'HOLD' | 'CANCELED' | 'WAITING'
     paymentMethod: 'CASH' | 'CREDIT'
   }
 

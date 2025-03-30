@@ -10,7 +10,7 @@ export function setupPurchaseInvoiceItemsTable(db: DatabaseType): void {
         'quantity' INTEGER,
         'price' REAL,
         'tax' REAL,
-        'deleted' INTEGER,
+        'deleted' INTEGER DEFAULT 0,
         FOREIGN KEY('itemId') REFERENCES 'items'('id'),
         FOREIGN KEY('purchaseInvoiceId') REFERENCES 'sale_invoices'('id')
     );`

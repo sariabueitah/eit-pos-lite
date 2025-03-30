@@ -10,7 +10,7 @@ export function setupSaleInvoicesTable(db: DatabaseType): void {
         'customer' TEXT,
         'status' TEXT,
         'paymentMethod' TEXT,
-        'deleted' INTEGER,
+        'deleted' INTEGER DEFAULT 0,
         FOREIGN KEY('userId') REFERENCES 'users'('id')
     );`
 
@@ -47,10 +47,13 @@ export function getSaleInvoiceById(db: DatabaseType, id: number): SaleInvoice {
     .get(id) as SaleInvoice
 }
 
-export function addSaleInvoice(db: DatabaseType, saleInvoice: SaleInvoice): void {
-  db.prepare(
-    'INSERT INTO suppliers (id,userId,date,customer,status,paymentMethod) VALUES (:id,:userId,:date,:customer,"status,:paymentMethod);'
-  ).run(saleInvoice)
+export function addSaleInvoice(db: DatabaseType, saleInvoice: SaleInvoice): number | bigint {
+  const result = db
+    .prepare(
+      'INSERT INTO sale_invoices (userId,date,customer,status,paymentMethod) VALUES (:userId,:date,:customer,:status,:paymentMethod);'
+    )
+    .run(saleInvoice)
+  return result.lastInsertRowid
 }
 
 export function updateSaleInvoice(

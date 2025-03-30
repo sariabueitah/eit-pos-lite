@@ -82,7 +82,7 @@ export default function EditItems(): JSX.Element {
         setTimeout(() => {
           setValue('categoryId', result.categoryId)
           setValue('supplierId', result.supplierId)
-        }, 100)
+        }, 200)
       })
       .catch((error) => {
         console.log('error')

@@ -65,9 +65,9 @@ export function getItemByBarcode(db: DatabaseType, barcode: string): Item {
 export function getItemsByName(db: DatabaseType, name: string): [Item] {
   return db
     .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE name = ?'
+      'SELECT id,name,description,barcode,unit,cost,price,tax,categoryId,supplierId FROM items WHERE name LIKE ?'
     )
-    .get(name) as [Item]
+    .all('%' + name + '%') as [Item]
 }
 
 export function addItem(db: DatabaseType, item: Item): void {
@@ -89,4 +89,49 @@ export function updateItem(db: DatabaseType, id: number, item: Partial<Item>): v
 
 export function deleteItem(db: DatabaseType, id: number): void {
   db.prepare('UPDATE items SET deleted = 1 WHERE id = ?;').run(id)
+}
+
+export function searchItemById(db: DatabaseType, id: number): Item {
+  return db
+    .prepare(
+      `
+      SELECT id FROM items 
+      WHERE id = ?
+      `
+    )
+    .get(id) as Item
+}
+
+export function searchItemByBarcode(db: DatabaseType, barcode: string): Item {
+  return db
+    .prepare(
+      `
+      SELECT id FROM items
+      WHERE barcode = ?
+      `
+    )
+    .get(barcode) as Item
+}
+
+export function searchItemByName(db: DatabaseType, name: string): [Item] {
+  return db
+    .prepare(
+      `
+      SELECT id, name FROM items
+      WHERE name LIKE ?
+      `
+    )
+    .all('%' + name + '%') as [Item]
+}
+
+export function getItemSaleById(db: DatabaseType, id: number): Item {
+  return db
+    .prepare(
+      `
+      SELECT i.id, i.barcode, i.name, c.name as category, i.price, i.unit, i.tax, i.cost FROM items i 
+      INNER JOIN categories c ON i.categoryId = c.id
+      WHERE i.id = ?
+      `
+    )
+    .get(id) as Item
 }

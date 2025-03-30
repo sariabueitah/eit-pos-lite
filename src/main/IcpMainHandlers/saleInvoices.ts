@@ -8,6 +8,7 @@ import {
   updateSaleInvoice,
   deleteSaleInvoice
 } from '../db/saleInvoices'
+import { addSaleInvoiceItem } from '../db/saleInvoiceItems'
 
 export function saleInvoiceHandlers(db: DatabaseType): void {
   ipcMain.handle('getAllSaleInvoices', () => {
@@ -27,5 +28,13 @@ export function saleInvoiceHandlers(db: DatabaseType): void {
   })
   ipcMain.handle('deleteSaleInvoice', (_, id: number) => {
     return deleteSaleInvoice(db, id)
+  })
+
+  ipcMain.handle('test', (_, x, y) => {
+    const invoiceId = addSaleInvoice(db, x)
+    for (let i = 0; i < y.length; i++) {
+      addSaleInvoiceItem(db, { ...y[i], saleInvoiceId: invoiceId })
+    }
+    return 'success'
   })
 }

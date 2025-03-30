@@ -30,7 +30,7 @@ export default function ItemForm({
   onSubmit,
   onBack
 }: Props): JSX.Element {
-  const [categories, setCategories] = useState([{ id: '0', name: '' }])
+  const [categories, setCategories] = useState([{ id: '1', name: '' }])
 
   useEffect(() => {
     window.electron.ipcRenderer.invoke('getAllCategories').then((categories) => {
@@ -38,7 +38,7 @@ export default function ItemForm({
     })
   }, [])
 
-  const [suppliers, setSuppliers] = useState([{ id: '0', name: '', phoneNumber: '' }])
+  const [suppliers, setSuppliers] = useState([{ id: '1', name: '', phoneNumber: '' }])
 
   useEffect(() => {
     window.electron.ipcRenderer.invoke('getAllSuppliers').then((suppliers) => {
@@ -167,7 +167,10 @@ export default function ItemForm({
             Cost
           </label>
           <input
-            {...register('cost', { required: 'Cost is required' })}
+            {...register('cost', {
+              required: 'Cost is required',
+              min: { value: 0, message: 'Cost must be larger than 0' }
+            })}
             type="number"
             step="any"
             name="cost"
@@ -190,7 +193,10 @@ export default function ItemForm({
             Price
           </label>
           <input
-            {...register('price', { required: 'Price is required' })}
+            {...register('price', {
+              required: 'Price is required',
+              min: { value: 0, message: 'Price must be larger than 0' }
+            })}
             type="number"
             step="any"
             name="price"
@@ -214,7 +220,10 @@ export default function ItemForm({
           </label>
           <div className="flex">
             <input
-              {...register('tax')}
+              {...register('tax', {
+                required: 'Tax is required',
+                min: { value: 0, message: 'Tax must be larger than 0' }
+              })}
               type="number"
               step="any"
               name="tax"

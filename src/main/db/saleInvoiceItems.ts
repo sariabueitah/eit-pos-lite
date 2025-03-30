@@ -11,7 +11,7 @@ export function setupSaleInvoiceItemsTable(db: DatabaseType): void {
         'price' REAL,
         'cost' REAL,
         'tax' REAL,
-        'deleted' INTEGER,
+        'deleted' INTEGER DEFAULT 0,
         FOREIGN KEY('itemId') REFERENCES 'items'('id'),
         FOREIGN KEY('saleInvoiceId') REFERENCES 'sale_invoices'('id')
     );`
@@ -62,9 +62,9 @@ export function getSaleInvoiceItemsByInvoiceId(
 }
 
 export function addSaleInvoiceItem(db: DatabaseType, saleInvoiceItem: SaleInvoiceItem): void {
-  db.prepare('INSERT INTO sale_invoice_items (itemId,saleInvoiceId,quantity,price,cost,tax)').run(
-    saleInvoiceItem
-  )
+  db.prepare(
+    'INSERT INTO sale_invoice_items (itemId,saleInvoiceId,quantity,price,cost,tax) VALUES (:itemId,:saleInvoiceId,:quantity,:price,:cost,:tax)'
+  ).run(saleInvoiceItem)
 }
 
 export function updateSaleInvoiceItem(

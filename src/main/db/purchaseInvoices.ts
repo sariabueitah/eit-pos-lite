@@ -9,7 +9,7 @@ export function setupPurchaseInvoicesTable(db: DatabaseType): void {
         'date' TEXT,
         'status' TEXT,
         'paid' REAL,
-        'deleted' INTEGER,
+        'deleted' INTEGER DEFAULT 0,
         FOREIGN KEY('supplierId') REFERENCES 'supplier'('id')
     );`
 

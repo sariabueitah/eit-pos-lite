@@ -8,7 +8,11 @@ import {
   getItemsByName,
   addItem,
   updateItem,
-  deleteItem
+  deleteItem,
+  searchItemById,
+  searchItemByBarcode,
+  searchItemByName,
+  getItemSaleById
 } from '../db/items'
 
 export function itemHandlers(db: DatabaseType): void {
@@ -28,7 +32,7 @@ export function itemHandlers(db: DatabaseType): void {
     return getItemByBarcode(db, barcode)
   })
 
-  ipcMain.handle('getItemByName', (_, name: string) => {
+  ipcMain.handle('getItemsByName', (_, name: string) => {
     return getItemsByName(db, name)
   })
 
@@ -42,5 +46,21 @@ export function itemHandlers(db: DatabaseType): void {
 
   ipcMain.handle('deleteItem', (_, id: number) => {
     return deleteItem(db, id)
+  })
+
+  ipcMain.handle('searchItemById', (_, id: number) => {
+    return searchItemById(db, id)
+  })
+
+  ipcMain.handle('searchItemByBarcode', (_, barcode: string) => {
+    return searchItemByBarcode(db, barcode)
+  })
+
+  ipcMain.handle('searchItemByName', (_, name: string) => {
+    return searchItemByName(db, name)
+  })
+
+  ipcMain.handle('getItemSaleById', (_, id: number) => {
+    return getItemSaleById(db, id)
   })
 }

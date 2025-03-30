@@ -18,6 +18,8 @@ import EditCategory from './categories/EditCategory'
 import Supplier from './suppliers/Suppliers'
 import AddSupplier from './suppliers/AddSupplier'
 import EditSupplier from './suppliers/EditSupplier'
+import SaleInvoice from './saleInvoice/SaleInvoices'
+import AddSaleInvoice from './saleInvoice/AddSaleInvoices'
 import NotFound from './NotFound'
 
 function App(): JSX.Element {
@@ -63,6 +65,8 @@ function App(): JSX.Element {
                 <Route path="/suppliers" element={<Supplier />} />
                 <Route path="/suppliers/new" element={<AddSupplier />} />
                 <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
+                <Route path="/saleInvoices" element={<SaleInvoice />} />
+                <Route path="/saleInvoices/new" element={<AddSaleInvoice />} />
               </>
             )}
           </Routes>
