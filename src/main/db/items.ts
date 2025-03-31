@@ -27,6 +27,94 @@ export function setupItemsTable(db: DatabaseType): void {
     db.exec('CREATE UNIQUE INDEX idx_items_barcode ON items (barcode);')
     db.exec('CREATE INDEX idx_items_name ON items (name);')
     db.exec('CREATE INDEX idx_items_deleted ON items (deleted);')
+
+    const inserSupplier = db.prepare(
+      'INSERT INTO items (name,description,barcode,unit,cost,price,tax,categoryId,supplierId) VALUES (:name,:description,:barcode,:unit,:cost,:price,:tax,:categoryId,:supplierId);'
+    )
+
+    const defualtUsers = [
+      {
+        name: 'coca cola',
+        description: 'coca cola',
+        barcode: '1',
+        unit: 'UNIT',
+        cost: 0.24,
+        price: 0.25,
+        tax: 0,
+        categoryId: 1,
+        supplierId: 1
+      },
+      {
+        name: 'choco break',
+        description: 'choco break',
+        barcode: '2',
+        unit: 'UNIT',
+        cost: 0.09,
+        price: 0.1,
+        tax: 0,
+        categoryId: 1,
+        supplierId: 1
+      },
+      {
+        name: 'pepsi',
+        description: 'pepsi',
+        barcode: '3',
+        unit: 'UNIT',
+        cost: 0.24,
+        price: 0.25,
+        tax: 0,
+        categoryId: 1,
+        supplierId: 1
+      },
+      {
+        name: 'ice tea',
+        description: 'ice tea',
+        barcode: '4',
+        unit: 'UNIT',
+        cost: 0.4,
+        price: 0.5,
+        tax: 0,
+        categoryId: 1,
+        supplierId: 1
+      },
+      {
+        name: 'mr chips',
+        description: 'chips',
+        barcode: '5',
+        unit: 'UNIT',
+        cost: 0.4,
+        price: 0.5,
+        tax: 16,
+        categoryId: 1,
+        supplierId: 1
+      },
+      {
+        name: 'nescafe',
+        description: 'nescafe',
+        barcode: '6',
+        unit: 'UNIT',
+        cost: 3.5,
+        price: 3.7,
+        tax: 16,
+        categoryId: 1,
+        supplierId: 1
+      },
+      {
+        name: 'yogart',
+        description: 'yogart',
+        barcode: '7',
+        unit: 'UNIT',
+        cost: 0.9,
+        price: 1,
+        tax: 7,
+        categoryId: 1,
+        supplierId: 1
+      }
+    ]
+
+    defualtUsers.forEach((element) => {
+      inserSupplier.run(element)
+    })
   }
 }
 
@@ -96,7 +184,7 @@ export function searchItemById(db: DatabaseType, id: number): Item {
     .prepare(
       `
       SELECT id FROM items 
-      WHERE id = ?
+      WHERE deleted  = 0 AND id = ?
       `
     )
     .get(id) as Item
@@ -107,7 +195,7 @@ export function searchItemByBarcode(db: DatabaseType, barcode: string): Item {
     .prepare(
       `
       SELECT id FROM items
-      WHERE barcode = ?
+      WHERE deleted  = 0 AND barcode = ? 
       `
     )
     .get(barcode) as Item
@@ -118,7 +206,7 @@ export function searchItemByName(db: DatabaseType, name: string): [Item] {
     .prepare(
       `
       SELECT id, name FROM items
-      WHERE name LIKE ?
+      WHERE deleted  = 0 AND name LIKE ?
       `
     )
     .all('%' + name + '%') as [Item]
@@ -130,7 +218,7 @@ export function getItemSaleById(db: DatabaseType, id: number): Item {
       `
       SELECT i.id, i.barcode, i.name, c.name as category, i.price, i.unit, i.tax, i.cost FROM items i 
       INNER JOIN categories c ON i.categoryId = c.id
-      WHERE i.id = ?
+      WHERE i.deleted  = 0 AND  i.id = ?
       `
     )
     .get(id) as Item

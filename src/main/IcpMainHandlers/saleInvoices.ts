@@ -30,7 +30,7 @@ export function saleInvoiceHandlers(db: DatabaseType): void {
     return deleteSaleInvoice(db, id)
   })
 
-  ipcMain.handle('test', (_, x, y) => {
+  ipcMain.handle('createSaleInvoice', (_, x, y) => {
     const invoiceId = addSaleInvoice(db, x)
     for (let i = 0; i < y.length; i++) {
       addSaleInvoiceItem(db, { ...y[i], saleInvoiceId: invoiceId })
