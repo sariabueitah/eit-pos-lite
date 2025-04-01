@@ -2,6 +2,7 @@ import PageContext from '../contexts/PageContext'
 import { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+//TODO add view page and cancel action for issued invoice and search funtionality
 export default function SaleInvoices(): JSX.Element {
   const navigate = useNavigate()
   const { setPageContext } = useContext(PageContext)

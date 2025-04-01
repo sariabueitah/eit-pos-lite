@@ -22,6 +22,8 @@ import SaleInvoice from './saleInvoice/SaleInvoices'
 import AddSaleInvoice from './saleInvoice/AddSaleInvoices'
 import NotFound from './NotFound'
 
+//TODO fix all styles unifiing the buttons maybe spruce up the style
+//TODO replace context with redux
 function App(): JSX.Element {
   const [sessionContext, setSessionContext] = useState<Session | undefined>()
   const [pageContext, setPageContext] = useState({ pageTitle: '' })

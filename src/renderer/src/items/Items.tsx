@@ -3,6 +3,7 @@ import PageContext from '../contexts/PageContext'
 import ItemRow from './componants/ItemRow'
 import { NavLink } from 'react-router-dom'
 
+//TODO add search funtionality
 export default function Items(): JSX.Element {
   const { setPageContext } = useContext(PageContext)
   const [itemData, seItemData] = useState<Item[]>([])

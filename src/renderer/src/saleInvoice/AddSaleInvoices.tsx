@@ -19,6 +19,8 @@ export type TempItem = {
   cost: number
 }
 
+//TODO handle hold maybe use redux
+
 export default function AddSaleInvoices(): JSX.Element {
   const { sessionContext } = useContext(SessionContext)
   const { setPageContext } = useContext(PageContext)

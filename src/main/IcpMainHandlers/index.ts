@@ -8,6 +8,7 @@ import { purchaseInvoiceItemsHandlers } from './purchaseInvoiceItems'
 import { saleInvoiceHandlers } from './saleInvoices'
 import { saleInvoiceItemsHandlers } from './saleInvoiceItems'
 
+//TODO check unused icpMain handlers and db calls
 export function defineIcpHandlers(db: DatabaseType): void {
   categoriesHandlers(db)
   itemHandlers(db)
