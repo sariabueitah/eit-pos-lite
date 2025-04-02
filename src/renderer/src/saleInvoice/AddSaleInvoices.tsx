@@ -1,11 +1,12 @@
-import PageContext from '../contexts/PageContext'
-import SessionContext from '../contexts/SessionContext'
-import { useContext, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setPage } from '../state/slices/PageSlice'
+import { useEffect, useState } from 'react'
 import KeyPad from '../components/KeyPad'
 import AddSaleInvoiceHeader from './componants/AddSaleInvoiceHeader'
 import AddSaleInvoiceItems from './componants/AddSaleInvoiceItems'
 import { roundNum } from '../components/Math'
 import Payment from './componants/Payment'
+import { RootState } from '../state/store'
 
 export type TempItem = {
   itemId: number
@@ -22,11 +23,11 @@ export type TempItem = {
 //TODO handle hold maybe use redux
 
 export default function AddSaleInvoices(): JSX.Element {
-  const { sessionContext } = useContext(SessionContext)
-  const { setPageContext } = useContext(PageContext)
+  const session = useSelector((state: RootState) => state.session.value)
+  const dispatch = useDispatch()
   useEffect(() => {
-    setPageContext({ pageTitle: 'Add Sale Invoice' })
-  }, [setPageContext])
+    dispatch(setPage('Add Sale Invoice'))
+  }, [dispatch])
 
   const [saleInvoice, setSaleInvoice] = useState<Partial<SaleInvoice>>({
     status: 'WAITING',
@@ -97,7 +98,7 @@ export default function AddSaleInvoices(): JSX.Element {
         paymentMethod: paymentMethod
       })
       setSaleInvoice({
-        userId: sessionContext?.id,
+        userId: session?.id,
         customer: saleInvoice.customer,
         date: Date(),
         paymentMethod: paymentMethod,
@@ -113,7 +114,7 @@ export default function AddSaleInvoices(): JSX.Element {
       .invoke(
         'createSaleInvoice',
         {
-          userId: sessionContext?.id,
+          userId: session?.id,
           customer: saleInvoice.customer,
           date: Date(),
           paymentMethod: saleInvoice.paymentMethod,

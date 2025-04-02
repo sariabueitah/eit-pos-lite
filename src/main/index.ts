@@ -8,7 +8,7 @@ import { authenticateUser } from './db/users'
 import { defineIcpHandlers } from './IcpMainHandlers/index'
 
 let db: DataBaseType
-let session: Session | undefined
+let session: Session | null
 
 function createWindow(): void {
   // Create the browser window.
@@ -43,8 +43,8 @@ function createWindow(): void {
   //setup on Start db operations
   db = setupDB()
   //setup session
-  session = undefined
-  mainWindow.webContents.send('userSession', undefined)
+  session = null
+  mainWindow.webContents.send('userSession', null)
 
   ipcMain.handle('login', (_, loginData: { userName: string; password: string }) => {
     let success = false
@@ -58,8 +58,8 @@ function createWindow(): void {
   })
 
   ipcMain.handle('logout', () => {
-    session = undefined
-    mainWindow.webContents.send('userSession', undefined)
+    session = null
+    mainWindow.webContents.send('userSession', null)
     return true
   })
 

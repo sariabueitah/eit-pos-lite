@@ -1,15 +1,14 @@
 import { NavLink } from 'react-router-dom'
-import SessionContext from '../contexts/SessionContext'
-import PageContext from '../contexts/PageContext'
-import { useContext } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../state/store'
 
 function NavBar(): JSX.Element {
-  const { sessionContext } = useContext(SessionContext)
-  const { pageContext } = useContext(PageContext)
+  const session = useSelector((state: RootState) => state.session.value)
+  const pageTitle = useSelector((state: RootState) => state.page.pageTitle)
 
   return (
     <>
-      {sessionContext && (
+      {session && (
         <div className="flex justify-between items-center p-3 border-b border-gray-300">
           <NavLink to="/">
             <div className="p-3 rounded-2xl bg-white hover:bg-gray-300 border border-gray-300">
@@ -25,11 +24,11 @@ function NavBar(): JSX.Element {
             </div>
           </NavLink>
           <div className="align-middle">
-            <h1>{pageContext?.pageTitle}</h1>
+            <h1>{pageTitle}</h1>
           </div>
           <div>
             <NavLink to="/" onClick={() => window.electron.ipcRenderer.invoke('logout')}>
-              <span className="text-center block">{sessionContext?.name}</span>
+              <span className="text-center block">{session?.name}</span>
               <span className="text-center block">Logout</span>
             </NavLink>
           </div>

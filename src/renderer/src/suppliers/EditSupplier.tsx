@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import PageContext from '../contexts/PageContext'
+import { useDispatch } from 'react-redux'
+import { setPage } from '../state/slices/PageSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import SupplierForm from './componants/SupplierForm'
 
 interface IFormInput {
@@ -14,10 +15,10 @@ export default function EditSupplier(): JSX.Element {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const { setPageContext } = useContext(PageContext)
+  const dispatch = useDispatch()
   useEffect(() => {
-    setPageContext({ pageTitle: 'Edit Supplier' })
-  }, [setPageContext])
+    dispatch(setPage('Edit Supplier'))
+  }, [dispatch])
 
   const {
     register,

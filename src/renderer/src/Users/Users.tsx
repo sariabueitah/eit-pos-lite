@@ -1,15 +1,16 @@
-import { useState, useEffect, useContext } from 'react'
-import PageContext from '../contexts/PageContext'
+import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { setPage } from '../state/slices/PageSlice'
 import UserRow from './componants/UserRow'
 import { NavLink } from 'react-router-dom'
 
 export default function Users(): JSX.Element {
   const [userData, setUserData] = useState<User[]>([])
 
-  const { setPageContext } = useContext(PageContext)
+  const dispatch = useDispatch()
   useEffect(() => {
-    setPageContext({ pageTitle: 'Users' })
-  }, [setPageContext])
+    dispatch(setPage('Users'))
+  }, [dispatch])
 
   useEffect(() => {
     window.electron.ipcRenderer

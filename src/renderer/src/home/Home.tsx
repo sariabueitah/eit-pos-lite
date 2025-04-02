@@ -1,13 +1,14 @@
-import { useContext, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import PageContext from '../contexts/PageContext'
+import { useDispatch } from 'react-redux'
+import { setPage } from '../state/slices/PageSlice'
+import { useEffect } from 'react'
 
 export default function Home(): JSX.Element {
-  const { setPageContext } = useContext(PageContext)
-
+  const dispatch = useDispatch()
   useEffect(() => {
-    setPageContext({ pageTitle: 'Main Page' })
-  }, [setPageContext])
+    dispatch(setPage('Main Page'))
+  }, [dispatch])
+
   return (
     <div className="m-auto py-5">
       <div className="p-3 flex justify-center">

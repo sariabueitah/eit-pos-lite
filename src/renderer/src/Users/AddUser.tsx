@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import PageContext from '../contexts/PageContext'
+import { useDispatch } from 'react-redux'
+import { setPage } from '../state/slices/PageSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import FormAlerts from '../components/FormAlerts'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 
 interface IFormInput {
   name: string
@@ -15,10 +16,10 @@ interface IFormInput {
 
 export default function AddUser(): JSX.Element {
   const navigate = useNavigate()
-  const { setPageContext } = useContext(PageContext)
+  const dispatch = useDispatch()
   useEffect(() => {
-    setPageContext({ pageTitle: 'Add User' })
-  }, [setPageContext])
+    dispatch(setPage('Add User'))
+  }, [dispatch])
 
   const {
     register,

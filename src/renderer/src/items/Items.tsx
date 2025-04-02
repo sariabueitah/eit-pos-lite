@@ -1,15 +1,17 @@
-import { useContext, useEffect, useState } from 'react'
-import PageContext from '../contexts/PageContext'
+import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setPage } from '../state/slices/PageSlice'
 import ItemRow from './componants/ItemRow'
 import { NavLink } from 'react-router-dom'
 
 //TODO add search funtionality
 export default function Items(): JSX.Element {
-  const { setPageContext } = useContext(PageContext)
-  const [itemData, seItemData] = useState<Item[]>([])
+  const dispatch = useDispatch()
   useEffect(() => {
-    setPageContext({ pageTitle: 'Items' })
-  }, [setPageContext])
+    dispatch(setPage('Items'))
+  }, [dispatch])
+
+  const [itemData, seItemData] = useState<Item[]>([])
 
   useEffect(() => {
     window.electron.ipcRenderer

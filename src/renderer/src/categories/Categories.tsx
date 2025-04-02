@@ -1,15 +1,15 @@
-import { useState, useEffect, useContext } from 'react'
-import PageContext from '../contexts/PageContext'
+import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { setPage } from '../state/slices/PageSlice'
 import CategoryRow from './componants/CategoryRow'
 import { NavLink } from 'react-router-dom'
 
 export default function Users(): JSX.Element {
   const [categoryData, setCategoryData] = useState<Category[]>([])
-
-  const { setPageContext } = useContext(PageContext)
+  const dispatch = useDispatch()
   useEffect(() => {
-    setPageContext({ pageTitle: 'Categories' })
-  }, [setPageContext])
+    dispatch(setPage('Categories'))
+  }, [dispatch])
 
   useEffect(() => {
     window.electron.ipcRenderer
