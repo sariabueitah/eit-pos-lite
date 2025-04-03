@@ -9,6 +9,7 @@ import {
   updateUser,
   deleteUser
 } from '../db/users'
+import { hashPasswordSync } from '../bcrypt'
 
 export function userHandlers(db: DatabaseType): void {
   ipcMain.handle('getAllUsers', () => {
@@ -28,10 +29,16 @@ export function userHandlers(db: DatabaseType): void {
   })
 
   ipcMain.handle('addUser', (_, user: User) => {
+    if (user.password) {
+      user.password = hashPasswordSync(user.password)
+    }
     return addUser(db, user)
   })
 
   ipcMain.handle('updateUser', (_, id: number, user: Partial<User>) => {
+    if (user.password) {
+      user.password = hashPasswordSync(user.password)
+    }
     return updateUser(db, id, user)
   })
 

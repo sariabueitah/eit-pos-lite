@@ -21,6 +21,7 @@ import EditSupplier from './suppliers/EditSupplier'
 import SaleInvoice from './saleInvoice/SaleInvoices'
 import AddSaleInvoice from './saleInvoice/AddSaleInvoices'
 import NotFound from './NotFound'
+import Loading from './Loading'
 
 //TODO fix all styles unifiing the buttons maybe spruce up the style
 function App(): JSX.Element {
@@ -39,6 +40,7 @@ function App(): JSX.Element {
 
   return (
     <>
+      <Loading />
       <NavBar />
       <div className="m-3">
         <Routes>

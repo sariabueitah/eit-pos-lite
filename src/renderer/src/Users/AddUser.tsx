@@ -27,33 +27,21 @@ export default function AddUser(): JSX.Element {
     handleSubmit,
     setError
   } = useForm<IFormInput>()
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    let success = false
-    try {
-      await window.electron.ipcRenderer
-        .invoke('addUser', {
-          name: data.name,
-          userName: data.userName,
-          phoneNumber: data.phoneNumber,
-          role: data.role,
-          password: data.password
-        })
-        .then(() => {
-          success = true
-        })
-        .catch((error) => {
-          setError('root', { type: 'manual', message: error })
-        })
-    } catch (error) {
-      let message = 'Unknown Error'
-      if (error instanceof Error) message = error.message
-      setError('root', { type: 'manual', message: message })
-    }
-    if (success) {
-      navigate('/users', { replace: true })
-    } else {
-      setError('root', { type: 'manual', message: 'createUser request was not successfull' })
-    }
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    window.electron.ipcRenderer
+      .invoke('addUser', {
+        name: data.name,
+        userName: data.userName,
+        phoneNumber: data.phoneNumber,
+        role: data.role,
+        password: data.password
+      })
+      .then(() => {
+        navigate('/users', { replace: true })
+      })
+      .catch((error) => {
+        setError('root', { type: 'manual', message: error })
+      })
   }
 
   return (

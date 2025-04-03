@@ -1,5 +1,6 @@
-import { Database as DatabaseType } from 'better-sqlite3'
+import Database, { Database as DatabaseType } from 'better-sqlite3'
 import { tableExists } from './index'
+import { hashPasswordSync, compareHashSync } from '../bcrypt'
 
 export function setupUsersTable(db: DatabaseType): void {
   if (!tableExists(db, 'users')) {
@@ -27,14 +28,14 @@ export function setupUsersTable(db: DatabaseType): void {
       {
         name: 'admin',
         userName: 'admin',
-        password: 'Admin#1',
+        password: hashPasswordSync('Admin#1'),
         phoneNumber: '0000000000',
         role: 'ADMIN'
       },
       {
         name: 'user1',
         userName: 'user1',
-        password: 'User#1',
+        password: hashPasswordSync('User#1'),
         phoneNumber: '0000000000',
         role: 'USER'
       }
@@ -70,22 +71,31 @@ export function getUserByUserName(db: DatabaseType, userName: string): User {
     .get(userName) as User
 }
 
-export function authenticateUser(db: DatabaseType, userName: string, password: string): Session {
-  return db
-    .prepare(
-      'SELECT id,name,userName,role FROM users WHERE userName = ? AND password = ? AND deleted = 0'
-    )
-    .get([userName, password]) as Session
+export function authenticateUser(
+  db: DatabaseType,
+  userName: string,
+  password: string
+): Session | undefined {
+  const user = db
+    .prepare('SELECT id,name,userName,role,password FROM users WHERE userName = ? AND deleted = 0')
+    .get([userName]) as Partial<User>
+
+  if (compareHashSync(password, user.password)) {
+    delete user['password']
+    return user as Session
+  } else {
+    return undefined
+  }
 }
 
-export function addUser(db: DatabaseType, user: User): void {
+export function addUser(db: DatabaseType, user: User): Database.RunResult {
   const insertUser = db.prepare(
     'INSERT INTO users (name, userName, password, phoneNumber, role) VALUES (?, ?, ?, ?, ?)'
   )
-  insertUser.run(user.name, user.userName, user.password, user.phoneNumber, user.role)
+  return insertUser.run(user.name, user.userName, user.password, user.phoneNumber, user.role)
 }
 
-export function updateUser(db: DatabaseType, id: number, user: Partial<User>): void {
+export function updateUser(db: DatabaseType, id: number, user: Partial<User>): Database.RunResult {
   const fields = Object.keys(user)
     .map((key) => `${key} = ?`)
     .join(', ')
@@ -93,9 +103,9 @@ export function updateUser(db: DatabaseType, id: number, user: Partial<User>): v
   values.push(id)
 
   const updateUser = db.prepare(`UPDATE users SET ${fields} WHERE id = ?`)
-  updateUser.run(...values)
+  return updateUser.run(...values)
 }
 
-export function deleteUser(db: DatabaseType, id: number): void {
-  db.prepare('UPDATE users SET deleted = 1 WHERE id = ?;').run(id)
+export function deleteUser(db: DatabaseType, id: number): Database.RunResult {
+  return db.prepare('UPDATE users SET deleted = 1 WHERE id = ?;').run(id)
 }
