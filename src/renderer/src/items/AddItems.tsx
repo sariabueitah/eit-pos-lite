@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage } from '../state/slices/PageSlice'
+import { setLoading } from '../state/slices/LoadingSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import ItemForm from './componants/ItemForm'
 import { useEffect } from 'react'
@@ -31,38 +32,29 @@ export default function AddItems(): JSX.Element {
     handleSubmit,
     setError
   } = useForm<IFormInput>()
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    let success = false
-    try {
-      await window.electron.ipcRenderer
-        .invoke('addItem', {
-          name: data.name,
-          description: data.description,
-          barcode: data.barcode,
-          unit: data.unit,
-          cost: data.cost,
-          price: data.price,
-          tax: data.tax,
-          image: '',
-          categoryId: data.categoryId,
-          supplierId: data.supplierId
-        })
-        .then(() => {
-          success = true
-        })
-        .catch((error) => {
-          setError('root', { type: 'manual', message: error })
-        })
-    } catch (error) {
-      let message = 'Unknown Error'
-      if (error instanceof Error) message = error.message
-      setError('root', { type: 'manual', message: message })
-    }
-    if (success) {
-      navigate('/items', { replace: true })
-    } else {
-      setError('root', { type: 'manual', message: 'insertItem request was not successfull' })
-    }
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    dispatch(setLoading(true))
+    window.electron.ipcRenderer
+      .invoke('addItem', {
+        name: data.name,
+        description: data.description,
+        barcode: data.barcode,
+        unit: data.unit,
+        cost: data.cost,
+        price: data.price,
+        tax: data.tax,
+        image: '',
+        categoryId: data.categoryId,
+        supplierId: data.supplierId
+      })
+      .then(() => {
+        dispatch(setLoading(false))
+        navigate('/items', { replace: true })
+      })
+      .catch((error) => {
+        dispatch(setLoading(false))
+        setError('root', { type: 'manual', message: error })
+      })
   }
 
   return (

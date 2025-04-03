@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage } from '../state/slices/PageSlice'
+import { setLoading } from '../state/slices/LoadingSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import FormAlerts from '../components/FormAlerts'
 import { useEffect } from 'react'
@@ -28,6 +29,7 @@ export default function AddUser(): JSX.Element {
     setError
   } = useForm<IFormInput>()
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    dispatch(setLoading(true))
     window.electron.ipcRenderer
       .invoke('addUser', {
         name: data.name,
@@ -38,9 +40,11 @@ export default function AddUser(): JSX.Element {
       })
       .then(() => {
         navigate('/users', { replace: true })
+        dispatch(setLoading(false))
       })
       .catch((error) => {
         setError('root', { type: 'manual', message: error })
+        dispatch(setLoading(false))
       })
   }
 

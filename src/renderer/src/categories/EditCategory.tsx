@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage } from '../state/slices/PageSlice'
+import { setLoading } from '../state/slices/LoadingSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useEffect } from 'react'
 import CategoryForm from './componants/CategoryForm'
@@ -24,29 +25,20 @@ export default function EditCategory(): JSX.Element {
     setError,
     setValue
   } = useForm<IFormInput>()
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    let success = false
-    try {
-      await window.electron.ipcRenderer
-        .invoke('updateCategory', id, {
-          name: data.name
-        })
-        .then(() => {
-          success = true
-        })
-        .catch((error) => {
-          setError('root', { type: 'manual', message: error })
-        })
-    } catch (error) {
-      let message = 'Unknown Error'
-      if (error instanceof Error) message = error.message
-      setError('root', { type: 'manual', message: message })
-    }
-    if (success) {
-      navigate('/categories', { replace: true })
-    } else {
-      setError('root', { type: 'manual', message: 'updateCategory request was not successfull' })
-    }
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    dispatch(setLoading(true))
+    window.electron.ipcRenderer
+      .invoke('updateCategory', id, {
+        name: data.name
+      })
+      .then(() => {
+        dispatch(setLoading(false))
+        navigate('/categories', { replace: true })
+      })
+      .catch((error) => {
+        dispatch(setLoading(false))
+        setError('root', { type: 'manual', message: error })
+      })
   }
 
   useEffect(() => {

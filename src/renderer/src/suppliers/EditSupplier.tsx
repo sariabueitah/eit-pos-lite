@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
+import { setLoading } from '../state/slices/LoadingSlice'
 import { setPage } from '../state/slices/PageSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useEffect } from 'react'
@@ -27,31 +28,22 @@ export default function EditSupplier(): JSX.Element {
     setError,
     setValue
   } = useForm<IFormInput>()
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
-    let success = false
-    try {
-      await window.electron.ipcRenderer
-        .invoke('updateSupplier', id, {
-          name: data.name,
-          phoneNumber: data.phoneNumber,
-          taxNumber: data.taxNumber
-        })
-        .then(() => {
-          success = true
-        })
-        .catch((error) => {
-          setError('root', { type: 'manual', message: error })
-        })
-    } catch (error) {
-      let message = 'Unknown Error'
-      if (error instanceof Error) message = error.message
-      setError('root', { type: 'manual', message: message })
-    }
-    if (success) {
-      navigate('/suppliers', { replace: true })
-    } else {
-      setError('root', { type: 'manual', message: 'updateSupplier request was not successfull' })
-    }
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    dispatch(setLoading(true))
+    window.electron.ipcRenderer
+      .invoke('updateSupplier', id, {
+        name: data.name,
+        phoneNumber: data.phoneNumber,
+        taxNumber: data.taxNumber
+      })
+      .then(() => {
+        dispatch(setLoading(false))
+        navigate('/suppliers', { replace: true })
+      })
+      .catch((error) => {
+        dispatch(setLoading(false))
+        setError('root', { type: 'manual', message: error })
+      })
   }
 
   useEffect(() => {
