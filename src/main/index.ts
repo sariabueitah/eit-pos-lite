@@ -40,21 +40,19 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
   //setup on Start db operations
   db = setupDB()
   //setup session
   session = null
   mainWindow.webContents.send('userSession', null)
 
-  ipcMain.handle('login', (_, loginData: { userName: string; password: string }) => {
-    let success = false
-    const authUser = authenticateUser(db, loginData.userName, loginData.password)
-    if (authUser !== undefined) {
-      session = authUser
-      mainWindow.webContents.send('userSession', authUser)
-      success = true
-    }
-    return success
+  ipcMain.handle('login', (_, { userName, password }) => {
+    const user = authenticateUser(db, userName, password)
+    if (user === undefined) return false
+    session = user
+    mainWindow.webContents.send('userSession', user)
+    return true
   })
 
   ipcMain.handle('logout', () => {
@@ -63,9 +61,7 @@ function createWindow(): void {
     return true
   })
 
-  ipcMain.handle('getSession', () => {
-    return session
-  })
+  ipcMain.handle('getSession', () => session)
 
   defineIcpHandlers(db)
 }

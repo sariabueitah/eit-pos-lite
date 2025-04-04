@@ -21,35 +21,34 @@ export type TempItem = {
 }
 
 //TODO handle hold maybe use redux
-
 export default function AddSaleInvoices(): JSX.Element {
   const session = useSelector((state: RootState) => state.session.value)
   const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch(setPage('Add Sale Invoice'))
   }, [dispatch])
 
-  const [saleInvoice, setSaleInvoice] = useState<Partial<SaleInvoice>>({
+  const [invoice, setInvoice] = useState<Partial<SaleInvoice>>({
     status: 'WAITING',
     customer: ''
   })
-  const [saleInvoiceItems, setSaleInvoiceItems] = useState<TempItem[]>([])
-
-  const [keyPad, setKeyPad] = useState<undefined | { itemId: number; name: string }>(undefined)
-  const [payment, setPayment] = useState<
+  const [invoiceItems, setInvoiceItems] = useState<TempItem[]>([])
+  const [keypadInfo, setKeypadInfo] = useState<undefined | { itemId: number; name: string }>(
+    undefined
+  )
+  const [paymentDetails, setPaymentDetails] = useState<
     undefined | { paymentMethod: 'CASH' | 'CREDIT'; total: number }
   >(undefined)
-
-  const setCustomer = (name: string): void => {
-    setSaleInvoice((prev) => ({
+  const updateCustomer = (name: string): void => {
+    setInvoice((prev) => ({
       ...prev,
       customer: name
     }))
   }
-
-  const addItemHandler = (itemId): void => {
+  const handleAddItem = (itemId: number): void => {
     window.electron.ipcRenderer.invoke('getItemSaleById', itemId).then((result) => {
-      setSaleInvoiceItems((prev) => {
+      setInvoiceItems((prev) => {
         const newItem = {
           itemId: result.id,
           barcode: result.barcode,
@@ -61,46 +60,33 @@ export default function AddSaleInvoices(): JSX.Element {
           tax: result.tax,
           cost: result.cost
         }
-        const foundIndex = prev.findIndex((o) => result.id === o.itemId)
-
-        if (prev.length === 0 || foundIndex === -1) {
+        const existingItemIndex = prev.findIndex((item) => result.id === item.itemId)
+        if (existingItemIndex === -1) {
           return [newItem, ...prev]
         } else {
-          prev[foundIndex].quantity++
+          prev[existingItemIndex].quantity++
           return [...prev]
         }
       })
     })
   }
-
-  const totalPriceCalc = (): number => {
-    let total = 0
-    for (let i = 0; i < saleInvoiceItems.length; i++) {
-      total += saleInvoiceItems[i].price * saleInvoiceItems[i].quantity
-    }
-    return roundNum(total)
-  }
-
-  const totalTaxCalc = (): number => {
-    let total = 0
-    for (let i = 0; i < saleInvoiceItems.length; i++) {
-      total +=
-        saleInvoiceItems[i].price * saleInvoiceItems[i].quantity * (saleInvoiceItems[i].tax / 100)
-    }
-    return roundNum(total)
-  }
-
-  const finalizePayment = (paymentMethod: 'CASH' | 'CREDIT'): void => {
-    const total = roundNum(totalPriceCalc() + totalTaxCalc())
-    if (total > 0 && saleInvoiceItems.length > 0) {
-      setPayment({
-        total: total,
+  const calculateTotalPrice = (): number =>
+    roundNum(invoiceItems.reduce((total, item) => total + item.price * item.quantity, 0))
+  const calculateTotalTax = (): number =>
+    roundNum(
+      invoiceItems.reduce((total, item) => total + item.price * item.quantity * (item.tax / 100), 0)
+    )
+  const handleFinalizePayment = (paymentMethod: 'CASH' | 'CREDIT'): void => {
+    const totalAmount = roundNum(calculateTotalPrice() + calculateTotalTax())
+    if (totalAmount > 0 && invoiceItems.length > 0) {
+      setPaymentDetails({
+        total: totalAmount,
         paymentMethod: paymentMethod
       })
-      setSaleInvoice({
+      setInvoice({
         userId: session?.id,
-        customer: saleInvoice.customer,
-        date: Date(),
+        customer: invoice.customer,
+        date: new Date().toISOString(),
         paymentMethod: paymentMethod,
         status: 'UNPAID'
       })
@@ -109,102 +95,95 @@ export default function AddSaleInvoices(): JSX.Element {
     }
   }
 
-  const paymentComplete = (invoiceType): void => {
+  const completePayment = (invoiceType: string): void => {
     window.electron.ipcRenderer
       .invoke(
         'createSaleInvoice',
         {
           userId: session?.id,
-          customer: saleInvoice.customer,
-          date: Date(),
-          paymentMethod: saleInvoice.paymentMethod,
+          customer: invoice.customer,
+          date: new Date().toISOString(),
+          paymentMethod: invoice.paymentMethod,
           status: 'PAID'
         },
-        saleInvoiceItems
+        invoiceItems
       )
-      .then((result) => {
-        alert(result)
-      })
-      .catch((e) => {
-        alert(e)
-      })
-    alert('Invoice :' + invoiceType)
-    reset()
+      .then((result) => alert(result))
+      .catch((error) => alert(error))
+    alert(`Invoice: ${invoiceType}`)
+    resetForm()
   }
 
-  const handleKeyPad = (quantity): void => {
-    if (keyPad && quantity == 0) {
-      setSaleInvoiceItems((prev) => {
-        return prev.filter((prev) => prev.itemId !== keyPad.itemId)
-      })
-    } else if (keyPad && quantity > 0) {
-      setSaleInvoiceItems((prev) => {
-        const foundIndex = prev.findIndex((o) => keyPad.itemId === o.itemId)
-        if (prev[foundIndex].unit == 'UNIT' && !Number.isInteger(quantity)) {
-          alert('Item sold By unit')
+  const handleKeypadInput = (quantity: number): void => {
+    if (keypadInfo) {
+      setInvoiceItems((prev) => {
+        const itemIndex = prev.findIndex((item) => keypadInfo.itemId === item.itemId)
+        if (quantity === 0) {
+          return prev.filter((item) => item.itemId !== keypadInfo.itemId)
+        } else if (prev[itemIndex].unit === 'UNIT' && !Number.isInteger(quantity)) {
+          alert('Item sold by unit')
         } else {
-          prev[foundIndex].quantity = quantity
+          prev[itemIndex].quantity = quantity
         }
         return [...prev]
       })
     }
-    setKeyPad(undefined)
+    setKeypadInfo(undefined)
   }
 
-  const reset = (): void => {
-    setSaleInvoice({
+  const resetForm = (): void => {
+    setInvoice({
       status: 'WAITING',
       customer: ''
     })
-    setSaleInvoiceItems([])
-    setKeyPad(undefined)
-    setPayment(undefined)
+    setInvoiceItems([])
+    setKeypadInfo(undefined)
+    setPaymentDetails(undefined)
   }
 
   return (
     <div>
-      {payment && (
+      {paymentDetails && (
         <Payment
-          payment={payment}
-          handleCancel={() => {
-            setPayment(undefined)
-          }}
-          paymentComplete={paymentComplete}
+          payment={paymentDetails}
+          handleCancel={() => setPaymentDetails(undefined)}
+          paymentComplete={completePayment}
         />
       )}
-      {keyPad && (
+      {keypadInfo && (
         <KeyPad
-          handleCancel={() => setKeyPad(undefined)}
-          handleSubmit={handleKeyPad}
-          title={keyPad?.name ?? ''}
+          handleCancel={() => setKeypadInfo(undefined)}
+          handleSubmit={handleKeypadInput}
+          title={keypadInfo?.name ?? ''}
         />
       )}
       <AddSaleInvoiceHeader
-        addItemHandler={addItemHandler}
-        setCustomer={setCustomer}
-        customer={saleInvoice.customer || ''}
+        addItemHandler={handleAddItem}
+        setCustomer={updateCustomer}
+        customer={invoice.customer || ''}
       />
-      <AddSaleInvoiceItems items={saleInvoiceItems} setKeyPad={setKeyPad} />
+      <AddSaleInvoiceItems items={invoiceItems} setKeyPad={setKeypadInfo} />
       <div className="flex justify-end">
         <div className="text-xl p-2">
-          Sub Total :<span className="p-2">{totalPriceCalc()}</span>
+          Sub Total: <span className="p-2">{calculateTotalPrice()}</span>
         </div>
         <div className="text-xl p-2">
-          Tax :<span className="p-2">{totalTaxCalc()}</span>
+          Tax: <span className="p-2">{calculateTotalTax()}</span>
         </div>
         <div className="text-xl p-2 bg-gray-200">
-          Total :<span className="p-2">{roundNum(totalPriceCalc() + totalTaxCalc())}</span>
+          Total:{' '}
+          <span className="p-2">{roundNum(calculateTotalPrice() + calculateTotalTax())}</span>
         </div>
       </div>
       <div className="flex m-4 justify-center">
         <div
-          onClick={() => finalizePayment('CASH')}
+          onClick={() => handleFinalizePayment('CASH')}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
           Cash
         </div>
         <div
-          onClick={() => finalizePayment('CREDIT')}
+          onClick={() => handleFinalizePayment('CREDIT')}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
           Credit
@@ -216,7 +195,7 @@ export default function AddSaleInvoices(): JSX.Element {
           Hold
         </div>
         <div
-          onClick={reset}
+          onClick={resetForm}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
           Reset
