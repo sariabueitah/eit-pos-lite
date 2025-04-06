@@ -1,12 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { setPage } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
-import KeyPad from '../components/KeyPad'
-import AddSaleInvoiceHeader from './componants/AddSaleInvoiceHeader'
 import AddSaleInvoiceItems from './componants/AddSaleInvoiceItems'
-import { roundNum } from '../components/Math'
-import Payment from './componants/Payment'
 import { RootState } from '../state/store'
+import { calTotal, calTotalDiscount, calTotalTax, roundNum } from '../components/Math'
+import Payment from './componants/Payment'
 
 export type TempItem = {
   itemId: number
@@ -18,80 +16,81 @@ export type TempItem = {
   quantity: number
   tax: number
   cost: number
+  discount: number
 }
 
-//TODO handle hold maybe use redux
 export default function AddSaleInvoices(): JSX.Element {
   const session = useSelector((state: RootState) => state.session.value)
   const dispatch = useDispatch()
-
   useEffect(() => {
     dispatch(setPage('Add Sale Invoice'))
   }, [dispatch])
 
-  const [invoice, setInvoice] = useState<Partial<SaleInvoice>>({
+  const [invoiceData, setInvoiceData] = useState<Partial<SaleInvoice>>({
     status: 'WAITING',
-    customer: ''
+    customer: '',
+    userId: session?.id,
+    date: new Date().toISOString()
   })
-  const [invoiceItems, setInvoiceItems] = useState<TempItem[]>([])
-  const [keypadInfo, setKeypadInfo] = useState<undefined | { itemId: number; name: string }>(
-    undefined
-  )
+
+  const [invoiceItemsData, setInvoiceItemsData] = useState<TempItem[]>([])
+
   const [paymentDetails, setPaymentDetails] = useState<
     undefined | { paymentMethod: 'CASH' | 'CREDIT'; total: number }
   >(undefined)
-  const updateCustomer = (name: string): void => {
-    setInvoice((prev) => ({
-      ...prev,
-      customer: name
-    }))
+
+  const handleInvoiceItemsData = (items): void => {
+    setInvoiceItemsData(items)
   }
-  const handleAddItem = (itemId: number): void => {
-    window.electron.ipcRenderer.invoke('getItemSaleById', itemId).then((result) => {
-      setInvoiceItems((prev) => {
-        const newItem = {
-          itemId: result.id,
-          barcode: result.barcode,
-          name: result.name,
-          category: result.category,
-          price: result.price,
-          unit: result.unit,
-          quantity: 1,
-          tax: result.tax,
-          cost: result.cost
-        }
-        const existingItemIndex = prev.findIndex((item) => result.id === item.itemId)
-        if (existingItemIndex === -1) {
-          return [newItem, ...prev]
-        } else {
-          prev[existingItemIndex].quantity++
-          return [...prev]
-        }
-      })
+
+  const itemsTotal = (): number => {
+    let total = 0
+    invoiceItemsData.forEach((item) => {
+      total += item.price * item.quantity
     })
+    return roundNum(total)
   }
-  const calculateTotalPrice = (): number =>
-    roundNum(invoiceItems.reduce((total, item) => total + item.price * item.quantity, 0))
-  const calculateTotalTax = (): number =>
-    roundNum(
-      invoiceItems.reduce((total, item) => total + item.price * item.quantity * (item.tax / 100), 0)
-    )
+
+  const itemsTotalDiscount = (): number => {
+    let total = 0
+    invoiceItemsData.forEach((item) => {
+      total += calTotalDiscount(item.quantity, item.discount)
+    })
+    return roundNum(total)
+  }
+
+  const itemsTotalTax = (): number => {
+    let total = 0
+    invoiceItemsData.forEach((item) => {
+      total += calTotalTax(item.price, item.quantity, item.discount, item.tax)
+    })
+    return roundNum(total)
+  }
+
+  const itemsFinalTotal = (): number => {
+    let total = 0
+    invoiceItemsData.forEach((item) => {
+      total += calTotal(item.price, item.quantity, item.discount, item.tax)
+    })
+    return roundNum(total)
+  }
+
   const handleFinalizePayment = (paymentMethod: 'CASH' | 'CREDIT'): void => {
-    const totalAmount = roundNum(calculateTotalPrice() + calculateTotalTax())
-    if (totalAmount > 0 && invoiceItems.length > 0) {
+    const totalAmount = itemsFinalTotal()
+    if (totalAmount > 0 && invoiceItemsData.length > 0) {
       setPaymentDetails({
         total: totalAmount,
         paymentMethod: paymentMethod
       })
-      setInvoice({
+      setInvoiceData({
         userId: session?.id,
-        customer: invoice.customer,
+        customer: invoiceData.customer,
         date: new Date().toISOString(),
         paymentMethod: paymentMethod,
-        status: 'UNPAID'
+        status: 'WAITING'
       })
     } else {
-      alert('No items')
+      alert('Please add items first')
     }
   }
 
@@ -101,12 +100,12 @@ export default function AddSaleInvoices(): JSX.Element {
         'createSaleInvoice',
         {
           userId: session?.id,
-          customer: invoice.customer,
+          customer: invoiceData.customer,
           date: new Date().toISOString(),
-          paymentMethod: invoice.paymentMethod,
+          paymentMethod: invoiceData.paymentMethod,
           status: 'PAID'
         },
-        invoiceItems
+        invoiceItemsData
       )
       .then((result) => alert(result))
       .catch((error) => alert(error))
@@ -114,82 +113,120 @@ export default function AddSaleInvoices(): JSX.Element {
     resetForm()
   }
 
-  const handleKeypadInput = (quantity: number): void => {
-    if (keypadInfo) {
-      setInvoiceItems((prev) => {
-        const itemIndex = prev.findIndex((item) => keypadInfo.itemId === item.itemId)
-        if (quantity === 0) {
-          return prev.filter((item) => item.itemId !== keypadInfo.itemId)
-        } else if (prev[itemIndex].unit === 'UNIT' && !Number.isInteger(quantity)) {
-          alert('Item sold by unit')
-        } else {
-          prev[itemIndex].quantity = quantity
-        }
-        return [...prev]
-      })
+  const holdInvoice = (): void => {
+    if (invoiceItemsData.length > 0) {
+      window.electron.ipcRenderer
+        .invoke(
+          'createTempSaleInvoice',
+          {
+            userId: session?.id,
+            customer: invoiceData.customer,
+            date: new Date().toISOString(),
+            paymentMethod: invoiceData.paymentMethod,
+            status: 'HOLD'
+          },
+          invoiceItemsData
+        )
+        .then((result) => {
+          alert('Invoice on Hold with number ' + result.id)
+          resetForm()
+        })
+        .catch((error) => alert(error))
+    } else {
+      alert('Please add items first')
     }
-    setKeypadInfo(undefined)
   }
 
   const resetForm = (): void => {
-    setInvoice({
+    setInvoiceData({
       status: 'WAITING',
       customer: ''
     })
-    setInvoiceItems([])
-    setKeypadInfo(undefined)
+    setInvoiceItemsData([])
     setPaymentDetails(undefined)
   }
 
   return (
-    <div>
-      {paymentDetails && (
-        <Payment
-          payment={paymentDetails}
-          handleCancel={() => setPaymentDetails(undefined)}
-          paymentComplete={completePayment}
-        />
-      )}
-      {keypadInfo && (
-        <KeyPad
-          handleCancel={() => setKeypadInfo(undefined)}
-          handleSubmit={handleKeypadInput}
-          title={keypadInfo?.name ?? ''}
-        />
-      )}
-      <AddSaleInvoiceHeader
-        addItemHandler={handleAddItem}
-        setCustomer={updateCustomer}
-        customer={invoice.customer || ''}
-      />
-      <AddSaleInvoiceItems items={invoiceItems} setKeyPad={setKeypadInfo} />
+    <>
+      <div className="grid grid-cols-4 gap-4">
+        <div className="col-span-2 flex items-center">
+          <div className="w-full flex relative">
+            <label className="w-26 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
+              Invoice ID:
+            </label>
+            <div className="relative w-full">
+              <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
+                {invoiceData.id}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-span-2 flex items-center">
+          <div className="w-full flex relative">
+            <label className="w-26 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
+              Status:
+            </label>
+            <div className="relative w-full">
+              <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
+                {invoiceData.status}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-span-4 flex items-center">
+          <div className="w-full flex relative">
+            <label className="w-26 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
+              Customer:
+            </label>
+            <input
+              onChange={(e) => setInvoiceData({ ...invoiceData, customer: e.target.value })}
+              onBlur={(e) => setInvoiceData({ ...invoiceData, customer: e.target.value })}
+              value={invoiceData.customer}
+              type="text"
+              name="customer"
+              id="customer"
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300"
+            />
+          </div>
+        </div>
+        <AddSaleInvoiceItems items={invoiceItemsData} setItems={handleInvoiceItemsData} />
+      </div>
       <div className="flex justify-end">
         <div className="text-xl p-2">
-          Sub Total: <span className="p-2">{calculateTotalPrice()}</span>
+          Sub Total: <span className="p-2">{itemsTotal()}</span>
         </div>
         <div className="text-xl p-2">
-          Tax: <span className="p-2">{calculateTotalTax()}</span>
+          Discount: <span className="p-2">{itemsTotalDiscount()}</span>
+        </div>
+        <div className="text-xl p-2">
+          Tax: <span className="p-2">{itemsTotalTax()}</span>
         </div>
         <div className="text-xl p-2 bg-gray-200">
-          Total:{' '}
-          <span className="p-2">{roundNum(calculateTotalPrice() + calculateTotalTax())}</span>
+          Total:
+          <span className="p-2">{itemsFinalTotal()}</span>
         </div>
       </div>
       <div className="flex m-4 justify-center">
         <div
-          onClick={() => handleFinalizePayment('CASH')}
+          onClick={() => {
+            handleFinalizePayment('CASH')
+          }}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
           Cash
         </div>
         <div
-          onClick={() => handleFinalizePayment('CREDIT')}
+          onClick={() => {
+            handleFinalizePayment('CREDIT')
+          }}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
           Credit
         </div>
         <div
-          onClick={() => {}}
+          onClick={() => {
+            holdInvoice()
+          }}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
           Hold
@@ -201,6 +238,13 @@ export default function AddSaleInvoices(): JSX.Element {
           Reset
         </div>
       </div>
-    </div>
+      {paymentDetails && (
+        <Payment
+          payment={paymentDetails}
+          handleCancel={() => setPaymentDetails(undefined)}
+          paymentComplete={completePayment}
+        />
+      )}
+    </>
   )
 }

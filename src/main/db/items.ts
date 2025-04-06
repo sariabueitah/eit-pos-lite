@@ -216,7 +216,7 @@ export function getItemSaleById(db: DatabaseType, id: number): Item {
   return db
     .prepare(
       `
-      SELECT i.id, i.barcode, i.name, c.name as category, i.price, i.unit, i.tax, i.cost FROM items i 
+      SELECT i.id as itemId, i.barcode, i.name, c.name as category, i.price, i.unit, i.tax, i.cost FROM items i 
       INNER JOIN categories c ON i.categoryId = c.id
       WHERE i.deleted  = 0 AND  i.id = ?
       `

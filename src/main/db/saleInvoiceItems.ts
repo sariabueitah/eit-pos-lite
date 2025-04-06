@@ -8,6 +8,7 @@ export function setupSaleInvoiceItemsTable(db: DatabaseType): void {
         'itemId' INTEGER,
         'saleInvoiceId' INTEGER,
         'quantity' INTEGER,
+        'discount' REAL,
         'price' REAL,
         'cost' REAL,
         'tax' REAL,

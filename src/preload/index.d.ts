@@ -20,8 +20,9 @@ declare global {
     price: number
     tax: number
     image: string
-    categoryId: string
-    supplierId: string
+    categoryId: number
+    supplierId: number
+    category: string
   }
 
   type Supplier = {
@@ -70,6 +71,7 @@ declare global {
     price: number
     cost: number
     tax: number
+    discount: number
   }
 
   type Session = {

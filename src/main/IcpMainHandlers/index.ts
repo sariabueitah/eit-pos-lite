@@ -7,6 +7,8 @@ import { purchaseInvoicesHandlers } from './purchaseInvoices'
 import { purchaseInvoiceItemsHandlers } from './purchaseInvoiceItems'
 import { saleInvoiceHandlers } from './saleInvoices'
 import { saleInvoiceItemsHandlers } from './saleInvoiceItems'
+import { tempSaleInvoiceHandlers } from './tempSaleInvoices'
+import { tempSaleInvoiceItemsHandlers } from './tempSaleInvoiceItems'
 
 //TODO check unused icpMain handlers and db calls
 //TODO check insert and update queries return types make them like user
@@ -19,4 +21,6 @@ export function defineIcpHandlers(db: DatabaseType): void {
   purchaseInvoiceItemsHandlers(db)
   saleInvoiceHandlers(db)
   saleInvoiceItemsHandlers(db)
+  tempSaleInvoiceHandlers(db)
+  tempSaleInvoiceItemsHandlers(db)
 }
