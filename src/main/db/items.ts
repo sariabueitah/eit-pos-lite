@@ -11,6 +11,7 @@ export function setupItemsTable(db: DatabaseType): void {
         'unit' TEXT,
         'cost' REAL,
         'price' REAL,
+        'discount' REAL DEFAULT 0,
         'tax' REAL DEFAULT 0,
         'image' TEXT DEFAULT '',
         'categoryId' INTEGER,
@@ -29,7 +30,7 @@ export function setupItemsTable(db: DatabaseType): void {
     db.exec('CREATE INDEX idx_items_deleted ON items (deleted);')
 
     const inserSupplier = db.prepare(
-      'INSERT INTO items (name,description,barcode,unit,cost,price,tax,categoryId,supplierId) VALUES (:name,:description,:barcode,:unit,:cost,:price,:tax,:categoryId,:supplierId);'
+      'INSERT INTO items (name,description,barcode,unit,cost,price,discount,tax,categoryId,supplierId) VALUES (:name,:description,:barcode,:unit,:cost,:price,:discount,:tax,:categoryId,:supplierId);'
     )
 
     const defualtUsers = [
@@ -40,6 +41,7 @@ export function setupItemsTable(db: DatabaseType): void {
         unit: 'UNIT',
         cost: 0.24,
         price: 0.25,
+        discount: 0,
         tax: 0,
         categoryId: 1,
         supplierId: 1
@@ -51,6 +53,7 @@ export function setupItemsTable(db: DatabaseType): void {
         unit: 'UNIT',
         cost: 0.09,
         price: 0.1,
+        discount: 0,
         tax: 0,
         categoryId: 1,
         supplierId: 1
@@ -62,6 +65,7 @@ export function setupItemsTable(db: DatabaseType): void {
         unit: 'UNIT',
         cost: 0.24,
         price: 0.25,
+        discount: 0,
         tax: 0,
         categoryId: 1,
         supplierId: 1
@@ -73,6 +77,7 @@ export function setupItemsTable(db: DatabaseType): void {
         unit: 'UNIT',
         cost: 0.4,
         price: 0.5,
+        discount: 0,
         tax: 0,
         categoryId: 1,
         supplierId: 1
@@ -84,6 +89,7 @@ export function setupItemsTable(db: DatabaseType): void {
         unit: 'UNIT',
         cost: 0.4,
         price: 0.5,
+        discount: 0,
         tax: 16,
         categoryId: 1,
         supplierId: 1
@@ -95,6 +101,7 @@ export function setupItemsTable(db: DatabaseType): void {
         unit: 'UNIT',
         cost: 3.5,
         price: 3.7,
+        discount: 0,
         tax: 16,
         categoryId: 1,
         supplierId: 1
@@ -106,6 +113,7 @@ export function setupItemsTable(db: DatabaseType): void {
         unit: 'UNIT',
         cost: 0.9,
         price: 1,
+        discount: 0,
         tax: 7,
         categoryId: 1,
         supplierId: 1
@@ -119,11 +127,7 @@ export function setupItemsTable(db: DatabaseType): void {
 }
 
 export function getAllItems(db: DatabaseType): [Item] {
-  return db
-    .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE deleted = 0'
-    )
-    .all() as [Item]
+  return db.prepare('SELECT * FROM items WHERE deleted = 0').all() as [Item]
 }
 
 export function getItemById(db: DatabaseType, id: number | bigint): Item {
@@ -143,7 +147,7 @@ export function getItemByName(db: DatabaseType, name: string): [Item] {
 export function addItem(db: DatabaseType, item: Item): Item {
   const result = db
     .prepare(
-      'INSERT INTO items (name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId) VALUES (@name,@description,@barcode,@unit,@cost,@price,@tax,@image,@categoryId,@supplierId)'
+      'INSERT INTO items (name,description,barcode,unit,cost,price,discount,tax,image,categoryId,supplierId) VALUES (@name,@description,@barcode,@unit,@cost,@price,@discount,@tax,@image,@categoryId,@supplierId)'
     )
     .run(item)
   return getItemById(db, result.lastInsertRowid)
