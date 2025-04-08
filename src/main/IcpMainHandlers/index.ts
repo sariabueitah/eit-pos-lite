@@ -10,8 +10,6 @@ import { saleInvoiceItemsHandlers } from './saleInvoiceItems'
 import { tempSaleInvoiceHandlers } from './tempSaleInvoices'
 import { tempSaleInvoiceItemsHandlers } from './tempSaleInvoiceItems'
 
-//TODO check unused icpMain handlers and db calls
-//TODO check insert and update queries return types make them like user
 export function defineIcpHandlers(db: DatabaseType): void {
   categoriesHandlers(db)
   itemHandlers(db)

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { setPage } from '../state/slices/PageSlice'
+import { setPage, addHold } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import AddSaleInvoiceItems from './componants/AddSaleInvoiceItems'
 import { RootState } from '../state/store'
@@ -10,7 +10,6 @@ export type TempItem = {
   itemId: number
   barcode: string
   name: string
-  category: string
   price: number
   unit: string
   quantity: number
@@ -30,7 +29,7 @@ export default function AddSaleInvoices(): JSX.Element {
     status: 'WAITING',
     customer: '',
     userId: session?.id,
-    date: new Date().toISOString()
+    date: new Date().getTime()
   })
 
   const [invoiceItemsData, setInvoiceItemsData] = useState<TempItem[]>([])
@@ -85,7 +84,7 @@ export default function AddSaleInvoices(): JSX.Element {
       setInvoiceData({
         userId: session?.id,
         customer: invoiceData.customer,
-        date: new Date().toISOString(),
+        date: new Date().getTime(),
         paymentMethod: paymentMethod,
         status: 'WAITING'
       })
@@ -97,11 +96,11 @@ export default function AddSaleInvoices(): JSX.Element {
   const completePayment = (invoiceType: string): void => {
     window.electron.ipcRenderer
       .invoke(
-        'createSaleInvoice',
+        'createSaleInvoiceWithItems',
         {
           userId: session?.id,
           customer: invoiceData.customer,
-          date: new Date().toISOString(),
+          date: new Date().getTime(),
           paymentMethod: invoiceData.paymentMethod,
           status: 'PAID'
         },
@@ -117,11 +116,11 @@ export default function AddSaleInvoices(): JSX.Element {
     if (invoiceItemsData.length > 0) {
       window.electron.ipcRenderer
         .invoke(
-          'createTempSaleInvoice',
+          'createTempSaleInvoiceWithItems',
           {
             userId: session?.id,
             customer: invoiceData.customer,
-            date: new Date().toISOString(),
+            date: new Date().getTime(),
             paymentMethod: invoiceData.paymentMethod,
             status: 'HOLD'
           },
@@ -130,6 +129,7 @@ export default function AddSaleInvoices(): JSX.Element {
         .then((result) => {
           alert('Invoice on Hold with number ' + result.id)
           resetForm()
+          dispatch(addHold())
         })
         .catch((error) => alert(error))
     } else {

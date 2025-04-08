@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { setPage } from '../state/slices/PageSlice'
-import { setLoading } from '../state/slices/LoadingSlice'
+import { setPage, setLoading } from '../state/slices/PageSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import ItemForm from './componants/ItemForm'
 import { useEffect } from 'react'

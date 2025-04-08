@@ -6,7 +6,7 @@ export function setupSaleInvoicesTable(db: DatabaseType): void {
     const createTable = `CREATE TABLE IF NOT EXISTS sale_invoices(
         'id' INTEGER PRIMARY KEY,
         'userId' INTEGER,
-        'date' TEXT,
+        'date' INTEGER,
         'customer' TEXT,
         'status' TEXT,
         'paymentMethod' TEXT,
@@ -25,52 +25,17 @@ export function setupSaleInvoicesTable(db: DatabaseType): void {
   }
 }
 
-export function getAllSaleInvoices(db: DatabaseType): [SaleInvoice] {
+function getSaleInvoiceById(db: DatabaseType, id: number | bigint): SaleInvoice {
   return db
-    .prepare(
-      'SELECT id,userId,date,customer,status,paymentMethod FROM sale_invoices WHERE deleted = 0'
-    )
-    .all() as [SaleInvoice]
-}
-
-export function getAllDeletedSaleInvoices(db: DatabaseType): [SaleInvoice] {
-  return db
-    .prepare(
-      'SELECT id,userId,date,customer,status,paymentMethod FROM sale_invoices WHERE deleted = 1'
-    )
-    .all() as [SaleInvoice]
-}
-
-export function getSaleInvoiceById(db: DatabaseType, id: number): SaleInvoice {
-  return db
-    .prepare('SELECT id,userId,date,customer,status,paymentMethod FROM sale_invoices WHERE id = ?')
+    .prepare('SELECT * FROM sale_invoices WHERE id = ? AND deleted = 0')
     .get(id) as SaleInvoice
 }
 
-export function addSaleInvoice(db: DatabaseType, saleInvoice: SaleInvoice): number | bigint {
+export function addSaleInvoice(db: DatabaseType, saleInvoice: SaleInvoice): SaleInvoice {
   const result = db
     .prepare(
       'INSERT INTO sale_invoices (userId,date,customer,status,paymentMethod) VALUES (:userId,:date,:customer,:status,:paymentMethod);'
     )
     .run(saleInvoice)
-  return result.lastInsertRowid
-}
-
-export function updateSaleInvoice(
-  db: DatabaseType,
-  id: number,
-  saleInvoice: Partial<SaleInvoice>
-): void {
-  const fields = Object.keys(saleInvoice)
-    .map((key) => `${key} = ?`)
-    .join(', ')
-  const values = Object.values(saleInvoice)
-  values.push(id)
-
-  const updateSaleInvoice = db.prepare(`UPDATE sale_invoices SET ${fields} WHERE id = ?`)
-  updateSaleInvoice.run(...values)
-}
-
-export function deleteSaleInvoice(db: DatabaseType, id: number): void {
-  db.prepare('UPDATE sale_invoice SET deleted = 1 WHERE id = ?;').run(id)
+  return getSaleInvoiceById(db, result.lastInsertRowid)
 }

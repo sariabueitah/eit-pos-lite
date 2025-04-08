@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { setLoading } from '../state/slices/LoadingSlice'
-import { setPage } from '../state/slices/PageSlice'
+import { setPage, setLoading } from '../state/slices/PageSlice'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useEffect } from 'react'
 import SupplierForm from './componants/SupplierForm'

@@ -126,100 +126,40 @@ export function getAllItems(db: DatabaseType): [Item] {
     .all() as [Item]
 }
 
-export function getAllDeletedItems(db: DatabaseType): [Item] {
-  return db
-    .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE deleted = 1'
-    )
-    .all() as [Item]
-}
-
-export function getItemById(db: DatabaseType, id: number): Item {
-  return db
-    .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE id = ?'
-    )
-    .get(id) as Item
+export function getItemById(db: DatabaseType, id: number | bigint): Item {
+  return db.prepare('SELECT * FROM items WHERE deleted = 0 AND id = ?').get(id) as Item
 }
 
 export function getItemByBarcode(db: DatabaseType, barcode: string): Item {
-  return db
+  return db.prepare('SELECT * FROM items WHERE deleted = 0 AND barcode = ?').get(barcode) as Item
+}
+
+export function getItemByName(db: DatabaseType, name: string): [Item] {
+  return db.prepare('SELECT * FROM items WHERE deleted = 0 AND name = ?').all('%' + name + '%') as [
+    Item
+  ]
+}
+
+export function addItem(db: DatabaseType, item: Item): Item {
+  const result = db
     .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId FROM items WHERE barcode = ?'
+      'INSERT INTO items (name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId) VALUES (@name,@description,@barcode,@unit,@cost,@price,@tax,@image,@categoryId,@supplierId)'
     )
-    .get(barcode) as Item
+    .run(item)
+  return getItemById(db, result.lastInsertRowid)
 }
 
-export function getItemsByName(db: DatabaseType, name: string): [Item] {
-  return db
-    .prepare(
-      'SELECT id,name,description,barcode,unit,cost,price,tax,categoryId,supplierId FROM items WHERE name LIKE ?'
-    )
-    .all('%' + name + '%') as [Item]
-}
-
-export function addItem(db: DatabaseType, item: Item): void {
-  db.prepare(
-    'INSERT INTO items (name,description,barcode,unit,cost,price,tax,image,categoryId,supplierId) VALUES (@name,@description,@barcode,@unit,@cost,@price,@tax,@image,@categoryId,@supplierId)'
-  ).run(item)
-}
-
-export function updateItem(db: DatabaseType, id: number, item: Partial<Item>): void {
+export function updateItem(db: DatabaseType, id: number, item: Partial<Item>): Item {
   const fields = Object.keys(item)
     .map((key) => `${key} = ?`)
     .join(', ')
   const values = Object.values(item)
   values.push(id)
 
-  const updateItem = db.prepare(`UPDATE items SET ${fields} WHERE id = ?`)
-  updateItem.run(...values)
+  const result = db.prepare(`UPDATE items SET ${fields} WHERE id = ?`).run(...values)
+  return getItemById(db, result.lastInsertRowid)
 }
 
 export function deleteItem(db: DatabaseType, id: number): void {
   db.prepare('UPDATE items SET deleted = 1 WHERE id = ?;').run(id)
-}
-
-export function searchItemById(db: DatabaseType, id: number): Item {
-  return db
-    .prepare(
-      `
-      SELECT id FROM items 
-      WHERE deleted  = 0 AND id = ?
-      `
-    )
-    .get(id) as Item
-}
-
-export function searchItemByBarcode(db: DatabaseType, barcode: string): Item {
-  return db
-    .prepare(
-      `
-      SELECT id FROM items
-      WHERE deleted  = 0 AND barcode = ? 
-      `
-    )
-    .get(barcode) as Item
-}
-
-export function searchItemByName(db: DatabaseType, name: string): [Item] {
-  return db
-    .prepare(
-      `
-      SELECT id, name FROM items
-      WHERE deleted  = 0 AND name LIKE ?
-      `
-    )
-    .all('%' + name + '%') as [Item]
-}
-
-export function getItemSaleById(db: DatabaseType, id: number): Item {
-  return db
-    .prepare(
-      `
-      SELECT i.id as itemId, i.barcode, i.name, c.name as category, i.price, i.unit, i.tax, i.cost FROM items i 
-      INNER JOIN categories c ON i.categoryId = c.id
-      WHERE i.deleted  = 0 AND  i.id = ?
-      `
-    )
-    .get(id) as Item
 }

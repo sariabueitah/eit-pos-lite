@@ -37,44 +37,36 @@ export function setupSuppliersTable(db: DatabaseType): void {
 }
 
 export function getAllSuppliers(db: DatabaseType): [Supplier] {
-  return db
-    .prepare('SELECT id,name,phoneNumber,taxNumber FROM suppliers WHERE deleted = 0')
-    .all() as [Supplier]
+  return db.prepare('SELECT * FROM suppliers WHERE deleted = 0').all() as [Supplier]
 }
 
-export function getAllDeletedSuppliers(db: DatabaseType): [Supplier] {
-  return db
-    .prepare('SELECT id,name,phoneNumber,taxNumber FROM suppliers WHERE deleted = 1')
-    .all() as [Supplier]
+export function getSupplierById(db: DatabaseType, id: number | bigint): Supplier {
+  return db.prepare('SELECT * FROM suppliers WHERE id = ?').get(id) as Supplier
 }
 
-export function getSupplierById(db: DatabaseType, id: number): Supplier {
-  return db
-    .prepare('SELECT id,name,phoneNumber,taxNumber FROM suppliers WHERE id = ?')
-    .get(id) as Supplier
+export function addSupplier(db: DatabaseType, supplier: Supplier): Supplier {
+  const result = db
+    .prepare(
+      'INSERT INTO suppliers (name, phoneNumber,taxNumber) VALUES (:name,:phoneNumber,:taxNumber);'
+    )
+    .run(supplier)
+
+  return getSupplierById(db, result.lastInsertRowid)
 }
 
-export function getSupplierByName(db: DatabaseType, name: string): Supplier {
-  return db
-    .prepare('SELECT id,name,phoneNumber,taxNumber FROM suppliers WHERE name = ?')
-    .get(name) as Supplier
-}
-
-export function addSupplier(db: DatabaseType, supplier: Supplier): void {
-  db.prepare(
-    'INSERT INTO suppliers (name, phoneNumber,taxNumber) VALUES (:name,:phoneNumber,:taxNumber);'
-  ).run(supplier)
-}
-
-export function updateSupplier(db: DatabaseType, id: number, supplier: Partial<Supplier>): void {
+export function updateSupplier(
+  db: DatabaseType,
+  id: number,
+  supplier: Partial<Supplier>
+): Supplier {
   const fields = Object.keys(supplier)
     .map((key) => `${key} = ?`)
     .join(', ')
   const values = Object.values(supplier)
   values.push(id)
 
-  const updateSupplier = db.prepare(`UPDATE suppliers SET ${fields} WHERE id = ?`)
-  updateSupplier.run(...values)
+  const result = db.prepare(`UPDATE suppliers SET ${fields} WHERE id = ?`).run(...values)
+  return getSupplierById(db, result.lastInsertRowid)
 }
 
 export function deleteSupplier(db: DatabaseType, id: number): void {

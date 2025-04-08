@@ -25,23 +25,8 @@ export function setupTempSaleInvoiceItemsTable(db: DatabaseType): void {
   }
 }
 
-export function getAllTempSaleInvoiceItems(db: DatabaseType): [SaleInvoiceItem] {
-  return db.prepare('SELECT * FROM temp_sale_invoice_items WHERE deleted = 0').all() as [
-    SaleInvoiceItem
-  ]
-}
-
-export function getTempSaleInvoiceItemById(db: DatabaseType, id: number | bigint): SaleInvoiceItem {
+function getTempSaleInvoiceItemById(db: DatabaseType, id: number | bigint): SaleInvoiceItem {
   return db.prepare('SELECT * FROM temp_sale_invoice_items WHERE id = ?').get(id) as SaleInvoiceItem
-}
-
-export function getTempSaleInvoiceItemsByInvoiceId(
-  db: DatabaseType,
-  invoice_id: number
-): [SaleInvoiceItem] {
-  return db
-    .prepare('SELECT * FROM temp_sale_invoice_items WHERE saleInvoiceId = ?')
-    .get(invoice_id) as [SaleInvoiceItem]
 }
 
 export function addTempSaleInvoiceItem(
@@ -55,26 +40,4 @@ export function addTempSaleInvoiceItem(
     .run(tempSaleInvoiceItem)
 
   return getTempSaleInvoiceItemById(db, result.lastInsertRowid)
-}
-
-export function updateTempSaleInvoiceItem(
-  db: DatabaseType,
-  id: number,
-  tempSaleInvoiceItem: Partial<SaleInvoiceItem>
-): SaleInvoiceItem {
-  const fields = Object.keys(tempSaleInvoiceItem)
-    .map((key) => `${key} = ?`)
-    .join(', ')
-  const values = Object.values(tempSaleInvoiceItem)
-  values.push(id)
-
-  const updateTempSaleInvoiceItem = db.prepare(
-    `UPDATE temp_sale_invoice_items SET ${fields} WHERE id = ?`
-  )
-  const resultId = updateTempSaleInvoiceItem.run(...values).lastInsertRowid
-  return getTempSaleInvoiceItemById(db, resultId)
-}
-
-export function deleteTempSaleInvoiceItem(db: DatabaseType, id: number): void {
-  db.prepare('DELETE FROM temp_sale_invoice_items WHERE id = ?;').run(id)
 }

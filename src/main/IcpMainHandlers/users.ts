@@ -2,7 +2,6 @@ import { ipcMain } from 'electron'
 import { Database as DatabaseType } from 'better-sqlite3'
 import {
   getAllUsers,
-  getAllDeletedUsers,
   getUserById,
   getUserByUserName,
   addUser,
@@ -14,10 +13,6 @@ import { hashPasswordSync } from '../bcrypt'
 export function userHandlers(db: DatabaseType): void {
   ipcMain.handle('getAllUsers', () => {
     return getAllUsers(db)
-  })
-
-  ipcMain.handle('getAllDeletedUsers', () => {
-    return getAllDeletedUsers(db)
   })
 
   ipcMain.handle('getUserById', (_, id: number) => {

@@ -6,7 +6,7 @@ export function setupTempSaleInvoicesTable(db: DatabaseType): void {
     const createTable = `CREATE TABLE IF NOT EXISTS temp_sale_invoices(
         'id' INTEGER PRIMARY KEY,
         'userId' INTEGER,
-        'date' TEXT,
+        'date' INTEGER,
         'customer' TEXT,
         'status' TEXT,
         'paymentMethod' TEXT,
@@ -24,11 +24,7 @@ export function setupTempSaleInvoicesTable(db: DatabaseType): void {
 }
 
 export function getAllTempSaleInvoices(db: DatabaseType): [SaleInvoice] {
-  return db.prepare('SELECT * FROM temp_sale_invoices WHERE deleted = 0').all() as [SaleInvoice]
-}
-
-export function getAllDeletedTempSaleInvoices(db: DatabaseType): [SaleInvoice] {
-  return db.prepare('SELECT * FROM temp_sale_invoices WHERE deleted = 1').all() as [SaleInvoice]
+  return db.prepare('SELECT * FROM temp_sale_invoices').all() as [SaleInvoice]
 }
 
 export function getTempSaleInvoiceById(db: DatabaseType, id: number | bigint): SaleInvoice {
@@ -46,24 +42,4 @@ export function addTempSaleInvoice(
     .run(tempSaleInvoice)
 
   return getTempSaleInvoiceById(db, result.lastInsertRowid)
-}
-
-export function updateTempSaleInvoice(
-  db: DatabaseType,
-  id: number,
-  tempSaleInvoice: Partial<SaleInvoice>
-): SaleInvoice {
-  const fields = Object.keys(tempSaleInvoice)
-    .map((key) => `${key} = ?`)
-    .join(', ')
-  const values = Object.values(tempSaleInvoice)
-  values.push(id)
-
-  const updateTempSaleInvoice = db.prepare(`UPDATE temp_sale_invoices SET ${fields} WHERE id = ?`)
-  const resultId = updateTempSaleInvoice.run(...values).lastInsertRowid
-  return getTempSaleInvoiceById(db, resultId)
-}
-
-export function deleteTempSaleInvoice(db: DatabaseType, id: number): void {
-  db.prepare('DELETE FROM temp_sale_invoices WHERE id = ?;').run(id)
 }

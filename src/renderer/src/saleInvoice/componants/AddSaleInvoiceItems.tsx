@@ -61,7 +61,7 @@ export default function AddSaleInvoiceItems({
     setSearch((prev) => ({ ...prev, value: e.target.value }))
     if (search.type == 'Name') {
       window.electron.ipcRenderer
-        .invoke('searchItemByName', e.target.value)
+        .invoke('getItemByName', e.target.value)
         .then((result) => {
           setSearch((prev) => ({ ...prev, searchResults: result }))
         })
@@ -84,7 +84,7 @@ export default function AddSaleInvoiceItems({
       case 'Barcode':
         {
           window.electron.ipcRenderer
-            .invoke('searchItemByBarcode', search.value)
+            .invoke('getItemByBarcode', search.value)
             .then((result) => {
               addItemFromScanner(result.id)
             })
@@ -96,7 +96,7 @@ export default function AddSaleInvoiceItems({
       case 'ID':
         {
           window.electron.ipcRenderer
-            .invoke('searchItemById', search.value)
+            .invoke('getItemById', search.value)
             .then((result) => {
               addItemFromScanner(result.id)
             })
@@ -128,12 +128,11 @@ export default function AddSaleInvoiceItems({
       spliced[0].quantity += 1
       setItems([...spliced, ...tempItems])
     } else {
-      window.electron.ipcRenderer.invoke('getItemSaleById', itemId).then((result) => {
+      window.electron.ipcRenderer.invoke('getItemById', itemId).then((result) => {
         const newItem = {
-          itemId: result.itemId,
+          itemId: result.id,
           barcode: result.barcode,
           name: result.name,
-          category: result.category,
           price: result.price,
           unit: result.unit,
           quantity: 1,
@@ -256,7 +255,6 @@ export default function AddSaleInvoiceItems({
         <div className="grid grid-cols-9 text-gray-700 uppercase bg-gray-200 text-xs font-bold">
           <div className="p-2">Barcode</div>
           <div className="p-2">Name</div>
-          <div className="p-2">category</div>
           <div className="p-2">Unit</div>
           <div className="p-2 text-center">Price per unit</div>
           <div className="p-2 text-center">Quantity</div>
@@ -273,7 +271,6 @@ export default function AddSaleInvoiceItems({
               >
                 <div className="text-gray-500 text-sm p-2">{value.barcode}</div>
                 <div className="text-gray-500 text-sm p-2">{value.name}</div>
-                <div className="text-gray-500 text-sm p-2">{value.category}</div>
                 <div className="text-gray-500 text-sm p-2">{value.unit}</div>
                 <div className="text-gray-500 text-sm p-2 text-center">{value.price}</div>
                 <div

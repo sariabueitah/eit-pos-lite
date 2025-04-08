@@ -53,13 +53,7 @@ export function getAllUsers(db: DatabaseType): [User] {
     .all() as [User]
 }
 
-export function getAllDeletedUsers(db: DatabaseType): [User] {
-  return db
-    .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE deleted = 1')
-    .all() as [User]
-}
-
-export function getUserById(db: DatabaseType, id: number): User {
+export function getUserById(db: DatabaseType, id: number | bigint): User {
   return db
     .prepare('SELECT id,name,userName,phoneNumber,role FROM users WHERE id = ?')
     .get(id) as User
@@ -88,22 +82,25 @@ export function authenticateUser(
   }
 }
 
-export function addUser(db: DatabaseType, user: User): Database.RunResult {
-  const insertUser = db.prepare(
-    'INSERT INTO users (name, userName, password, phoneNumber, role) VALUES (?, ?, ?, ?, ?)'
-  )
-  return insertUser.run(user.name, user.userName, user.password, user.phoneNumber, user.role)
+export function addUser(db: DatabaseType, user: User): User {
+  const result = db
+    .prepare(
+      'INSERT INTO users (name, userName, password, phoneNumber, role) VALUES (:name, :userName, :password, :phoneNumber, :role)'
+    )
+    .run(user)
+
+  return getUserById(db, result.lastInsertRowid)
 }
 
-export function updateUser(db: DatabaseType, id: number, user: Partial<User>): Database.RunResult {
+export function updateUser(db: DatabaseType, id: number, user: Partial<User>): User {
   const fields = Object.keys(user)
     .map((key) => `${key} = ?`)
     .join(', ')
   const values = Object.values(user)
   values.push(id)
 
-  const updateUser = db.prepare(`UPDATE users SET ${fields} WHERE id = ?`)
-  return updateUser.run(...values)
+  const result = db.prepare(`UPDATE users SET ${fields} WHERE id = ?`).run(...values)
+  return getUserById(db, result.lastInsertRowid)
 }
 
 export function deleteUser(db: DatabaseType, id: number): Database.RunResult {

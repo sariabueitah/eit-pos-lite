@@ -6,7 +6,7 @@ type Props = {
   onDelete: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-export default function UserRow(props: Props): JSX.Element {
+export default function CategoryRow(props: Props): JSX.Element {
   const submit = (): void => {
     confirmAlert({
       customUI: ({ onClose }) => {

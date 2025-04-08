@@ -40,7 +40,7 @@ declare global {
   type PurchaseInvoice = {
     id: number
     supplierId: number
-    date: string
+    date: number
     status: 'PAID' | 'UNPAID' | 'PARTIAL'
     paid: number
   }
@@ -57,7 +57,7 @@ declare global {
   type SaleInvoice = {
     id: number
     userId: number
-    date: string
+    date: number
     customer: string
     status: 'PAID' | 'UNPAID' | 'HOLD' | 'CANCELED' | 'WAITING'
     paymentMethod: 'CASH' | 'CREDIT'
