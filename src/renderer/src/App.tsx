@@ -23,6 +23,7 @@ import AddSaleInvoice from './saleInvoice/AddSaleInvoices'
 import NotFound from './NotFound'
 import Loading from './components/Loading'
 import Hold from './components/Hold'
+import Confirmation from './components/Confirmation'
 
 //TODO create new Dialog component and replace and remove the old one
 //TODO Edit and add pages forms are not very good and need to be fixed
@@ -50,6 +51,7 @@ function App(): JSX.Element {
 
   return (
     <>
+      <Confirmation />
       <Loading />
       <Hold />
       <NavBar />

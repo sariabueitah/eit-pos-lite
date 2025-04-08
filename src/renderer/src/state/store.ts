@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import sessionReducer from './slices/SessionSlice'
 import pageReducer from './slices/PageSlice'
+import confirmationReducer from './slices/ConfirmationSlice'
 
 export const store = configureStore({
   reducer: {
     session: sessionReducer,
-    page: pageReducer
+    page: pageReducer,
+    confirmation: confirmationReducer
   }
 })
 
