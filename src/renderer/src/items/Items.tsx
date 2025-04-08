@@ -4,7 +4,6 @@ import { setPage } from '../state/slices/PageSlice'
 import ItemRow from './componants/ItemRow'
 import { NavLink } from 'react-router-dom'
 
-//TODO add search funtionality
 export default function Items(): JSX.Element {
   const dispatch = useDispatch()
   useEffect(() => {

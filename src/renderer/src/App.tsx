@@ -24,7 +24,16 @@ import NotFound from './NotFound'
 import Loading from './components/Loading'
 import Hold from './components/Hold'
 
+//TODO create new Dialog component and replace and remove the old one
+//TODO Edit and add pages forms are not very good and need to be fixed
+//TODO emplement the hold feature continue
+//TODO Purchase invoice
+//TODO Search functionality for all pages
+//TODO Print recipt
+//TODO Create a queue for the Tax API
+//TODO Create a setup page
 //TODO fix all styles unifiing the buttons maybe spruce up the style
+
 function App(): JSX.Element {
   const session = useSelector((state: RootState) => state.session.value)
   const dispatch = useDispatch<AppDispatch>()
