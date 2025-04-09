@@ -1,28 +1,17 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage, setLoading } from '../state/slices/PageSlice'
-import { useForm, SubmitHandler } from 'react-hook-form'
 import CategoryForm from './componants/CategoryForm'
-import { useEffect } from 'react'
 
-interface IFormInput {
-  name: string
-}
-
-export default function AddUser(): JSX.Element {
-  const navigate = useNavigate()
+export default function AddCategory(): JSX.Element {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   useEffect(() => {
-    dispatch(setPage('Add Category'))
+    dispatch(setPage('Edit Category'))
   }, [dispatch])
 
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    setError
-  } = useForm<IFormInput>()
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit = (setError, _, data): void => {
     dispatch(setLoading(true))
     window.electron.ipcRenderer
       .invoke('addCategory', {
@@ -37,12 +26,8 @@ export default function AddUser(): JSX.Element {
         setError('root', { type: 'manual', message: error })
       })
   }
-
   return (
     <CategoryForm
-      errors={errors}
-      register={register}
-      handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       onBack={() => {
         navigate('/categories', { replace: true })

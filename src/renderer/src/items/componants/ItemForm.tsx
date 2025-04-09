@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import FormAlerts from '../../components/FormAlerts'
-import { UseFormHandleSubmit, SubmitHandler, UseFormRegister, FieldErrors } from 'react-hook-form'
 
 interface IFormInput {
   name: string
@@ -9,42 +10,74 @@ interface IFormInput {
   unit: 'Grams' | 'Kilograms' | 'Liters' | 'Milliliters' | 'Units'
   cost: number
   price: number
+  discount: number
   tax: number
   image: string
   categoryId: string
   supplierId: string
 }
 
-interface Props {
-  errors: FieldErrors<IFormInput>
-  register: UseFormRegister<IFormInput>
-  handleSubmit: UseFormHandleSubmit<IFormInput, undefined>
-  onSubmit: SubmitHandler<IFormInput>
+export default function ItemForm(props: {
+  onSubmit: (setError, id, data) => void
   onBack: () => void
-}
-
-export default function ItemForm({
-  errors,
-  register,
-  handleSubmit,
-  onSubmit,
-  onBack
-}: Props): JSX.Element {
-  const [categories, setCategories] = useState([{ id: '1', name: '' }])
+}): JSX.Element {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
 
   useEffect(() => {
     window.electron.ipcRenderer.invoke('getAllCategories').then((categories) => {
       setCategories(categories)
     })
-  }, [])
-
-  const [suppliers, setSuppliers] = useState([{ id: '1', name: '', phoneNumber: '' }])
-
-  useEffect(() => {
     window.electron.ipcRenderer.invoke('getAllSuppliers').then((suppliers) => {
       setSuppliers(suppliers)
     })
   }, [])
+  const { id } = useParams()
+
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    setError,
+    setValue
+  } = useForm<IFormInput>()
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    props.onSubmit(setError, id, {
+      name: data.name,
+      description: data.description,
+      barcode: data.barcode,
+      unit: data.unit,
+      cost: data.cost,
+      price: data.price,
+      discount: data.discount,
+      tax: data.tax,
+      image: '',
+      categoryId: data.categoryId,
+      supplierId: data.supplierId
+    })
+  }
+
+  useEffect(() => {
+    if (id === undefined) return
+    window.electron.ipcRenderer
+      .invoke('getItemById', id)
+      .then((result) => {
+        setValue('name', result.name)
+        setValue('description', result.description)
+        setValue('barcode', result.barcode)
+        setValue('unit', result.unit)
+        setValue('cost', result.cost)
+        setValue('price', result.price)
+        setValue('discount', result.discount)
+        setValue('tax', result.tax)
+        setValue('image', result.image)
+        setValue('categoryId', result.categoryId, { shouldTouch: true })
+        setValue('supplierId', result.supplierId, { shouldTouch: true })
+      })
+      .catch((error) => {
+        setError('root', { type: 'manual', message: error + ' Data not retrieved' })
+      })
+  }, [categories, id, setError, setValue, suppliers])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-1/2 mx-auto">
@@ -89,7 +122,7 @@ export default function ItemForm({
                 return window.electron.ipcRenderer
                   .invoke('getItemByBarcode', value)
                   .then((result) => {
-                    if (result) {
+                    if (result && result.id !== Number(id)) {
                       return 'Barcode matches another item'
                     } else {
                       return true
@@ -129,7 +162,7 @@ export default function ItemForm({
             }
           />
         </div>
-        <div className="mb-5">
+        <div className="mb-5 col-span-4">
           <label
             className={
               errors.unit
@@ -155,6 +188,35 @@ export default function ItemForm({
             <option value="Liters">Liters</option>
             <option value="Milliliters">Milliliters</option>
           </select>
+        </div>
+        <div className="mb-5">
+          <label
+            className={
+              errors.discount
+                ? 'block mb-2 text-sm font-medium text-red-900'
+                : 'block mb-2 text-sm font-medium text-gray-900'
+            }
+          >
+            Discount
+          </label>
+          <input
+            {...register('discount', {
+              required: 'Discount is required',
+              min: { value: 0, message: 'Discount must be larger than 0' },
+              validate: (value, data) => {
+                return value <= data.price || 'Discount must be less than price'
+              }
+            })}
+            type="number"
+            step="any"
+            name="discount"
+            id="discount"
+            className={
+              errors.discount
+                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+            }
+          />
         </div>
         <div className="mb-5">
           <label
@@ -326,7 +388,7 @@ export default function ItemForm({
           Submit
         </button>
         <button
-          onClick={onBack}
+          onClick={props.onBack}
           className="hover:bg-gray-300 border border-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mx-4"
         >
           Back

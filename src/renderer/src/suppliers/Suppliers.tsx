@@ -4,9 +4,8 @@ import { setPage } from '../state/slices/PageSlice'
 import SupplierRow from './componants/SupplierRow'
 import { NavLink } from 'react-router-dom'
 
-export default function Users(): JSX.Element {
+export default function Suppliers(): JSX.Element {
   const [supplierData, setSupplierData] = useState<Supplier[]>([])
-
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setPage('Suppliers'))

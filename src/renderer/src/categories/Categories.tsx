@@ -4,7 +4,7 @@ import { setPage } from '../state/slices/PageSlice'
 import CategoryRow from './componants/CategoryRow'
 import { NavLink } from 'react-router-dom'
 
-export default function Users(): JSX.Element {
+export default function Categories(): JSX.Element {
   const [categoryData, setCategoryData] = useState<Category[]>([])
   const dispatch = useDispatch()
   useEffect(() => {

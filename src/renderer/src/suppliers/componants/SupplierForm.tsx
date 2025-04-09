@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import FormAlerts from '../../components/FormAlerts'
-import { UseFormHandleSubmit, SubmitHandler, UseFormRegister, FieldErrors } from 'react-hook-form'
 
 interface IFormInput {
   name: string
@@ -7,21 +9,35 @@ interface IFormInput {
   taxNumber: string
 }
 
-interface Props {
-  errors: FieldErrors<IFormInput>
-  register: UseFormRegister<IFormInput>
-  handleSubmit: UseFormHandleSubmit<IFormInput, undefined>
-  onSubmit: SubmitHandler<IFormInput>
+export default function SupplierForm(props: {
+  onSubmit: (setError, id, data) => void
   onBack: () => void
-}
+}): JSX.Element {
+  const { id } = useParams()
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    setError,
+    setValue
+  } = useForm<IFormInput>()
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    props.onSubmit(setError, id, data)
+  }
 
-export default function SupplierForm({
-  errors,
-  register,
-  handleSubmit,
-  onSubmit,
-  onBack
-}: Props): JSX.Element {
+  useEffect(() => {
+    window.electron.ipcRenderer
+      .invoke('getSupplierById', id)
+      .then((result) => {
+        setValue('name', result.name)
+        setValue('phoneNumber', result.phoneNumber)
+        setValue('taxNumber', result.taxNumber)
+      })
+      .catch((error) => {
+        setError('root', { type: 'manual', message: error + ' Data not retrieved' })
+      })
+  }, [id, setError, setValue])
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-1/3 mx-auto">
       <FormAlerts alerts={errors} />
@@ -36,7 +52,20 @@ export default function SupplierForm({
           Name
         </label>
         <input
-          {...register('name', { required: 'Name is required' })}
+          {...register('name', {
+            required: 'Name is required',
+            validate: (value) => {
+              return window.electron.ipcRenderer
+                .invoke('getSupplierByName', value)
+                .then((result) => {
+                  if (result && result.id !== Number(id)) {
+                    return 'Name matches another supplier'
+                  } else {
+                    return true
+                  }
+                })
+            }
+          })}
           type="text"
           name="name"
           id="name"
@@ -80,7 +109,20 @@ export default function SupplierForm({
           Tax Number
         </label>
         <input
-          {...register('taxNumber', { required: 'Tax Number is required' })}
+          {...register('taxNumber', {
+            required: 'Tax Number is required',
+            validate: (value) => {
+              return window.electron.ipcRenderer
+                .invoke('getSupplierByTaxNumber', value)
+                .then((result) => {
+                  if (result && result.id !== Number(id)) {
+                    return 'Tax Number matches another supplier'
+                  } else {
+                    return true
+                  }
+                })
+            }
+          })}
           type="text"
           name="taxNumber"
           id="taxNumber"
@@ -99,7 +141,7 @@ export default function SupplierForm({
           Submit
         </button>
         <button
-          onClick={onBack}
+          onClick={props.onBack}
           className="hover:bg-gray-300 border border-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mx-4"
         >
           Back

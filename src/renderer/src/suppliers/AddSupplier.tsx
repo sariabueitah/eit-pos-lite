@@ -1,30 +1,17 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage, setLoading } from '../state/slices/PageSlice'
-import { useForm, SubmitHandler } from 'react-hook-form'
 import SupplierForm from './componants/SupplierForm'
-import { useEffect } from 'react'
 
-interface IFormInput {
-  name: string
-  phoneNumber: string
-  taxNumber: string
-}
-
-export default function AddUser(): JSX.Element {
+export default function AddSupplier(): JSX.Element {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setPage('Add Supplier'))
   }, [dispatch])
 
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    setError
-  } = useForm<IFormInput>()
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit = (setError, _, data): void => {
     dispatch(setLoading(true))
     window.electron.ipcRenderer
       .invoke('addSupplier', {
@@ -44,9 +31,6 @@ export default function AddUser(): JSX.Element {
 
   return (
     <SupplierForm
-      errors={errors}
-      register={register}
-      handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       onBack={() => {
         navigate('/suppliers', { replace: true })

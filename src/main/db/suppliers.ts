@@ -44,6 +44,14 @@ export function getSupplierById(db: DatabaseType, id: number | bigint): Supplier
   return db.prepare('SELECT * FROM suppliers WHERE id = ?').get(id) as Supplier
 }
 
+export function getSupplierByName(db: DatabaseType, name: string): Supplier {
+  return db.prepare('SELECT * FROM suppliers WHERE name = ?').get(name) as Supplier
+}
+
+export function getSupplierByTaxNumber(db: DatabaseType, taxNumber: string): Supplier {
+  return db.prepare('SELECT * FROM suppliers WHERE taxNumber = ?').get(taxNumber) as Supplier
+}
+
 export function addSupplier(db: DatabaseType, supplier: Supplier): Supplier {
   const result = db
     .prepare(

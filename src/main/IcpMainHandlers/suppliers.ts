@@ -3,6 +3,8 @@ import { ipcMain } from 'electron'
 import {
   getAllSuppliers,
   getSupplierById,
+  getSupplierByName,
+  getSupplierByTaxNumber,
   addSupplier,
   updateSupplier,
   deleteSupplier
@@ -16,7 +18,12 @@ export function suppliersHandlers(db: DatabaseType): void {
   ipcMain.handle('getSupplierById', (_, id: number) => {
     return getSupplierById(db, id)
   })
-
+  ipcMain.handle('getSupplierByName', (_, name: string) => {
+    return getSupplierByName(db, name)
+  })
+  ipcMain.handle('getSupplierByTaxNumber', (_, taxNumber: string) => {
+    return getSupplierByTaxNumber(db, taxNumber)
+  })
   ipcMain.handle('addSupplier', (_, supplier: Supplier) => {
     return addSupplier(db, supplier)
   })

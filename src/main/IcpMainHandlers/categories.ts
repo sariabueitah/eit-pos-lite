@@ -3,6 +3,7 @@ import { ipcMain } from 'electron'
 import {
   getAllCategories,
   getCategoryById,
+  getCategoryByName,
   addCategory,
   updateCategory,
   deleteCategory
@@ -14,6 +15,9 @@ export function categoriesHandlers(db: DataBaseType): void {
   })
   ipcMain.handle('getCategoryById', (_, id: number) => {
     return getCategoryById(db, id)
+  })
+  ipcMain.handle('getCategoryByName', (_, name: string) => {
+    return getCategoryByName(db, name)
   })
   ipcMain.handle('addCategory', (_, category: Category) => {
     return addCategory(db, category)

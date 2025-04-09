@@ -75,6 +75,9 @@ export default function Items(): JSX.Element {
               cost
             </th>
             <th scope="col" className="p-2">
+              discount
+            </th>
+            <th scope="col" className="p-2">
               price
             </th>
             <th scope="col" className="p-2">

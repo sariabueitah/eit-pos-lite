@@ -1,25 +1,40 @@
+import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import FormAlerts from '../../components/FormAlerts'
-import { UseFormHandleSubmit, SubmitHandler, UseFormRegister, FieldErrors } from 'react-hook-form'
 
 interface IFormInput {
   name: string
 }
 
-interface Props {
-  errors: FieldErrors<IFormInput>
-  register: UseFormRegister<IFormInput>
-  handleSubmit: UseFormHandleSubmit<IFormInput, undefined>
-  onSubmit: SubmitHandler<IFormInput>
+export default function CategoryForm(props: {
+  onSubmit: (setError, id, data) => void
   onBack: () => void
-}
+}): JSX.Element {
+  const { id } = useParams()
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    setError,
+    setValue
+  } = useForm<IFormInput>()
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    props.onSubmit(setError, id, data)
+  }
 
-export default function CategoryForm({
-  errors,
-  register,
-  handleSubmit,
-  onSubmit,
-  onBack
-}: Props): JSX.Element {
+  useEffect(() => {
+    if (id === undefined) return
+    window.electron.ipcRenderer
+      .invoke('getCategoryById', id)
+      .then((result) => {
+        setValue('name', result.name)
+      })
+      .catch((error) => {
+        setError('root', { type: 'manual', message: error + ' Data not retrieved' })
+      })
+  }, [id, setError, setValue])
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-1/3 mx-auto">
       <FormAlerts alerts={errors} />
@@ -34,7 +49,20 @@ export default function CategoryForm({
           Name
         </label>
         <input
-          {...register('name', { required: 'Name is required' })}
+          {...register('name', {
+            required: 'Name is required',
+            validate: (value) => {
+              return window.electron.ipcRenderer
+                .invoke('getCategoryByName', value)
+                .then((result) => {
+                  if (result && result.id !== Number(id)) {
+                    return 'Name matches another category'
+                  } else {
+                    return true
+                  }
+                })
+            }
+          })}
           type="text"
           name="name"
           id="name"
@@ -53,7 +81,7 @@ export default function CategoryForm({
           Submit
         </button>
         <button
-          onClick={onBack}
+          onClick={props.onBack}
           className="hover:bg-gray-300 border border-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mx-4"
         >
           Back

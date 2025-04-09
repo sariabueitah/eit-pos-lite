@@ -37,6 +37,10 @@ export function getCategoryById(db: DatabaseType, id: number | bigint): Category
   return db.prepare('SELECT * FROM categories WHERE id = ?').get(id) as Category
 }
 
+export function getCategoryByName(db: DatabaseType, name: string): Category {
+  return db.prepare('SELECT * FROM categories WHERE name = ?').get(name) as Category
+}
+
 export function addCategory(db: DatabaseType, category: Category): Category {
   const result = db.prepare('INSERT INTO categories (name) VALUES (:name);').run(category)
 

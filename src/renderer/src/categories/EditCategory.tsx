@@ -1,30 +1,17 @@
-import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { setPage, setLoading } from '../state/slices/PageSlice'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { setLoading, setPage } from '../state/slices/PageSlice'
 import { useEffect } from 'react'
 import CategoryForm from './componants/CategoryForm'
-
-interface IFormInput {
-  name: string
-}
+import { useNavigate } from 'react-router-dom'
 
 export default function EditCategory(): JSX.Element {
-  const { id } = useParams()
-  const navigate = useNavigate()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   useEffect(() => {
     dispatch(setPage('Edit Category'))
   }, [dispatch])
 
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    setError,
-    setValue
-  } = useForm<IFormInput>()
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit = (setError, id, data): void => {
     dispatch(setLoading(true))
     window.electron.ipcRenderer
       .invoke('updateCategory', id, {
@@ -39,24 +26,8 @@ export default function EditCategory(): JSX.Element {
         setError('root', { type: 'manual', message: error })
       })
   }
-
-  useEffect(() => {
-    window.electron.ipcRenderer
-      .invoke('getCategoryById', id)
-      .then((result) => {
-        setValue('name', result.name)
-      })
-      .catch((error) => {
-        console.log('error')
-        console.log(error)
-      })
-  }, [id, setValue])
-
   return (
     <CategoryForm
-      errors={errors}
-      register={register}
-      handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       onBack={() => {
         navigate('/categories', { replace: true })

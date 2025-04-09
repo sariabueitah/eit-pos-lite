@@ -17,6 +17,7 @@ declare global {
     barcode: string
     unit: 'Grams' | 'Kilograms' | 'Liters' | 'Milliliters' | 'Units'
     cost: number
+    discount: number
     price: number
     tax: number
     image: string

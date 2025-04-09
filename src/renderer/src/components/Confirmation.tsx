@@ -1,17 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux'
-import { closeConfirmation, confirm } from '../state/slices/ConfirmationSlice'
-import { RootState } from '../state/store'
-export default function Confirmation(): JSX.Element {
-  const dispatch = useDispatch()
-  const { isOpen, message } = useSelector((state: RootState) => state.confirmation)
-  if (!isOpen) return <></>
+import { createPortal } from 'react-dom'
 
-  return (
+export default function Confirmation(props: {
+  onCancel: () => void
+  onConfirm: () => void
+  message: string
+}): JSX.Element {
+  const portalElement = document.getElementById('portal')
+  if (!portalElement) {
+    throw new Error('Portal element not found')
+  }
+
+  return createPortal(
     <div className="absolute top-0 left-0 w-screen h-screen bg-gray-700/75">
       <div className="flex justify-center h-screen items-center">
         <div className="relative p-4 text-center bg-white rounded-xl shadow">
           <button
-            onClick={() => dispatch(closeConfirmation())}
+            onClick={props.onCancel}
             type="button"
             className="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
             data-modal-toggle="deleteModal"
@@ -43,10 +47,10 @@ export default function Confirmation(): JSX.Element {
               clipRule="evenodd"
             ></path>
           </svg>
-          <p className="mb-4 text-gray-500">{message}</p>
+          <p className="mb-4 text-gray-500">{props.message}</p>
           <div className="flex justify-center items-center space-x-4">
             <button
-              onClick={() => dispatch(closeConfirmation())}
+              onClick={props.onCancel}
               data-modal-toggle="deleteModal"
               type="button"
               className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-900"
@@ -54,7 +58,7 @@ export default function Confirmation(): JSX.Element {
               No, cancel
             </button>
             <button
-              onClick={() => dispatch(confirm())}
+              onClick={props.onConfirm}
               type="submit"
               className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700"
             >
@@ -63,6 +67,7 @@ export default function Confirmation(): JSX.Element {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    portalElement
   )
 }
