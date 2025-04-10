@@ -62,6 +62,7 @@ declare global {
     customer: string
     status: 'PAID' | 'UNPAID' | 'HOLD' | 'CANCELED' | 'WAITING'
     paymentMethod: 'CASH' | 'CREDIT'
+    userName: string
   }
 
   type SaleInvoiceItem = {
@@ -73,6 +74,11 @@ declare global {
     cost: number
     tax: number
     discount: number
+  }
+
+  type SaleInvoiceWithItems = {
+    saleInvoice: SaleInvoice
+    saleInvoiceItems: SaleInvoiceItem[]
   }
 
   type Session = {

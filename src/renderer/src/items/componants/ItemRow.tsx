@@ -15,9 +15,7 @@ export default function ItemRow(props: Props): JSX.Element {
   }
   return (
     <tr className="bg-white border-b border-gray-200">
-      <th scope="row" className="px-6 py-4 font-medium text-gray-900">
-        {props.item.id}
-      </th>
+      <td className="p-2">{props.item.id}</td>
       <td className="p-2">{props.item.name}</td>
       <td className="p-2">{props.item.description}</td>
       <td className="p-2">{props.item.barcode}</td>

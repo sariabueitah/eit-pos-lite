@@ -16,7 +16,7 @@ export default function UserRow(props: Props): JSX.Element {
 
   return (
     <tr className="bg-white border-b border-gray-200">
-      <th className="p-2">{props.user.id}</th>
+      <td className="p-2">{props.user.id}</td>
       <td className="p-2">{props.user.name}</td>
       <td className="p-2">{props.user.userName}</td>
       <td className="p-2">{props.user.phoneNumber}</td>

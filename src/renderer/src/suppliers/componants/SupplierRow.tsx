@@ -15,7 +15,7 @@ export default function SupplierRow(props: Props): JSX.Element {
 
   return (
     <tr className="bg-white border-b border-gray-200">
-      <th className="p-2">{props.supplier.id}</th>
+      <td className="p-2">{props.supplier.id}</td>
       <td className="p-2">{props.supplier.name}</td>
       <td className="p-2">{props.supplier.phoneNumber}</td>
       <td className="p-2">{props.supplier.taxNumber}</td>

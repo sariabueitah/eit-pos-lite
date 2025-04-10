@@ -16,7 +16,7 @@ export default function CategoryRow(props: Props): JSX.Element {
 
   return (
     <tr className="bg-white border-b border-gray-200">
-      <th className="p-2">{props.category.id}</th>
+      <td className="p-2">{props.category.id}</td>
       <td className="p-2">{props.category.name}</td>
       <td className="p-2">
         <button className="cursor-pointer" onClick={handleEdit}>

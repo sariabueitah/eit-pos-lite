@@ -24,7 +24,7 @@ import NotFound from './NotFound'
 import Loading from './components/Loading'
 import Hold from './components/Hold'
 
-//TODO emplement the hold feature continue
+//TODO implement the hold feature continue
 //TODO Purchase invoice
 //TODO Print recipt
 //TODO Create a queue for the Tax API
