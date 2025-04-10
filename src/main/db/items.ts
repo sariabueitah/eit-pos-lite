@@ -167,3 +167,43 @@ export function updateItem(db: DatabaseType, id: number, item: Partial<Item>): I
 export function deleteItem(db: DatabaseType, id: number): void {
   db.prepare('UPDATE items SET deleted = 1 WHERE id = ?;').run(id)
 }
+
+export function searchItems(db: DatabaseType, search: string, status: string): [Item] {
+  let query = 'SELECT * FROM items'
+
+  switch (status) {
+    case 'ACTIVE':
+      query += ' WHERE deleted = 0'
+      break
+    case 'INACTIVE':
+      query += ' WHERE deleted = 1'
+      break
+  }
+
+  let searchArray = search.split(/(\s+)/).filter(function (e) {
+    return e.trim().length > 0
+  })
+
+  searchArray = searchArray.map(function (e) {
+    return '%' + e + '%'
+  })
+
+  if (searchArray.length == 0) {
+    return db.prepare(query).all() as [Item]
+  }
+
+  if (searchArray.length > 0 && status == 'ALL') {
+    query += ' WHERE '
+  }
+
+  for (let i = 0; i < searchArray.length; i++) {
+    query += `(id LIKE @${i} OR barcode LIKE @${i} OR name LIKE @${i})`
+    if (i < searchArray.length - 1) {
+      query += ' AND '
+    }
+  }
+
+  const searchObj = Object.assign({}, searchArray)
+
+  return db.prepare(query).all(searchObj) as [Item]
+}

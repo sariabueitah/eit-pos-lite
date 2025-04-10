@@ -27,7 +27,6 @@ import Hold from './components/Hold'
 //TODO figure a way to handle input with trailing spaces being saved in the database
 //TODO emplement the hold feature continue
 //TODO Purchase invoice
-//TODO Search functionality for all pages
 //TODO Print recipt
 //TODO Create a queue for the Tax API
 //TODO Create a setup page

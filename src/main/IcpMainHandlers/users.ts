@@ -6,7 +6,8 @@ import {
   getUserByUserName,
   addUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  searchUsers
 } from '../db/users'
 import { hashPasswordSync } from '../bcrypt'
 
@@ -39,5 +40,9 @@ export function userHandlers(db: DatabaseType): void {
 
   ipcMain.handle('deleteUser', (_, id: number) => {
     return deleteUser(db, id)
+  })
+
+  ipcMain.handle('searchUsers', (_, search: string, status: string) => {
+    return searchUsers(db, search, status)
   })
 }

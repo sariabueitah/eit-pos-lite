@@ -6,7 +6,8 @@ import {
   getItemById,
   addItem,
   updateItem,
-  deleteItem
+  deleteItem,
+  searchItems
 } from '../db/items'
 
 export function itemHandlers(db: DatabaseType): void {
@@ -32,5 +33,9 @@ export function itemHandlers(db: DatabaseType): void {
 
   ipcMain.handle('deleteItem', (_, id: number) => {
     return deleteItem(db, id)
+  })
+
+  ipcMain.handle('searchItems', (_, search: string, status: string) => {
+    return searchItems(db, search, status)
   })
 }

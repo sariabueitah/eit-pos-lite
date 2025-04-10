@@ -6,7 +6,8 @@ import {
   getCategoryByName,
   addCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  searchCategories
 } from '../db/categories'
 
 export function categoriesHandlers(db: DataBaseType): void {
@@ -27,5 +28,8 @@ export function categoriesHandlers(db: DataBaseType): void {
   })
   ipcMain.handle('deleteCategory', (_, id: number) => {
     return deleteCategory(db, id)
+  })
+  ipcMain.handle('searchCategories', (_, search: string, status: string) => {
+    return searchCategories(db, search, status)
   })
 }

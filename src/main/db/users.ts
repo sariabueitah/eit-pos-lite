@@ -106,3 +106,43 @@ export function updateUser(db: DatabaseType, id: number, user: Partial<User>): U
 export function deleteUser(db: DatabaseType, id: number): Database.RunResult {
   return db.prepare('UPDATE users SET deleted = 1 WHERE id = ?;').run(id)
 }
+
+export function searchUsers(db: DatabaseType, search: string, status: string): [User] {
+  let query = 'SELECT id,name, userName, password, phoneNumber, role FROM users'
+
+  switch (status) {
+    case 'ACTIVE':
+      query += ' WHERE deleted = 0'
+      break
+    case 'INACTIVE':
+      query += ' WHERE deleted = 1'
+      break
+  }
+
+  let searchArray = search.split(/(\s+)/).filter(function (e) {
+    return e.trim().length > 0
+  })
+
+  searchArray = searchArray.map(function (e) {
+    return '%' + e + '%'
+  })
+
+  if (searchArray.length == 0) {
+    return db.prepare(query).all() as [User]
+  }
+
+  if (searchArray.length > 0 && status == 'ALL') {
+    query += ' WHERE '
+  }
+
+  for (let i = 0; i < searchArray.length; i++) {
+    query += `(phoneNumber LIKE @${i} OR userName LIKE @${i} OR name LIKE @${i} OR id LIKE @${i})`
+    if (i < searchArray.length - 1) {
+      query += ' AND '
+    }
+  }
+
+  const searchObj = Object.assign({}, searchArray)
+
+  return db.prepare(query).all(searchObj) as [User]
+}

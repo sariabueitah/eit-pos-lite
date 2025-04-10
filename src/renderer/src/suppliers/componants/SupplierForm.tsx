@@ -26,6 +26,7 @@ export default function SupplierForm(props: {
   }
 
   useEffect(() => {
+    if (id === undefined) return
     window.electron.ipcRenderer
       .invoke('getSupplierById', id)
       .then((result) => {

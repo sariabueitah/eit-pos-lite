@@ -65,3 +65,43 @@ export function updateCategory(
 export function deleteCategory(db: DatabaseType, id: number): void {
   db.prepare('UPDATE categories SET deleted = 1 WHERE id = ?;').run(id)
 }
+
+export function searchCategories(db: DatabaseType, search: string, status: string): [Category] {
+  let query = 'SELECT * FROM categories'
+
+  switch (status) {
+    case 'ACTIVE':
+      query += ' WHERE deleted = 0'
+      break
+    case 'INACTIVE':
+      query += ' WHERE deleted = 1'
+      break
+  }
+
+  let searchArray = search.split(/(\s+)/).filter(function (e) {
+    return e.trim().length > 0
+  })
+
+  searchArray = searchArray.map(function (e) {
+    return '%' + e + '%'
+  })
+
+  if (searchArray.length == 0) {
+    return db.prepare(query).all() as [Category]
+  }
+
+  if (searchArray.length > 0 && status == 'ALL') {
+    query += ' WHERE '
+  }
+
+  for (let i = 0; i < searchArray.length; i++) {
+    query += `(id LIKE @${i} OR name LIKE @${i})`
+    if (i < searchArray.length - 1) {
+      query += ' AND '
+    }
+  }
+
+  const searchObj = Object.assign({}, searchArray)
+
+  return db.prepare(query).all(searchObj) as [Category]
+}

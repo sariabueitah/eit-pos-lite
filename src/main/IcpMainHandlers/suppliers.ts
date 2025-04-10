@@ -7,7 +7,8 @@ import {
   getSupplierByTaxNumber,
   addSupplier,
   updateSupplier,
-  deleteSupplier
+  deleteSupplier,
+  searchSuppliers
 } from '../db/suppliers'
 
 export function suppliersHandlers(db: DatabaseType): void {
@@ -32,5 +33,8 @@ export function suppliersHandlers(db: DatabaseType): void {
   })
   ipcMain.handle('deleteSupplier', (_, id: number) => {
     return deleteSupplier(db, id)
+  })
+  ipcMain.handle('searchSuppliers', (_, search: string, status: string) => {
+    return searchSuppliers(db, search, status)
   })
 }
