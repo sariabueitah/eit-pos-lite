@@ -74,6 +74,9 @@ declare global {
     cost: number
     tax: number
     discount: number
+    name?: string
+    barcode?: string
+    unit?: 'Grams' | 'Kilograms' | 'Liters' | 'Milliliters' | 'Units'
   }
 
   type SaleInvoiceWithItems = {

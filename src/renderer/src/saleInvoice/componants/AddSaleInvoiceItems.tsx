@@ -252,7 +252,7 @@ export default function AddSaleInvoiceItems({
         </div>
       </div>
       <div className="col-span-4 mt-3">
-        <div className="grid grid-cols-9 text-gray-700 uppercase bg-gray-200 text-xs font-bold">
+        <div className="grid grid-cols-8 text-gray-700 uppercase bg-gray-200 text-xs font-bold">
           <div className="p-2">Barcode</div>
           <div className="p-2">Name</div>
           <div className="p-2">Unit</div>
@@ -267,7 +267,7 @@ export default function AddSaleInvoiceItems({
             return (
               <div
                 key={value.itemId}
-                className="odd:bg-white even:bg-gray-100 grid grid-cols-9 text-gray-700"
+                className="odd:bg-white even:bg-gray-100 grid grid-cols-8 text-gray-700"
               >
                 <div className="text-gray-500 text-sm p-2">{value.barcode}</div>
                 <div className="text-gray-500 text-sm p-2">{value.name}</div>

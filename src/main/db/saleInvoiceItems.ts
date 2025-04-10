@@ -12,7 +12,6 @@ export function setupSaleInvoiceItemsTable(db: DatabaseType): void {
         'price' REAL,
         'cost' REAL,
         'tax' REAL,
-        'deleted' INTEGER DEFAULT 0,
         FOREIGN KEY('itemId') REFERENCES 'items'('id'),
         FOREIGN KEY('saleInvoiceId') REFERENCES 'sale_invoices'('id')
     );`
@@ -23,14 +22,22 @@ export function setupSaleInvoiceItemsTable(db: DatabaseType): void {
     db.exec(
       'CREATE INDEX idx_sale_invoice_items_saleInvoiceId ON sale_invoice_items (saleInvoiceId);'
     )
-    db.exec('CREATE INDEX idx_sale_invoice_items_deleted ON sale_invoice_items (deleted);')
   }
 }
 
 function getSaleInvoiceItemById(db: DatabaseType, id: number | bigint): SaleInvoiceItem {
+  return db.prepare('SELECT * FROM sale_invoice_items WHERE id = ?').get(id) as SaleInvoiceItem
+}
+
+export function getSaleInvoiceItemsBySaleInvoiceId(
+  db: DatabaseType,
+  saleInvoiceId: number | bigint
+): SaleInvoiceItem[] {
   return db
-    .prepare('SELECT * FROM sale_invoice_items WHERE id = ? AND deleted = 0')
-    .get(id) as SaleInvoiceItem
+    .prepare(
+      'SELECT s.*, i.barcode, i.name, i.unit FROM sale_invoice_items s INNER JOIN items i ON s.itemId = i.id WHERE saleInvoiceId = ?'
+    )
+    .all(saleInvoiceId) as [SaleInvoiceItem]
 }
 
 export function addSaleInvoiceItem(

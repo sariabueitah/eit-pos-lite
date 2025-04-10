@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import SaleInvoiceRow from './componants/SaleInvoiceRow'
 
-//TODO add view page and cancel action for issued invoice and search funtionality
 export default function SaleInvoices(): JSX.Element {
   const dispatch = useDispatch()
   useEffect(() => {

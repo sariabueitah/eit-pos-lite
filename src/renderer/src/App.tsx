@@ -18,7 +18,8 @@ import EditCategory from './categories/EditCategory'
 import Supplier from './suppliers/Suppliers'
 import AddSupplier from './suppliers/AddSupplier'
 import EditSupplier from './suppliers/EditSupplier'
-import SaleInvoice from './saleInvoice/SaleInvoices'
+import SaleInvoices from './saleInvoice/SaleInvoices'
+import SaleInvoice from './saleInvoice/SaleInvoice'
 import AddSaleInvoice from './saleInvoice/AddSaleInvoices'
 import NotFound from './NotFound'
 import Loading from './components/Loading'
@@ -74,8 +75,9 @@ function App(): JSX.Element {
               <Route path="/suppliers" element={<Supplier />} />
               <Route path="/suppliers/new" element={<AddSupplier />} />
               <Route path="/suppliers/edit/:id" element={<EditSupplier />} />
-              <Route path="/saleInvoices" element={<SaleInvoice />} />
+              <Route path="/saleInvoices" element={<SaleInvoices />} />
               <Route path="/saleInvoices/new" element={<AddSaleInvoice />} />
+              <Route path="/saleInvoices/:id" element={<SaleInvoice />} />
             </>
           )}
         </Routes>

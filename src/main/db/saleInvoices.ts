@@ -29,7 +29,7 @@ export function getAllSaleInvoices(db: DatabaseType): SaleInvoice[] {
     .all() as SaleInvoice[]
 }
 
-function getSaleInvoiceById(db: DatabaseType, id: number | bigint): SaleInvoice {
+export function getSaleInvoiceById(db: DatabaseType, id: number | bigint): SaleInvoice {
   return db.prepare('SELECT * FROM sale_invoices WHERE id = ?').get(id) as SaleInvoice
 }
 
