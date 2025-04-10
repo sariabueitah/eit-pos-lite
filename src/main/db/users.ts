@@ -83,6 +83,9 @@ export function authenticateUser(
 }
 
 export function addUser(db: DatabaseType, user: User): User {
+  Object.keys(user).forEach(
+    (k) => (user[k] = typeof user[k] == 'string' ? user[k].trim() : user[k])
+  )
   const result = db
     .prepare(
       'INSERT INTO users (name, userName, password, phoneNumber, role) VALUES (:name, :userName, :password, :phoneNumber, :role)'
@@ -93,6 +96,9 @@ export function addUser(db: DatabaseType, user: User): User {
 }
 
 export function updateUser(db: DatabaseType, id: number, user: Partial<User>): User {
+  Object.keys(user).forEach(
+    (k) => (user[k] = typeof user[k] == 'string' ? user[k].trim() : user[k])
+  )
   const fields = Object.keys(user)
     .map((key) => `${key} = ?`)
     .join(', ')

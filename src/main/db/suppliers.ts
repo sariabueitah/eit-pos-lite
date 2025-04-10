@@ -53,6 +53,9 @@ export function getSupplierByTaxNumber(db: DatabaseType, taxNumber: string): Sup
 }
 
 export function addSupplier(db: DatabaseType, supplier: Supplier): Supplier {
+  Object.keys(supplier).forEach(
+    (k) => (supplier[k] = typeof supplier[k] == 'string' ? supplier[k].trim() : supplier[k])
+  )
   const result = db
     .prepare(
       'INSERT INTO suppliers (name, phoneNumber,taxNumber) VALUES (:name,:phoneNumber,:taxNumber);'
@@ -67,6 +70,9 @@ export function updateSupplier(
   id: number,
   supplier: Partial<Supplier>
 ): Supplier {
+  Object.keys(supplier).forEach(
+    (k) => (supplier[k] = typeof supplier[k] == 'string' ? supplier[k].trim() : supplier[k])
+  )
   const fields = Object.keys(supplier)
     .map((key) => `${key} = ?`)
     .join(', ')

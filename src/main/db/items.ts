@@ -145,6 +145,9 @@ export function getItemByName(db: DatabaseType, name: string): [Item] {
 }
 
 export function addItem(db: DatabaseType, item: Item): Item {
+  Object.keys(item).forEach(
+    (k) => (item[k] = typeof item[k] == 'string' ? item[k].trim() : item[k])
+  )
   const result = db
     .prepare(
       'INSERT INTO items (name,description,barcode,unit,cost,price,discount,tax,image,categoryId,supplierId) VALUES (@name,@description,@barcode,@unit,@cost,@price,@discount,@tax,@image,@categoryId,@supplierId)'
@@ -154,6 +157,9 @@ export function addItem(db: DatabaseType, item: Item): Item {
 }
 
 export function updateItem(db: DatabaseType, id: number, item: Partial<Item>): Item {
+  Object.keys(item).forEach(
+    (k) => (item[k] = typeof item[k] == 'string' ? item[k].trim() : item[k])
+  )
   const fields = Object.keys(item)
     .map((key) => `${key} = ?`)
     .join(', ')

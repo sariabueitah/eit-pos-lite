@@ -42,6 +42,9 @@ export function getCategoryByName(db: DatabaseType, name: string): Category {
 }
 
 export function addCategory(db: DatabaseType, category: Category): Category {
+  Object.keys(category).forEach(
+    (k) => (category[k] = typeof category[k] == 'string' ? category[k].trim() : category[k])
+  )
   const result = db.prepare('INSERT INTO categories (name) VALUES (:name);').run(category)
 
   return getCategoryById(db, result.lastInsertRowid)
@@ -52,6 +55,10 @@ export function updateCategory(
   id: number,
   category: Partial<Category>
 ): Category {
+  Object.keys(category).forEach(
+    (k) => (category[k] = typeof category[k] == 'string' ? category[k].trim() : category[k])
+  )
+
   const fields = Object.keys(category)
     .map((key) => `${key} = ?`)
     .join(', ')

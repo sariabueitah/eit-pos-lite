@@ -32,6 +32,10 @@ function getSaleInvoiceById(db: DatabaseType, id: number | bigint): SaleInvoice 
 }
 
 export function addSaleInvoice(db: DatabaseType, saleInvoice: SaleInvoice): SaleInvoice {
+  Object.keys(saleInvoice).forEach(
+    (k) =>
+      (saleInvoice[k] = typeof saleInvoice[k] == 'string' ? saleInvoice[k].trim() : saleInvoice[k])
+  )
   const result = db
     .prepare(
       'INSERT INTO sale_invoices (userId,date,customer,status,paymentMethod) VALUES (:userId,:date,:customer,:status,:paymentMethod);'

@@ -24,7 +24,6 @@ import NotFound from './NotFound'
 import Loading from './components/Loading'
 import Hold from './components/Hold'
 
-//TODO figure a way to handle input with trailing spaces being saved in the database
 //TODO emplement the hold feature continue
 //TODO Purchase invoice
 //TODO Print recipt

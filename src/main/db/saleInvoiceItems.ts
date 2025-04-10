@@ -37,6 +37,11 @@ export function addSaleInvoiceItem(
   db: DatabaseType,
   saleInvoiceItem: SaleInvoiceItem
 ): SaleInvoiceItem {
+  Object.keys(saleInvoiceItem).forEach(
+    (k) =>
+      (saleInvoiceItem[k] =
+        typeof saleInvoiceItem[k] == 'string' ? saleInvoiceItem[k].trim() : saleInvoiceItem[k])
+  )
   const result = db
     .prepare(
       'INSERT INTO sale_invoice_items (itemId,saleInvoiceId,quantity,price,cost,tax) VALUES (:itemId,:saleInvoiceId,:quantity,:price,:cost,:tax)'
