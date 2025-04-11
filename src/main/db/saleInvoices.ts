@@ -25,7 +25,9 @@ export function setupSaleInvoicesTable(db: DatabaseType): void {
 
 export function getAllSaleInvoices(db: DatabaseType): SaleInvoice[] {
   return db
-    .prepare('SELECT s.*, u.userName FROM sale_invoices s INNER JOIN users u ON s.userId = u.id')
+    .prepare(
+      'SELECT s.*, u.userName FROM sale_invoices s INNER JOIN users u ON s.userId = u.id ORDER BY s.date DESC'
+    )
     .all() as SaleInvoice[]
 }
 
@@ -94,6 +96,6 @@ export function searchSaleInvoices(
       }
     }
     const searchObj = Object.assign({}, searchArray)
-    return db.prepare(query + whereClause).all(searchObj) as [SaleInvoice]
+    return db.prepare(query + whereClause + ' ORDER BY s.date DESC').all(searchObj) as [SaleInvoice]
   }
 }

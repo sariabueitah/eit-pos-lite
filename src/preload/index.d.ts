@@ -62,11 +62,11 @@ declare global {
     customer: string
     status: 'PAID' | 'UNPAID' | 'HOLD' | 'CANCELED' | 'WAITING'
     paymentMethod: 'CASH' | 'CREDIT'
-    userName: string
+    userName?: string
   }
 
   type SaleInvoiceItem = {
-    id: number
+    id?: number
     itemId: number
     saleInvoiceId: number
     quantity: number

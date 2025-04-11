@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { TempItem } from '../AddSaleInvoices'
 import KeyPad from '../../components/KeyPad'
 import { calTotalDiscount, calTotalTax, calTotal } from '../../components/Math'
 
@@ -13,8 +12,8 @@ export default function AddSaleInvoiceItems({
   items,
   setItems
 }: {
-  items: TempItem[]
-  setItems: (items: TempItem[]) => void
+  items: SaleInvoiceItem[]
+  setItems: (items: SaleInvoiceItem[]) => void
 }): JSX.Element {
   const searchTypesArray: Array<Search['type']> = ['Barcode', 'Name', 'ID']
   const [search, setSearch] = useState<Search>({
@@ -44,7 +43,7 @@ export default function AddSaleInvoiceItems({
             spliced[0].discount = value
           }
         } else {
-          if (spliced[0].unit == 'UNIT' && !Number.isInteger(value)) {
+          if (spliced[0].unit == 'Units' && !Number.isInteger(value)) {
             alert('Quantity must be an integer')
             return
           }
@@ -139,7 +138,7 @@ export default function AddSaleInvoiceItems({
           tax: result.tax,
           cost: result.cost,
           discount: 0
-        } as TempItem
+        } as SaleInvoiceItem
         setItems([newItem, ...tempItems])
       })
     }
@@ -277,7 +276,7 @@ export default function AddSaleInvoiceItems({
                   onClick={() =>
                     setKeypadInfo({
                       itemId: value.itemId,
-                      name: value.name,
+                      name: value.name || '',
                       value: value.quantity,
                       discount: false
                     })
@@ -290,7 +289,7 @@ export default function AddSaleInvoiceItems({
                   onClick={() =>
                     setKeypadInfo({
                       itemId: value.itemId,
-                      name: value.name,
+                      name: value.name || '',
                       value: value.discount,
                       discount: true
                     })

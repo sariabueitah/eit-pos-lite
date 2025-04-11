@@ -51,7 +51,7 @@ export function addSaleInvoiceItem(
   )
   const result = db
     .prepare(
-      'INSERT INTO sale_invoice_items (itemId,saleInvoiceId,quantity,price,cost,tax) VALUES (:itemId,:saleInvoiceId,:quantity,:price,:cost,:tax)'
+      'INSERT INTO sale_invoice_items (itemId,saleInvoiceId,quantity,discount,price,cost,tax) VALUES (:itemId,:saleInvoiceId,:quantity,:discount,:price,:cost,:tax)'
     )
     .run(saleInvoiceItem)
 

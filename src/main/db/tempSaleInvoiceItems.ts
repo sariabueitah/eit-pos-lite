@@ -26,7 +26,22 @@ export function setupTempSaleInvoiceItemsTable(db: DatabaseType): void {
 }
 
 function getTempSaleInvoiceItemById(db: DatabaseType, id: number | bigint): SaleInvoiceItem {
-  return db.prepare('SELECT * FROM temp_sale_invoice_items WHERE id = ?').get(id) as SaleInvoiceItem
+  return db
+    .prepare(
+      'SELECT s.*, i.barcode, i.name, i.unit FROM temp_sale_invoice_items s INNER JOIN items i ON s.itemId = i.id WHERE s.id = ?'
+    )
+    .get(id) as SaleInvoiceItem
+}
+
+export function getTempSaleInvoiceItemBySaleInvoiceId(
+  db: DatabaseType,
+  saleInvoiceId: number | bigint
+): SaleInvoiceItem[] {
+  return db
+    .prepare(
+      'SELECT s.itemId,s.saleInvoiceId,s.quantity,s.discount,i.price,i.cost,i.tax, i.barcode, i.name, i.unit FROM temp_sale_invoice_items s INNER JOIN items i ON s.itemId = i.id WHERE s.saleInvoiceId = ?'
+    )
+    .all(saleInvoiceId) as [SaleInvoiceItem]
 }
 
 export function addTempSaleInvoiceItem(
@@ -47,4 +62,11 @@ export function addTempSaleInvoiceItem(
     .run(tempSaleInvoiceItem)
 
   return getTempSaleInvoiceItemById(db, result.lastInsertRowid)
+}
+
+export function deleteTempSaleInvoiceItemBySaleInvoiceId(
+  db: DatabaseType,
+  saleInvoiceId: number | bigint
+): void {
+  db.prepare('DELETE FROM temp_sale_invoice_items WHERE saleInvoiceId = ?').run(saleInvoiceId)
 }

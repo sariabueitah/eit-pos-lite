@@ -1,24 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { setPage, addHold } from '../state/slices/PageSlice'
+import { setPage, addHold, removeHold } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import AddSaleInvoiceItems from './componants/AddSaleInvoiceItems'
 import { RootState } from '../state/store'
 import { calTotal, calTotalDiscount, calTotalTax, roundNum } from '../components/Math'
 import Payment from './componants/Payment'
-
-export type TempItem = {
-  itemId: number
-  barcode: string
-  name: string
-  price: number
-  unit: string
-  quantity: number
-  tax: number
-  cost: number
-  discount: number
-}
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 export default function AddSaleInvoices(): JSX.Element {
+  const navigate = useNavigate()
   const session = useSelector((state: RootState) => state.session.value)
   const dispatch = useDispatch()
   useEffect(() => {
@@ -32,11 +22,38 @@ export default function AddSaleInvoices(): JSX.Element {
     date: new Date().getTime()
   })
 
-  const [invoiceItemsData, setInvoiceItemsData] = useState<TempItem[]>([])
+  const [invoiceItemsData, setInvoiceItemsData] = useState<SaleInvoiceItem[]>([])
 
   const [paymentDetails, setPaymentDetails] = useState<
     undefined | { paymentMethod: 'CASH' | 'CREDIT'; total: number }
   >(undefined)
+
+  const [searchParams] = useSearchParams()
+  const holdId = searchParams.get('holdId')
+  useEffect(() => {
+    if (!holdId) return
+    window.electron.ipcRenderer
+      .invoke('getTempSaleInvoiceItemBySaleInvoiceId', holdId)
+      .then((results) => {
+        setInvoiceItemsData(results)
+      })
+      .catch((e) => {
+        alert(e)
+      })
+    window.electron.ipcRenderer
+      .invoke('getTempSaleInvoiceById', holdId)
+      .then((result) => {
+        if (result === undefined) navigate('/saleInvoices/new', { replace: true })
+        setInvoiceData(result)
+        window.electron.ipcRenderer.invoke('deleteTempSaleInvoiceItemBySaleInvoiceId', holdId)
+        window.electron.ipcRenderer.invoke('deleteTempSaleInvoiceById', holdId).then(() => {
+          dispatch(removeHold())
+        })
+      })
+      .catch((e) => {
+        alert(e)
+      })
+  }, [dispatch, holdId, navigate])
 
   const handleInvoiceItemsData = (items): void => {
     setInvoiceItemsData(items)
@@ -127,9 +144,10 @@ export default function AddSaleInvoices(): JSX.Element {
           invoiceItemsData
         )
         .then((result) => {
-          alert('Invoice on Hold with number ' + result.id)
+          alert('Invoice on Hold with number ' + result.tempSaleInvoice.id)
           resetForm()
           dispatch(addHold())
+          if (holdId) navigate('/saleInvoices/new', { replace: true })
         })
         .catch((error) => alert(error))
     } else {

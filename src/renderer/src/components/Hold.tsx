@@ -2,8 +2,10 @@ import { AppDispatch, RootState } from '../state/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { showHold, getHoldCount } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Hold(): JSX.Element {
+  const navigate = useNavigate()
   const show = useSelector((state: RootState) => state.page.hold.show)
   const count = useSelector((state: RootState) => state.page.hold.count)
   const dispatch = useDispatch<AppDispatch>()
@@ -19,12 +21,17 @@ export default function Hold(): JSX.Element {
     })
   }, [count])
 
+  const handleHoldClick = (id): void => {
+    navigate(`/saleInvoices/new?holdId=${id}`, { replace: false })
+    dispatch(showHold(!show))
+  }
+
   return (
     <>
       <div
         className={
-          'absolute top-0 right-0 z-40 w-64 h-screen p-4 overflow-y-auto transition-transform bg-white ' +
-          (show ? 'translate-x-0' : 'translate-x-full')
+          'absolute top-0 left-0 z-40 w-64 h-screen p-4 overflow-y-auto transition-transform bg-white ' +
+          (show ? 'translate-x-0' : '-translate-x-full')
         }
       >
         <h5 className="text-base font-semibold text-gray-500 uppercase">Invoices On Hold</h5>
@@ -53,9 +60,9 @@ export default function Hold(): JSX.Element {
           <ul className="space-y-2">
             {invoices.map((invoice) => (
               <li key={invoice.id}>
-                <a
-                  href="#"
-                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100 group"
+                <button
+                  onClick={() => handleHoldClick(invoice.id)}
+                  className="w-full flex p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100 group"
                 >
                   <svg
                     aria-hidden="true"
@@ -67,7 +74,7 @@ export default function Hold(): JSX.Element {
                     <path d="M2 10a8 8 0 018-8v8h8a8 8 0 01-8 8H2z"></path>
                   </svg>
                   <span className="flex-1 ml-3 whitespace-nowrap">{invoice.id}</span>
-                </a>
+                </button>
               </li>
             ))}
           </ul>

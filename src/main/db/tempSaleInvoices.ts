@@ -48,3 +48,7 @@ export function addTempSaleInvoice(
 
   return getTempSaleInvoiceById(db, result.lastInsertRowid)
 }
+
+export function deleteTempSaleInvoiceById(db: DatabaseType, id: number | bigint): void {
+  db.prepare('DELETE FROM temp_sale_invoices WHERE id = ?').run(id)
+}

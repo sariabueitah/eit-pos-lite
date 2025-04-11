@@ -3,7 +3,8 @@ import { ipcMain } from 'electron'
 import {
   getAllTempSaleInvoices,
   getTempSaleInvoiceById,
-  addTempSaleInvoice
+  addTempSaleInvoice,
+  deleteTempSaleInvoiceById
 } from '../db/tempSaleInvoices'
 import { addTempSaleInvoiceItem } from '../db/tempSaleInvoiceItems'
 
@@ -28,5 +29,9 @@ export function tempSaleInvoiceHandlers(db: DatabaseType): void {
       )
     }
     return { tempSaleInvoice: tempSaleInvoice, tempSaleInvoiceItems: tempSaleInvoiceItems }
+  })
+
+  ipcMain.handle('deleteTempSaleInvoiceById', (_, id: number | bigint) => {
+    return deleteTempSaleInvoiceById(db, id)
   })
 }

@@ -31,6 +31,9 @@ const pageSlice = createSlice({
     },
     addHold: (state) => {
       state.hold.count += 1
+    },
+    removeHold: (state) => {
+      state.hold.count -= 1
     }
   },
   extraReducers: (builder) => {
@@ -46,5 +49,5 @@ export const getHoldCount = createAsyncThunk('page/getHoldCount', async () => {
   })
 })
 
-export const { setPage, setLoading, showHold, addHold } = pageSlice.actions
+export const { setPage, setLoading, showHold, addHold, removeHold } = pageSlice.actions
 export default pageSlice.reducer
