@@ -19,6 +19,7 @@ export default function SupplierRow(props: Props): JSX.Element {
       <td className="p-2">{props.supplier.name}</td>
       <td className="p-2">{props.supplier.phoneNumber}</td>
       <td className="p-2">{props.supplier.taxNumber}</td>
+      <td className="p-2">{props.supplier.balance}</td>
       <td className="p-2">
         <button className="cursor-pointer" onClick={handleEdit}>
           <svg

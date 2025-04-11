@@ -31,6 +31,7 @@ declare global {
     name: string
     phoneNumber: string
     taxNumber: string
+    balance: number
   }
 
   type Category = {
@@ -42,8 +43,11 @@ declare global {
     id: number
     supplierId: number
     date: number
-    status: 'PAID' | 'UNPAID' | 'PARTIAL'
+    status: 'PAID' | 'UNPAID'
     paid: number
+    totalPrice: number
+    invoiceNumber: string
+    name?: string
   }
 
   type PurchaseInvoiceItem = {
@@ -51,8 +55,11 @@ declare global {
     itemId: number
     purchaseInvoiceId: number
     quantity: number
-    price: number
+    cost: number
     tax: number
+    name?: string
+    barcode?: string
+    unit?: 'Grams' | 'Kilograms' | 'Liters' | 'Milliliters' | 'Units'
   }
 
   type SaleInvoice = {

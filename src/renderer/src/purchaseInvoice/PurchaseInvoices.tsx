@@ -1,56 +1,48 @@
-import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPage } from '../state/slices/PageSlice'
-import SupplierRow from './componants/SupplierRow'
 import { NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import PurchaseInvoiceRow from './componants/PurchaseInvoiceRow'
 
-export default function Suppliers(): JSX.Element {
-  const [supplierData, setSupplierData] = useState<Supplier[]>([])
-  const [search, setSearch] = useState('')
-  const [deleted, setDeleted] = useState('ALL')
+export default function PurchaseInvoices(): JSX.Element {
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage('Suppliers'))
+    dispatch(setPage('Purchase Invoices'))
   }, [dispatch])
+
+  const [invoiceData, seInvoiceData] = useState<PurchaseInvoice[]>([])
+  const [search, setSearch] = useState('')
+  const [deleted, setDeleted] = useState('ALL')
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      window.electron.ipcRenderer
+        .invoke('searchPurchaseInvoices', search.trim(), deleted, dateFrom, dateTo)
+        .then((result) => {
+          seInvoiceData(result)
+        })
+    }, 500)
+    return (): void => clearTimeout(timeoutId)
+  }, [search, deleted, dateFrom, dateTo])
 
   useEffect(() => {
     window.electron.ipcRenderer
-      .invoke('getAllSuppliers')
+      .invoke('getAllPurchaseInvoices')
       .then((result) => {
-        setSupplierData(result)
+        seInvoiceData(result)
       })
       .catch((error) => {
         console.log(error)
       })
   }, [])
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      window.electron.ipcRenderer
-        .invoke('searchSuppliers', search.trim(), deleted)
-        .then((result) => {
-          setSupplierData(result)
-        })
-    }, 500)
-    return (): void => clearTimeout(timeoutId)
-  }, [search, deleted])
-
-  const handleDelete = (id: number): void => {
-    window.electron.ipcRenderer
-      .invoke('deleteSupplier', id)
-      .then(() => {
-        setSupplierData((l) => (l ? l.filter((item) => item.id !== id) : []))
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-
   return (
     <div className="">
       <NavLink
         className="absolute bottom-4 right-4 border border-gray-300 hover:bg-gray-300 rounded-2xl"
-        to="/suppliers/new"
+        to="/saleInvoices/new"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -87,40 +79,40 @@ export default function Suppliers(): JSX.Element {
             type="radio"
             id="radio2"
             name="radios"
-            value="ACTIVE"
-            checked={deleted === 'ACTIVE'}
-            onChange={() => setDeleted('ACTIVE')}
+            value="PAID"
+            checked={deleted === 'PAID'}
+            onChange={() => setDeleted('PAID')}
           />
           <label
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/active:bg-gray-300 peer-checked/active:hover:bg-gray-400 rounded-xl"
             htmlFor="radio2"
           >
-            Active
+            Paid
           </label>
           <input
             className="peer/deleted hidden"
             type="radio"
             id="radio3"
             name="radios"
-            value="INACTIVE"
-            checked={deleted === 'INACTIVE'}
-            onChange={() => setDeleted('INACTIVE')}
+            value="CANCELLED"
+            checked={deleted === 'UNPAID'}
+            onChange={() => setDeleted('UNPAID')}
           />
           <label
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/deleted:bg-gray-300 peer-checked/deleted:hover:bg-gray-400 rounded-xl"
             htmlFor="radio3"
           >
-            Deleted
+            Unpaid
           </label>
         </div>
-        <div className="col-span-4 relative my-2">
+        <div className="col-span-2 relative my-2">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             type="text"
             name="search"
             id="search"
-            placeholder="Search By ID, Name, Phone Number or Tax Number"
+            placeholder="Search By ID or Supplier Name"
             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-300 border"
           />
           <button
@@ -143,24 +135,50 @@ export default function Suppliers(): JSX.Element {
             </svg>
           </button>
         </div>
+        <div className="col-span-2 relative my-2 flex gap-2">
+          <div className="flex items-center gap-2 w-1/2">
+            <label>From:</label>
+            <input
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              type="date"
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-300 border"
+            />
+          </div>
+          <div className="flex items-center gap-2 w-1/2">
+            <label>To:</label>
+            <input
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              type="date"
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-300 border"
+            />
+          </div>
+        </div>
       </div>
-      <table className="w-full text-sm text-left text-gray-500 overflow-x-scroll">
+      <table className="w-full text-sm text-left text-gray-500 overflow-scroll">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="p-2">
               ID
             </th>
             <th scope="col" className="p-2">
-              Name
+              Supplier
             </th>
             <th scope="col" className="p-2">
-              Phone Number
+              Invoice Number
             </th>
             <th scope="col" className="p-2">
-              Tax Number
+              Status
             </th>
             <th scope="col" className="p-2">
-              balance
+              Paid Amount
+            </th>
+            <th scope="col" className="p-2">
+              Total Price
+            </th>
+            <th scope="col" className="p-2">
+              Date
             </th>
             <th scope="col" className="p-2">
               Actions
@@ -168,13 +186,9 @@ export default function Suppliers(): JSX.Element {
           </tr>
         </thead>
         <tbody>
-          {supplierData &&
-            supplierData.map((object) => (
-              <SupplierRow
-                onDelete={() => handleDelete(object.id)}
-                supplier={object}
-                key={object.id}
-              />
+          {invoiceData &&
+            invoiceData.map((object) => (
+              <PurchaseInvoiceRow purchaseInvoice={object} key={object.id} />
             ))}
         </tbody>
       </table>

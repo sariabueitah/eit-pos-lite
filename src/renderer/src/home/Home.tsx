@@ -67,6 +67,8 @@ export default function Home(): JSX.Element {
           </svg>
           Supplier
         </NavLink>
+      </div>
+      <div className="p-3 flex justify-center">
         <NavLink className="w-40 text-center block" to="/saleInvoices/new">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -82,9 +84,7 @@ export default function Home(): JSX.Element {
           </svg>
           Issue Sale Invoice
         </NavLink>
-      </div>
-      <div className="p-3 flex justify-center">
-        <NavLink className="w-40 text-center block" to="/">
+        <NavLink className="w-40 text-center block" to="/purchaseInvoices/new">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -114,7 +114,7 @@ export default function Home(): JSX.Element {
           </svg>
           Sale Invoices
         </NavLink>
-        <NavLink className="w-40 text-center block" to="/">
+        <NavLink className="w-40 text-center block" to="/purchaseInvoices">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

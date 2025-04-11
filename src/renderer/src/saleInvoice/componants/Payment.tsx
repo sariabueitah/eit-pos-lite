@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { roundNum } from '../../components/Math'
 
 type Props = {
@@ -9,12 +9,63 @@ type Props = {
 
 export default function Payment(props: Props): JSX.Element {
   const [input, setInput] = useState('0')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (props.payment && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.setSelectionRange(0, inputRef.current.value.length)
+    }
+  }, [props.payment])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const re = /^([0-9]+([.][0-9]*)?|[.][0-9]+)$/
 
     if (e.target.value === '' || re.test(e.target.value)) {
       setInput(e.target.value)
+    }
+  }
+  const handleKeypadInput = (key: string): void => {
+    let newValue
+    if (props.payment) {
+      if (inputRef.current) {
+        const selectedStart = inputRef.current.selectionStart
+        const selectedEnd = inputRef.current.selectionEnd
+        let cursor = inputRef.current.selectionStart || inputRef.current.value.length
+        if (selectedStart !== null && selectedEnd !== null) {
+          const value = inputRef.current.value
+          switch (key) {
+            case 'C':
+              if (selectedStart === selectedEnd) {
+                newValue = value.slice(0, selectedStart - 1) + value.slice(selectedEnd)
+              } else {
+                newValue = value.slice(0, selectedStart) + value.slice(selectedEnd)
+              }
+              cursor--
+              break
+            case '.':
+              if (value.indexOf('.') == -1) {
+                newValue = value.substring(0, selectedStart) + '.' + value.substring(selectedEnd)
+                cursor++
+              }
+              break
+            default:
+              newValue = value.substring(0, selectedStart) + key + value.substring(selectedEnd)
+              cursor++
+              break
+          }
+
+          const re = /^([0-9]+([.][0-9]*)?|[.][0-9]+)$/
+
+          if (newValue === '' || re.test(newValue)) {
+            setInput(newValue)
+          }
+          inputRef.current.focus()
+          setTimeout(() => {
+            inputRef?.current?.setSelectionRange(cursor, cursor)
+          }, 10)
+        }
+      }
     }
   }
 
@@ -62,66 +113,67 @@ export default function Payment(props: Props): JSX.Element {
           {props.payment.paymentMethod == 'CASH' && (
             <div className="grid grid-cols-3 gap-2 m-2 border-l border-gray-300 pl-4">
               <input
+                ref={inputRef}
                 onChange={handleInputChange}
                 value={input}
                 className="col-span-3 bg-gray-50 border border-gray-300 text-gray-900 text-2xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 h-24"
               ></input>
               <div
-                onClick={() => setInput((prev) => prev + 7)}
+                onClick={() => handleKeypadInput('7')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 7
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 8)}
+                onClick={() => handleKeypadInput('8')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 8
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 9)}
+                onClick={() => handleKeypadInput('9')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 9
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 6)}
+                onClick={() => handleKeypadInput('6')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 6
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 5)}
+                onClick={() => handleKeypadInput('5')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 5
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 4)}
+                onClick={() => handleKeypadInput('4')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 4
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 3)}
+                onClick={() => handleKeypadInput('3')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 3
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 2)}
+                onClick={() => handleKeypadInput('2')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 2
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 1)}
+                onClick={() => handleKeypadInput('1')}
                 className="py-5 border rounded-lg border-gray-200 "
               >
                 1
               </div>
               <div
-                onClick={() => setInput((prev) => prev.slice(0, -1))}
+                onClick={() => handleKeypadInput('C')}
                 className="py-5 border rounded-lg border-gray-200"
               >
                 <svg
@@ -140,21 +192,13 @@ export default function Payment(props: Props): JSX.Element {
                 </svg>
               </div>
               <div
-                onClick={() => setInput((prev) => prev + 0)}
+                onClick={() => handleKeypadInput('0')}
                 className="py-5 border rounded-lg border-gray-200"
               >
                 0
               </div>
               <div
-                onClick={() =>
-                  setInput((prev) => {
-                    if (prev.indexOf('.') == -1) {
-                      return prev + '.'
-                    } else {
-                      return prev
-                    }
-                  })
-                }
+                onClick={() => handleKeypadInput('.')}
                 className="py-5 border rounded-lg border-gray-200"
               >
                 .

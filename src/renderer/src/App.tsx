@@ -24,8 +24,10 @@ import AddSaleInvoice from './saleInvoice/AddSaleInvoices'
 import NotFound from './NotFound'
 import Loading from './components/Loading'
 import Hold from './components/Hold'
+import PurchaseInvoices from './purchaseInvoice/PurchaseInvoices'
+import AddPurchaseInvoice from './purchaseInvoice/AddPurchaseInvoice'
+import PurchaseInvoice from './purchaseInvoice/PurchaseInvoice'
 
-//TODO Purchase invoice
 //TODO Print recipt
 //TODO Create a queue for the Tax API
 //TODO Create a setup page
@@ -77,6 +79,9 @@ function App(): JSX.Element {
               <Route path="/saleInvoices" element={<SaleInvoices />} />
               <Route path="/saleInvoices/new" element={<AddSaleInvoice />} />
               <Route path="/saleInvoices/:id" element={<SaleInvoice />} />
+              <Route path="/purchaseInvoices" element={<PurchaseInvoices />} />
+              <Route path="/purchaseInvoices/new" element={<AddPurchaseInvoice />} />
+              <Route path="/purchaseInvoices/:id" element={<PurchaseInvoice />} />
             </>
           )}
         </Routes>

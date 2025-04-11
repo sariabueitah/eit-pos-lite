@@ -8,6 +8,7 @@ export function setupSuppliersTable(db: DatabaseType): void {
         'name' TEXT,
         'phoneNumber' TEXT,
         'taxNumber' TEXT,
+        'balance' REAL DEFAULT 0,
         'deleted' INTEGER DEFAULT 0
       );`
 
