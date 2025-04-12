@@ -3,15 +3,17 @@ import { useDispatch } from 'react-redux'
 import { setPage } from '../state/slices/PageSlice'
 import SupplierRow from './componants/SupplierRow'
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function Suppliers(): JSX.Element {
+  const { t } = useTranslation()
   const [supplierData, setSupplierData] = useState<Supplier[]>([])
   const [search, setSearch] = useState('')
   const [deleted, setDeleted] = useState('ALL')
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage('Suppliers'))
-  }, [dispatch])
+    dispatch(setPage(t('Suppliers')))
+  }, [dispatch, t])
 
   useEffect(() => {
     window.electron.ipcRenderer
@@ -20,12 +22,14 @@ export default function Suppliers(): JSX.Element {
         setSupplierData(result)
       })
       .catch((error) => {
+        //TODO check catch
         console.log(error)
       })
   }, [])
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      //TODO check catch
       window.electron.ipcRenderer
         .invoke('searchSuppliers', search.trim(), deleted)
         .then((result) => {
@@ -36,6 +40,7 @@ export default function Suppliers(): JSX.Element {
   }, [search, deleted])
 
   const handleDelete = (id: number): void => {
+    //TODO check catch
     window.electron.ipcRenderer
       .invoke('deleteSupplier', id)
       .then(() => {
@@ -80,7 +85,7 @@ export default function Suppliers(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/all:bg-gray-300 peer-checked/all:hover:bg-gray-400 rounded-xl"
             htmlFor="radio1"
           >
-            All
+            {t('All')}
           </label>
           <input
             className="peer/active hidden"
@@ -95,7 +100,7 @@ export default function Suppliers(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/active:bg-gray-300 peer-checked/active:hover:bg-gray-400 rounded-xl"
             htmlFor="radio2"
           >
-            Active
+            {t('Active')}
           </label>
           <input
             className="peer/deleted hidden"
@@ -110,7 +115,7 @@ export default function Suppliers(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/deleted:bg-gray-300 peer-checked/deleted:hover:bg-gray-400 rounded-xl"
             htmlFor="radio3"
           >
-            Deleted
+            {t('Deleted')}
           </label>
         </div>
         <div className="col-span-4 relative my-2">
@@ -120,7 +125,7 @@ export default function Suppliers(): JSX.Element {
             type="text"
             name="search"
             id="search"
-            placeholder="Search By ID, Name, Phone Number or Tax Number"
+            placeholder={t('Search By ID, Name, Phone Number or Tax Number')}
             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-300 border"
           />
           <button
@@ -148,22 +153,22 @@ export default function Suppliers(): JSX.Element {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="p-2">
-              ID
+              {t('ID')}
             </th>
             <th scope="col" className="p-2">
-              Name
+              {t('Name')}
             </th>
             <th scope="col" className="p-2">
-              Phone Number
+              {t('Phone Number')}
             </th>
             <th scope="col" className="p-2">
-              Tax Number
+              {t('Tax Number')}
             </th>
             <th scope="col" className="p-2">
-              balance
+              {t('balance')}
             </th>
             <th scope="col" className="p-2">
-              Actions
+              {t('Actions')}
             </th>
           </tr>
         </thead>

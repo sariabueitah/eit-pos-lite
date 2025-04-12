@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage, setLoading } from '../state/slices/PageSlice'
 import UserForm from './componants/UserForm'
+import { useTranslation } from 'react-i18next'
 
 export default function AddUser(): JSX.Element {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {
-    dispatch(setPage('Add User'))
-  }, [dispatch])
+    dispatch(setPage(t('Add User')))
+  }, [dispatch, t])
   const onSubmit = (setError, _, data): void => {
     dispatch(setLoading(true))
     window.electron.ipcRenderer
@@ -25,6 +27,7 @@ export default function AddUser(): JSX.Element {
         dispatch(setLoading(false))
       })
       .catch((error) => {
+        //TODO check catch
         setError('root', { type: 'manual', message: error })
         dispatch(setLoading(false))
       })

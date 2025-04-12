@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage, setLoading } from '../state/slices/PageSlice'
 import UserForm from './componants/UserForm'
+import { useTranslation } from 'react-i18next'
 
 export default function EditUser(): JSX.Element {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {
-    dispatch(setPage('Edit User'))
-  }, [dispatch])
+    dispatch(setPage(t('Edit User')))
+  }, [dispatch, t])
 
   const onSubmit = (setError, id, data): void => {
     dispatch(setLoading(true))
@@ -25,6 +27,7 @@ export default function EditUser(): JSX.Element {
         navigate('/users', { replace: true })
       })
       .catch((error) => {
+        //TODO check catch
         dispatch(setLoading(false))
         setError('root', { type: 'manual', message: error })
       })

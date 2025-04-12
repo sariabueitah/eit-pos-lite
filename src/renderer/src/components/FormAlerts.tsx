@@ -13,14 +13,18 @@ export default function FormAlerts(props: Props): JSX.Element {
     <>
       {show && (
         <div
-          className="flex my-3 items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
+          className="flex my-3 items-center mb-4 text-sm text-red-800 rounded-lg bg-red-50"
           role="alert"
         >
           <span className="sr-only">Info</span>
           <div>
-            <ul>
+            <ul className="px-8 py-4">
               {Object.entries(props.alerts).map(([key, value]) => {
-                return <li key={key}>{value?.message?.toString()}</li>
+                return (
+                  <li className="my-1 list-disc" key={key}>
+                    {value?.message?.toString()}
+                  </li>
+                )
               })}
             </ul>
           </div>

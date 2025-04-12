@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Confirmation from '../../components/Confirmation'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   item: Item
@@ -8,6 +9,7 @@ type Props = {
 }
 
 export default function ItemRow(props: Props): JSX.Element {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [confirm, setConfirm] = useState(false)
   const handleEdit = (): void => {
@@ -19,7 +21,7 @@ export default function ItemRow(props: Props): JSX.Element {
       <td className="p-2">{props.item.name}</td>
       <td className="p-2">{props.item.description}</td>
       <td className="p-2">{props.item.barcode}</td>
-      <td className="p-2">{props.item.unit}</td>
+      <td className="p-2">{t(props.item.unit)}</td>
       <td className="p-2">{props.item.cost}</td>
       <td className="p-2">{props.item.discount}</td>
       <td className="p-2">{props.item.price}</td>

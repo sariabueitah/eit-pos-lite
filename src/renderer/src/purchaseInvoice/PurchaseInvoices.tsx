@@ -3,12 +3,14 @@ import { setPage } from '../state/slices/PageSlice'
 import { NavLink } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import PurchaseInvoiceRow from './componants/PurchaseInvoiceRow'
+import { useTranslation } from 'react-i18next'
 
 export default function PurchaseInvoices(): JSX.Element {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage('Purchase Invoices'))
-  }, [dispatch])
+    dispatch(setPage(t('Purchase Invoices')))
+  }, [dispatch, t])
 
   const [invoiceData, seInvoiceData] = useState<PurchaseInvoice[]>([])
   const [search, setSearch] = useState('')
@@ -18,6 +20,7 @@ export default function PurchaseInvoices(): JSX.Element {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      //TODO check catch
       window.electron.ipcRenderer
         .invoke('searchPurchaseInvoices', search.trim(), deleted, dateFrom, dateTo)
         .then((result) => {
@@ -28,6 +31,7 @@ export default function PurchaseInvoices(): JSX.Element {
   }, [search, deleted, dateFrom, dateTo])
 
   useEffect(() => {
+    //TODO check catch
     window.electron.ipcRenderer
       .invoke('getAllPurchaseInvoices')
       .then((result) => {
@@ -72,7 +76,7 @@ export default function PurchaseInvoices(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/all:bg-gray-300 peer-checked/all:hover:bg-gray-400 rounded-xl"
             htmlFor="radio1"
           >
-            All
+            {t('All')}
           </label>
           <input
             className="peer/active hidden"
@@ -87,7 +91,7 @@ export default function PurchaseInvoices(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/active:bg-gray-300 peer-checked/active:hover:bg-gray-400 rounded-xl"
             htmlFor="radio2"
           >
-            Paid
+            {t('Paid')}
           </label>
           <input
             className="peer/deleted hidden"
@@ -102,7 +106,7 @@ export default function PurchaseInvoices(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/deleted:bg-gray-300 peer-checked/deleted:hover:bg-gray-400 rounded-xl"
             htmlFor="radio3"
           >
-            Unpaid
+            {t('Unpaid')}
           </label>
         </div>
         <div className="col-span-2 relative my-2">
@@ -112,7 +116,7 @@ export default function PurchaseInvoices(): JSX.Element {
             type="text"
             name="search"
             id="search"
-            placeholder="Search By ID or Supplier Name"
+            placeholder={t('Search By ID or Supplier Name')}
             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-300 border"
           />
           <button
@@ -137,7 +141,7 @@ export default function PurchaseInvoices(): JSX.Element {
         </div>
         <div className="col-span-2 relative my-2 flex gap-2">
           <div className="flex items-center gap-2 w-1/2">
-            <label>From:</label>
+            <label>{t('From')}:</label>
             <input
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
@@ -146,7 +150,7 @@ export default function PurchaseInvoices(): JSX.Element {
             />
           </div>
           <div className="flex items-center gap-2 w-1/2">
-            <label>To:</label>
+            <label>{t('To')}:</label>
             <input
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
@@ -160,28 +164,28 @@ export default function PurchaseInvoices(): JSX.Element {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="p-2">
-              ID
+              {t('ID')}
             </th>
             <th scope="col" className="p-2">
-              Supplier
+              {t('supplier')}
             </th>
             <th scope="col" className="p-2">
-              Invoice Number
+              {t('Invoice Number')}
             </th>
             <th scope="col" className="p-2">
-              Status
+              {t('Status')}
             </th>
             <th scope="col" className="p-2">
-              Paid Amount
+              {t('Paid Amount')}
             </th>
             <th scope="col" className="p-2">
-              Total Price
+              {t('Total Price')}
             </th>
             <th scope="col" className="p-2">
-              Date
+              {t('Date')}
             </th>
             <th scope="col" className="p-2">
-              Actions
+              {t('Actions')}
             </th>
           </tr>
         </thead>

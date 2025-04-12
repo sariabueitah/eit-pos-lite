@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { roundNum } from '../../components/Math'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   payment: { paymentMethod: 'CASH' | 'CREDIT'; total: number }
@@ -8,6 +9,7 @@ type Props = {
 }
 
 export default function Payment(props: Props): JSX.Element {
+  const { t } = useTranslation()
   const [input, setInput] = useState('0')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -73,15 +75,17 @@ export default function Payment(props: Props): JSX.Element {
     <div className="absolute bg-gray-700/75 w-screen h-screen z-50 top-0 left-0">
       <div className="flex justify-center items-center h-screen w-screen">
         <div className="flex p-4 text-center bg-white rounded-2xl shadow">
-          <div className="grid grid-cols-2 auto-rows-min m-2 min-w-30">
-            <div className="text-left">Total:</div>
-            <div className="text-right">{props.payment.total}</div>
+          <div className="grid grid-cols-2 auto-rows-min m-2 min-w-30 rtl:border-l border-gray-300 rtl:pl-4">
+            <div className="text-left rtl:text-right">{t('total')}:</div>
+            <div className="text-right rtl:text-left">{props.payment.total}</div>
             {props.payment.paymentMethod == 'CASH' && (
               <>
-                <div className="text-left">Recieved:</div>
-                <div className="text-right">{input}</div>
-                <div className="text-left">Remainder:</div>
-                <div className="text-right">{roundNum(Number(input) - props.payment.total)}</div>
+                <div className="text-left rtl:text-right">{t('Recieved')}:</div>
+                <div className="text-right rtl:text-left">{input}</div>
+                <div className="text-left rtl:text-right">{t('Remainder')}:</div>
+                <div className="text-right rtl:text-left">
+                  {roundNum(Number(input) - props.payment.total)}
+                </div>
               </>
             )}
             <hr className="my-5 h-0.25 border-t-0 bg-gray-200 col-span-2" />
@@ -89,29 +93,29 @@ export default function Payment(props: Props): JSX.Element {
               onClick={() => props.paymentComplete('Normal Invoice')}
               className="mt-2 col-span-2 py-5 border rounded-lg border-gray-200"
             >
-              Invoice
+              {t('Print Invoice')}
             </div>
             <div
               onClick={() => props.paymentComplete('A4 Invoice')}
               className="mt-2 col-span-2 py-5 border rounded-lg border-gray-200"
             >
-              Invoice A4
+              {t('Print Invoice(A4)')}
             </div>
             <div
               onClick={() => props.paymentComplete('No Invoice')}
               className="mt-2 col-span-2 py-5 border rounded-lg border-gray-200"
             >
-              No Invoice
+              {t('No Invoice')}
             </div>
             <div
               onClick={props.handleCancel}
               className="mt-2 col-span-2 py-5 border rounded-lg border-gray-200"
             >
-              Cancel
+              {t('Cancel')}
             </div>
           </div>
           {props.payment.paymentMethod == 'CASH' && (
-            <div className="grid grid-cols-3 gap-2 m-2 border-l border-gray-300 pl-4">
+            <div className="grid grid-cols-3 gap-2 m-2 border-l rtl:border-none border-gray-300 pl-4 rtl:pl-0">
               <input
                 ref={inputRef}
                 onChange={handleInputChange}
@@ -182,7 +186,7 @@ export default function Payment(props: Props): JSX.Element {
                   viewBox="0 0 24 24"
                   strokeWidth="1.5"
                   stroke="currentColor"
-                  className="size-6 m-auto"
+                  className="size-6 m-auto rtl:rotate-180"
                 >
                   <path
                     strokeLinecap="round"

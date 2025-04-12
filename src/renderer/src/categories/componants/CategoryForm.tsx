@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import FormAlerts from '../../components/FormAlerts'
+import { useTranslation } from 'react-i18next'
 
 interface IFormInput {
   name: string
@@ -11,6 +12,7 @@ export default function CategoryForm(props: {
   onSubmit: (setError, id, data) => void
   onBack: () => void
 }): JSX.Element {
+  const { t } = useTranslation()
   const { id } = useParams()
   const {
     register,
@@ -31,9 +33,9 @@ export default function CategoryForm(props: {
         setValue('name', result.name)
       })
       .catch((error) => {
-        setError('root', { type: 'manual', message: error + ' Data not retrieved' })
+        setError('root', { type: 'manual', message: error + ' ' + t('Data not retrieved') })
       })
-  }, [id, setError, setValue])
+  }, [id, setError, setValue, t])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-1/3 mx-auto">
@@ -46,17 +48,17 @@ export default function CategoryForm(props: {
               : 'block mb-2 text-sm font-medium text-gray-900'
           }
         >
-          Name
+          {t('Name')}
         </label>
         <input
           {...register('name', {
-            required: 'Name is required',
+            required: t('Name is required'),
             validate: (value) => {
               return window.electron.ipcRenderer
                 .invoke('getCategoryByName', value)
                 .then((result) => {
                   if (result && result.id !== Number(id)) {
-                    return 'Name matches another category'
+                    return t('Name matches another category')
                   } else {
                     return true
                   }
@@ -78,13 +80,13 @@ export default function CategoryForm(props: {
           type="submit"
           className="text-white bg-blue-600 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
         >
-          Submit
+          {t('Submit')}
         </button>
         <button
           onClick={props.onBack}
           className="hover:bg-gray-300 border border-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mx-4"
         >
-          Back
+          {t('Back')}
         </button>
       </div>
     </form>

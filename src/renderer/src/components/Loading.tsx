@@ -1,7 +1,9 @@
 import { useSelector } from 'react-redux'
 import { RootState } from '../state/store'
+import { useTranslation } from 'react-i18next'
 
 export default function Loading(): JSX.Element {
+  const { t } = useTranslation()
   const loading = useSelector((state: RootState) => state.page.loading)
 
   return (
@@ -27,7 +29,7 @@ export default function Loading(): JSX.Element {
                   fill="currentFill"
                 />
               </svg>
-              <span className="sr-only">Loading...</span>
+              <span className="sr-only">{t('loading')}...</span>
             </div>
           </div>
         </div>

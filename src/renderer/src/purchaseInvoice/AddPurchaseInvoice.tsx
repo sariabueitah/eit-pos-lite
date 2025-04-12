@@ -2,13 +2,15 @@ import { calTotal, calTotalTax, roundNum } from '../components/Math'
 import AddPurchaseInvoiceItems from './componants/AddPurchaseInvoiceItems'
 import { setPage } from '@renderer/state/slices/PageSlice'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 
 export default function AddPurchaseInvoice(): JSX.Element {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage('Add Purchase Invoice'))
-  }, [dispatch])
+    dispatch(setPage(t('Issue Purchase Invoice')))
+  }, [dispatch, t])
 
   const [invoiceData, setInvoiceData] = useState<Partial<PurchaseInvoice>>({
     supplierId: 1,
@@ -22,6 +24,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
   const handlePaidChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const re = /^([0-9]+([.][0-9]*)?|[.][0-9]+)$/
     if (e.target.value === '' || re.test(e.target.value)) {
+      //TODO check this
       //@ts-ignore TODO check later
       setInvoiceData({ ...invoiceData, paid: e.target.value })
     }
@@ -30,12 +33,14 @@ export default function AddPurchaseInvoice(): JSX.Element {
   const handleTotalPriceChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const re = /^([0-9]+([.][0-9]*)?|[.][0-9]+)$/
     if (e.target.value === '' || re.test(e.target.value)) {
+      //TODO check this
       //@ts-ignore TODO check later
       setInvoiceData({ ...invoiceData, totalPrice: e.target.value })
     }
   }
 
   useEffect(() => {
+    //TODO check catch
     window.electron.ipcRenderer
       .invoke('getAllSuppliers')
       .then((results) => {
@@ -84,6 +89,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
     }
     let status = 'UNPAID'
     if ((invoiceData.paid ?? 0) >= itemsFinalTotal()) status = 'PAID'
+    //TODO check catch
     window.electron.ipcRenderer
       .invoke(
         'createPurchaseInvoiceWithItems',
@@ -118,7 +124,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
         <div className="col-span-2 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Supplier:
+              {t('supplier')}:
             </label>
             <select
               onChange={(e) =>
@@ -140,7 +146,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
         <div className="col-span-2 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Invoice Number:
+              {t('Invoice Number')}:
             </label>
             <input
               onBlur={(e) => setInvoiceData({ ...invoiceData, invoiceNumber: e.target.value })}
@@ -156,7 +162,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
         <div className="col-span-2 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Paid Amount:
+              {t('Paid Amount')}:
             </label>
             <input
               onBlur={handlePaidChange}
@@ -172,7 +178,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
         <div className="col-span-2 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Total Price:
+              {t('Total Price')}:
             </label>
             <input
               onBlur={handleTotalPriceChange}
@@ -190,14 +196,13 @@ export default function AddPurchaseInvoice(): JSX.Element {
       </div>
       <div className="flex justify-end">
         <div className="text-xl p-2">
-          Sub Total: <span className="p-2">{itemsTotal()}</span>
+          {t('Sub Total')}: <span className="p-2">{itemsTotal()}</span>
         </div>
         <div className="text-xl p-2">
-          Tax: <span className="p-2">{itemsTotalTax()}</span>
+          {t('tax')}: <span className="p-2">{itemsTotalTax()}</span>
         </div>
         <div className="text-xl p-2 bg-gray-200">
-          Total:
-          <span className="p-2">{itemsFinalTotal()}</span>
+          {t('total')}:<span className="p-2">{itemsFinalTotal()}</span>
         </div>
       </div>
       <div className="flex m-4 justify-center">
@@ -205,13 +210,13 @@ export default function AddPurchaseInvoice(): JSX.Element {
           onClick={save}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
-          Save
+          {t('Save')}
         </div>
         <div
           onClick={resetForm}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
         >
-          Reset
+          {t('Reset')}
         </div>
       </div>
     </>

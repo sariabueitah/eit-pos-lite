@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import KeyPad from '../../components/KeyPad'
 import { calTotalDiscount, calTotalTax, calTotal } from '../../components/Math'
+import { useTranslation } from 'react-i18next'
 
 type Search = {
   type: 'Barcode' | 'Name' | 'ID'
@@ -15,6 +16,7 @@ export default function AddSaleInvoiceItems({
   items: SaleInvoiceItem[]
   setItems: (items: SaleInvoiceItem[]) => void
 }): JSX.Element {
+  const { t } = useTranslation()
   const searchTypesArray: Array<Search['type']> = ['Barcode', 'Name', 'ID']
   const [search, setSearch] = useState<Search>({
     type: 'Barcode',
@@ -37,14 +39,14 @@ export default function AddSaleInvoiceItems({
             spliced[0].discount = spliced[0].price * (value / 100)
           } else {
             if (value > spliced[0].price) {
-              alert('Discount value can not be greater than item price')
+              alert(t('Discount value can not be greater than item price'))
               return
             }
             spliced[0].discount = value
           }
         } else {
           if (spliced[0].unit == 'Units' && !Number.isInteger(value)) {
-            alert('Quantity must be an integer')
+            alert(t('Quantity must be an integer'))
             return
           }
           spliced[0].quantity = value
@@ -65,6 +67,7 @@ export default function AddSaleInvoiceItems({
           setSearch((prev) => ({ ...prev, searchResults: result }))
         })
         .catch((e) => {
+          //TODO check
           alert(e)
         })
     } else {
@@ -88,6 +91,7 @@ export default function AddSaleInvoiceItems({
               addItemFromScanner(result.id)
             })
             .catch((e) => {
+              //TODO check
               alert(e)
             })
         }
@@ -100,6 +104,7 @@ export default function AddSaleInvoiceItems({
               addItemFromScanner(result.id)
             })
             .catch((e) => {
+              //TODO check
               alert(e)
             })
         }
@@ -109,11 +114,13 @@ export default function AddSaleInvoiceItems({
           if (search.searchResults.length > 0 && search.searchResults[0]) {
             addItemFromScanner(search.searchResults[0].id)
           } else {
+            //TODO check
             alert('error')
           }
         }
         break
       default: {
+        //TODO check
         alert('error')
       }
     }
@@ -155,7 +162,7 @@ export default function AddSaleInvoiceItems({
             className="w-26 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200"
             type="button"
           >
-            {search.type}
+            {t(search.type)}
             <svg
               className="w-2.5 h-2.5 ms-2.5"
               aria-hidden="true"
@@ -194,7 +201,7 @@ export default function AddSaleInvoiceItems({
                             })
                           }
                         >
-                          {value}
+                          {t(value)}
                         </button>
                       </li>
                     )
@@ -252,14 +259,14 @@ export default function AddSaleInvoiceItems({
       </div>
       <div className="col-span-4 mt-3">
         <div className="grid grid-cols-8 text-gray-700 uppercase bg-gray-200 text-xs font-bold">
-          <div className="p-2">Barcode</div>
-          <div className="p-2">Name</div>
-          <div className="p-2">Unit</div>
-          <div className="p-2 text-center">Price per unit</div>
-          <div className="p-2 text-center">Quantity</div>
-          <div className="p-2 text-center">Total Discount</div>
-          <div className="p-2 text-center">Total Tax</div>
-          <div className="p-2 text-center">Final Total</div>
+          <div className="p-2">{t('Barcode')}</div>
+          <div className="p-2">{t('Name')}</div>
+          <div className="p-2">{t('Unit')}</div>
+          <div className="p-2 text-center">{t('Price per unit')}</div>
+          <div className="p-2 text-center">{t('Quantity')}</div>
+          <div className="p-2 text-center">{t('Total Discount')}</div>
+          <div className="p-2 text-center">{t('Total Tax')}</div>
+          <div className="p-2 text-center">{t('Final Total')}</div>
         </div>
         <div className="h-[45vh] overflow-y-scroll bg-gray-300">
           {items.map((value) => {
@@ -270,7 +277,9 @@ export default function AddSaleInvoiceItems({
               >
                 <div className="text-gray-500 text-sm p-2">{value.barcode}</div>
                 <div className="text-gray-500 text-sm p-2">{value.name}</div>
-                <div className="text-gray-500 text-sm p-2">{value.unit}</div>
+                <div className="text-gray-500 text-sm p-2">
+                  {value.unit !== undefined ? t(value.unit) : ''}
+                </div>
                 <div className="text-gray-500 text-sm p-2 text-center">{value.price}</div>
                 <div
                   onClick={() =>

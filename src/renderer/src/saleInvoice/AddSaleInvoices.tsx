@@ -6,14 +6,16 @@ import { RootState } from '../state/store'
 import { calTotal, calTotalDiscount, calTotalTax, roundNum } from '../components/Math'
 import Payment from './componants/Payment'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function AddSaleInvoices(): JSX.Element {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const session = useSelector((state: RootState) => state.session.value)
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage('Add Sale Invoice'))
-  }, [dispatch])
+    dispatch(setPage(t('Issue Sale Invoice')))
+  }, [dispatch, t])
 
   const [invoiceData, setInvoiceData] = useState<Partial<SaleInvoice>>({
     status: 'WAITING',
@@ -38,6 +40,7 @@ export default function AddSaleInvoices(): JSX.Element {
         setInvoiceItemsData(results)
       })
       .catch((e) => {
+        //TODO check catch
         alert(e)
       })
     window.electron.ipcRenderer
@@ -51,6 +54,7 @@ export default function AddSaleInvoices(): JSX.Element {
         })
       })
       .catch((e) => {
+        //TODO check catch
         alert(e)
       })
   }, [dispatch, holdId, navigate])
@@ -106,11 +110,12 @@ export default function AddSaleInvoices(): JSX.Element {
         status: 'WAITING'
       })
     } else {
-      alert('Please add items first')
+      alert(t('Please add items first'))
     }
   }
 
   const completePayment = (invoiceType: string): void => {
+    //TODO check catch
     window.electron.ipcRenderer
       .invoke(
         'createSaleInvoiceWithItems',
@@ -131,6 +136,7 @@ export default function AddSaleInvoices(): JSX.Element {
 
   const holdInvoice = (): void => {
     if (invoiceItemsData.length > 0) {
+      //TODO check catch
       window.electron.ipcRenderer
         .invoke(
           'createTempSaleInvoiceWithItems',
@@ -144,14 +150,14 @@ export default function AddSaleInvoices(): JSX.Element {
           invoiceItemsData
         )
         .then((result) => {
-          alert('Invoice on Hold with number ' + result.tempSaleInvoice.id)
+          alert(t('Invoice on Hold with number') + ' ' + result.tempSaleInvoice.id)
           resetForm()
           dispatch(addHold())
           if (holdId) navigate('/saleInvoices/new', { replace: true })
         })
         .catch((error) => alert(error))
     } else {
-      alert('Please add items first')
+      alert(t('Please add items first'))
     }
   }
 
@@ -170,7 +176,7 @@ export default function AddSaleInvoices(): JSX.Element {
         <div className="col-span-2 flex items-center">
           <div className="w-full flex relative">
             <label className="w-26 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Invoice ID:
+              {t('Invoice ID')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -182,11 +188,11 @@ export default function AddSaleInvoices(): JSX.Element {
         <div className="col-span-2 flex items-center">
           <div className="w-full flex relative">
             <label className="w-26 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Status:
+              {t('Status')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
-                {invoiceData.status}
+                {invoiceData.status !== undefined ? t(invoiceData.status) : ''}
               </p>
             </div>
           </div>
@@ -194,7 +200,7 @@ export default function AddSaleInvoices(): JSX.Element {
         <div className="col-span-4 flex items-center">
           <div className="w-full flex relative">
             <label className="w-26 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Customer:
+              {t('Customer')}:
             </label>
             <input
               onChange={(e) => setInvoiceData({ ...invoiceData, customer: e.target.value })}
@@ -211,17 +217,16 @@ export default function AddSaleInvoices(): JSX.Element {
       </div>
       <div className="flex justify-end">
         <div className="text-xl p-2">
-          Sub Total: <span className="p-2">{itemsTotal()}</span>
+          {t('Sub Total')}: <span className="p-2">{itemsTotal()}</span>
         </div>
         <div className="text-xl p-2">
-          Discount: <span className="p-2">{itemsTotalDiscount()}</span>
+          {t('discount')}: <span className="p-2">{itemsTotalDiscount()}</span>
         </div>
         <div className="text-xl p-2">
-          Tax: <span className="p-2">{itemsTotalTax()}</span>
+          {t('tax')}: <span className="p-2">{itemsTotalTax()}</span>
         </div>
         <div className="text-xl p-2 bg-gray-200">
-          Total:
-          <span className="p-2">{itemsFinalTotal()}</span>
+          {t('total')}:<span className="p-2">{itemsFinalTotal()}</span>
         </div>
       </div>
       <div className="flex m-4 justify-center">
@@ -229,31 +234,31 @@ export default function AddSaleInvoices(): JSX.Element {
           onClick={() => {
             handleFinalizePayment('CASH')
           }}
-          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
+          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
-          Cash
+          {t('Payment(Cash)')}
         </div>
         <div
           onClick={() => {
             handleFinalizePayment('CREDIT')
           }}
-          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
+          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
-          Credit
+          {t('Payment(Credit)')}
         </div>
         <div
           onClick={() => {
             holdInvoice()
           }}
-          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
+          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
-          Hold
+          {t('Hold')}
         </div>
         <div
           onClick={resetForm}
-          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-28 text-center mx-4 text-xl py-3"
+          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
-          Reset
+          {t('Reset')}
         </div>
       </div>
       {paymentDetails && (

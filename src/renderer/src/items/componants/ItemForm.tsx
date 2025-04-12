@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import FormAlerts from '../../components/FormAlerts'
+import { useTranslation } from 'react-i18next'
 
 interface IFormInput {
   name: string
@@ -21,10 +22,12 @@ export default function ItemForm(props: {
   onSubmit: (setError, id, data) => void
   onBack: () => void
 }): JSX.Element {
+  const { t } = useTranslation()
   const [categories, setCategories] = useState<Category[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
 
   useEffect(() => {
+    //TODO add catch
     window.electron.ipcRenderer.invoke('getAllCategories').then((categories) => {
       setCategories(categories)
     })
@@ -75,9 +78,9 @@ export default function ItemForm(props: {
         setValue('supplierId', result.supplierId, { shouldTouch: true })
       })
       .catch((error) => {
-        setError('root', { type: 'manual', message: error + ' Data not retrieved' })
+        setError('root', { type: 'manual', message: error + ' ' + t('Data not retrieved') })
       })
-  }, [categories, id, setError, setValue, suppliers])
+  }, [categories, id, setError, setValue, suppliers, t])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-1/2 mx-auto">
@@ -91,10 +94,10 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Name
+            {t('Name')}
           </label>
           <input
-            {...register('name', { required: 'Name is required' })}
+            {...register('name', { required: t('Name is required') })}
             type="text"
             name="name"
             id="name"
@@ -113,17 +116,17 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Barcode
+            {t('barcode')}
           </label>
           <input
             {...register('barcode', {
-              required: 'Barcode is required',
+              required: t('Barcode is required'),
               validate: (value) => {
                 return window.electron.ipcRenderer
                   .invoke('getItemByBarcode', value)
                   .then((result) => {
                     if (result && result.id !== Number(id)) {
-                      return 'Barcode matches another item'
+                      return t('Barcode matches another item')
                     } else {
                       return true
                     }
@@ -148,7 +151,7 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Description
+            {t('Description')}
           </label>
           <textarea
             {...register('description')}
@@ -170,7 +173,7 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Unit
+            {t('unit')}
           </label>
           <select
             {...register('unit', { required: 'Unit is required' })}
@@ -182,11 +185,11 @@ export default function ItemForm(props: {
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }
           >
-            <option value="Units">Units</option>
-            <option value="Grams">Grams</option>
-            <option value="Kilograms">Kilograms</option>
-            <option value="Liters">Liters</option>
-            <option value="Milliliters">Milliliters</option>
+            <option value="Units">{t('Units')}</option>
+            <option value="Grams">{t('Grams')}</option>
+            <option value="Kilograms">{t('Kilograms')}</option>
+            <option value="Liters">{t('Liters')}</option>
+            <option value="Milliliters">{t('Milliliters')}</option>
           </select>
         </div>
         <div className="mb-5">
@@ -197,14 +200,14 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Discount
+            {t('discount')}
           </label>
           <input
             {...register('discount', {
-              required: 'Discount is required',
-              min: { value: 0, message: 'Discount must be larger than 0' },
+              required: t('Discount is required'),
+              min: { value: 0, message: t('Discount must be larger than 0') },
               validate: (value, data) => {
-                return value <= data.price || 'Discount must be less than price'
+                return value <= data.price || t('Discount must be less than price')
               }
             })}
             type="number"
@@ -226,12 +229,12 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Cost
+            {t('cost')}
           </label>
           <input
             {...register('cost', {
-              required: 'Cost is required',
-              min: { value: 0, message: 'Cost must be larger than 0' }
+              required: t('Cost is required'),
+              min: { value: 0, message: t('Cost must be larger than 0') }
             })}
             type="number"
             step="any"
@@ -252,12 +255,12 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Price
+            {t('price')}
           </label>
           <input
             {...register('price', {
-              required: 'Price is required',
-              min: { value: 0, message: 'Price must be larger than 0' }
+              required: t('Price is required'),
+              min: { value: 0, message: t('Price must be larger than 0') }
             })}
             type="number"
             step="any"
@@ -278,13 +281,13 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Tax
+            {t('tax')}
           </label>
           <div className="flex">
             <input
               {...register('tax', {
-                required: 'Tax is required',
-                min: { value: 0, message: 'Tax must be larger than 0' }
+                required: t('Tax is required'),
+                min: { value: 0, message: t('Tax must be equal or larger than 0') }
               })}
               type="number"
               step="any"
@@ -301,29 +304,6 @@ export default function ItemForm(props: {
             </span>
           </div>
         </div>
-        <div className="mb-5 col-span-4">
-          <label
-            className={
-              errors.image
-                ? 'block mb-2 text-sm font-medium text-red-900'
-                : 'block mb-2 text-sm font-medium text-gray-900'
-            }
-          >
-            Image
-          </label>
-          <input
-            {...register('image')}
-            type="file"
-            accept="image/png, image/jpeg"
-            name="image"
-            id="image"
-            className={
-              errors.image
-                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
-                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-            }
-          />
-        </div>
         <div className="mb-5 col-span-2">
           <label
             className={
@@ -332,11 +312,11 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Category
+            {t('category')}
           </label>
 
           <select
-            {...register('categoryId', { required: 'Category is required' })}
+            {...register('categoryId', { required: t('Category is required') })}
             name="categoryId"
             id="categoryId"
             className={
@@ -360,10 +340,10 @@ export default function ItemForm(props: {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Supplier
+            {t('supplier')}
           </label>
           <select
-            {...register('supplierId', { required: 'Supplier is required' })}
+            {...register('supplierId', { required: t('Supplier is required') })}
             name="supplierId"
             id="supplierId"
             className={
@@ -385,13 +365,13 @@ export default function ItemForm(props: {
           type="submit"
           className="text-white bg-blue-600 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
         >
-          Submit
+          {t('Submit')}
         </button>
         <button
           onClick={props.onBack}
           className="hover:bg-gray-300 border border-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mx-4"
         >
-          Back
+          {t('Back')}
         </button>
       </div>
     </form>

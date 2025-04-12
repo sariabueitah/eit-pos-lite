@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import FormAlerts from '../components/FormAlerts'
+import { useTranslation } from 'react-i18next'
 
 interface IFormInput {
   userName: string
@@ -9,6 +10,7 @@ interface IFormInput {
 
 export default function Login(): JSX.Element {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const {
     register,
@@ -23,10 +25,10 @@ export default function Login(): JSX.Element {
       if (loginCheck) {
         navigate('/', { replace: true })
       } else {
-        setError('password', { type: 'manual', message: 'Invalid password' })
+        setError('password', { type: 'manual', message: t('Invalid password') })
       }
     } else {
-      setError('userName', { type: 'manual', message: 'Invalid Username' })
+      setError('userName', { type: 'manual', message: t('Invalid Username') })
     }
   }
   return (
@@ -44,10 +46,10 @@ export default function Login(): JSX.Element {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Username
+            {t('User Name')}
           </label>
           <input
-            {...register('userName', { required: 'Username is required' })}
+            {...register('userName', { required: t('User Name is required') })}
             name="userName"
             type="text"
             id="userName"
@@ -66,10 +68,10 @@ export default function Login(): JSX.Element {
                 : 'block mb-2 text-sm font-medium text-gray-900'
             }
           >
-            Password
+            {t('Password')}
           </label>
           <input
-            {...register('password', { required: 'Password is required' })}
+            {...register('password', { required: t('Password is required') })}
             aria-invalid={errors.password ? 'true' : 'false'}
             name="password"
             type="password"
@@ -85,7 +87,7 @@ export default function Login(): JSX.Element {
           type="submit"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center"
         >
-          Login
+          {t('Login')}
         </button>
       </form>
     </div>

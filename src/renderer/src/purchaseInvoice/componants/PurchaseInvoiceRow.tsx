@@ -1,15 +1,17 @@
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 type Props = {
   purchaseInvoice: PurchaseInvoice
 }
 export default function PurchaseInvoiceRow(props: Props): JSX.Element {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   return (
     <tr className="bg-white border-b border-gray-200">
       <td className="p-2">{props.purchaseInvoice.id}</td>
       <td className="p-2">{props.purchaseInvoice.name}</td>
       <td className="p-2">{props.purchaseInvoice.invoiceNumber}</td>
-      <td className="p-2">{props.purchaseInvoice.status}</td>
+      <td className="p-2">{t(props.purchaseInvoice.status)}</td>
       <td className="p-2">{props.purchaseInvoice.paid}</td>
       <td className="p-2">{props.purchaseInvoice.totalPrice}</td>
       <td className="p-2">{new Date(props.purchaseInvoice.date).toLocaleString('en-GB')}</td>

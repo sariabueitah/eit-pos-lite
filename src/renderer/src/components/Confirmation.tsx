@@ -1,10 +1,12 @@
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function Confirmation(props: {
   onCancel: () => void
   onConfirm: () => void
   message: string
 }): JSX.Element {
+  const { t } = useTranslation()
   const portalElement = document.getElementById('portal')
   if (!portalElement) {
     throw new Error('Portal element not found')
@@ -55,14 +57,14 @@ export default function Confirmation(props: {
               type="button"
               className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-900"
             >
-              No, cancel
+              {t('No, cancel')}
             </button>
             <button
               onClick={props.onConfirm}
               type="submit"
               className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700"
             >
-              Yes, I&apos;m sure
+              {t('Yes, I&apos;m sure')}
             </button>
           </div>
         </div>

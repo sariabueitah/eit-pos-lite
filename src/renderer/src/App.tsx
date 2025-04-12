@@ -27,13 +27,18 @@ import Hold from './components/Hold'
 import PurchaseInvoices from './purchaseInvoice/PurchaseInvoices'
 import AddPurchaseInvoice from './purchaseInvoice/AddPurchaseInvoice'
 import PurchaseInvoice from './purchaseInvoice/PurchaseInvoice'
+import { useTranslation } from 'react-i18next'
 
+//TODO Supplier Balance calculation issue
 //TODO Print recipt
 //TODO Create a queue for the Tax API
 //TODO Create a setup page
 //TODO fix all styles unifiing the buttons maybe spruce up the style
 
 function App(): JSX.Element {
+  const { i18n } = useTranslation()
+  document.body.dir = i18n.dir()
+
   const session = useSelector((state: RootState) => state.session.value)
   const dispatch = useDispatch<AppDispatch>()
   useEffect(() => {
@@ -56,17 +61,13 @@ function App(): JSX.Element {
       <div className="m-3">
         <Routes>
           {session === null && <Route path="*" element={<Login />} />}
-          {session && session.role === 'ADMIN' && (
-            <>
-              <Route path="/users" element={<Users />} />
-              <Route path="/users/new" element={<AddUser />} />
-              <Route path="/users/edit/:id" element={<EditUser />} />
-            </>
-          )}
           {session && (
             <>
               <Route path="/" element={<Home />} />
               <Route path="*" element={<NotFound />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/users/new" element={<AddUser />} />
+              <Route path="/users/edit/:id" element={<EditUser />} />
               <Route path="/items" element={<Items />} />
               <Route path="/items/new" element={<AddItems />} />
               <Route path="/items/edit/:id" element={<EditItems />} />

@@ -3,16 +3,18 @@ import { useDispatch } from 'react-redux'
 import { setPage } from '../state/slices/PageSlice'
 import UserRow from './componants/UserRow'
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function Users(): JSX.Element {
+  const { t } = useTranslation()
   const [userData, setUserData] = useState<User[]>([])
   const [search, setSearch] = useState('')
   const [deleted, setDeleted] = useState('ALL')
 
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage('Users'))
-  }, [dispatch])
+    dispatch(setPage(t('Users')))
+  }, [dispatch, t])
 
   useEffect(() => {
     window.electron.ipcRenderer
@@ -79,7 +81,7 @@ export default function Users(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/all:bg-gray-300 peer-checked/all:hover:bg-gray-400 rounded-xl"
             htmlFor="radio1"
           >
-            All
+            {t('All')}
           </label>
           <input
             className="peer/active hidden"
@@ -94,7 +96,7 @@ export default function Users(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/active:bg-gray-300 peer-checked/active:hover:bg-gray-400 rounded-xl"
             htmlFor="radio2"
           >
-            Active
+            {t('Active')}
           </label>
           <input
             className="peer/deleted hidden"
@@ -109,7 +111,7 @@ export default function Users(): JSX.Element {
             className="border border-gray-300 hover:bg-gray-300 py-1 px-3 cursor-pointer peer-checked/deleted:bg-gray-300 peer-checked/deleted:hover:bg-gray-400 rounded-xl"
             htmlFor="radio3"
           >
-            Deleted
+            {t('Deleted')}
           </label>
         </div>
         <div className="col-span-4 relative my-2">
@@ -119,7 +121,7 @@ export default function Users(): JSX.Element {
             type="text"
             name="search"
             id="search"
-            placeholder="Search By Name, Username or Phone Number"
+            placeholder={t('Search By Name, Username or Phone Number')}
             className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-300 border"
           />
           <button
@@ -147,22 +149,22 @@ export default function Users(): JSX.Element {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="p-2">
-              ID
+              {t('ID')}
             </th>
             <th scope="col" className="p-2">
-              Name
+              {t('Name')}
             </th>
             <th scope="col" className="p-2">
-              Username
+              {t('User Name')}
             </th>
             <th scope="col" className="p-2">
-              Phone Number
+              {t('Phone Number')}
             </th>
             <th scope="col" className="p-2">
-              Role
+              {t('Role')}
             </th>
             <th scope="col" className="p-2">
-              Actions
+              {t('Actions')}
             </th>
           </tr>
         </thead>

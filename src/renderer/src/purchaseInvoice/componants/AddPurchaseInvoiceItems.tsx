@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import KeyPad from '../../components/KeyPad'
 import { calTotalTax, calTotal } from '../../components/Math'
+import { useTranslation } from 'react-i18next'
 
 type Search = {
   type: 'Barcode' | 'Name' | 'ID'
@@ -15,6 +16,7 @@ export default function AddSaleInvoiceItems({
   items: PurchaseInvoiceItem[]
   setItems: (items: PurchaseInvoiceItem[]) => void
 }): JSX.Element {
+  const { t } = useTranslation()
   const searchTypesArray: Array<Search['type']> = ['Barcode', 'Name', 'ID']
   const [search, setSearch] = useState<Search>({
     type: 'Barcode',
@@ -47,6 +49,7 @@ export default function AddSaleInvoiceItems({
   const handleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearch((prev) => ({ ...prev, value: e.target.value }))
     if (search.type == 'Name') {
+      //TODO check catch
       window.electron.ipcRenderer
         .invoke('getItemByName', e.target.value)
         .then((result) => {
@@ -70,6 +73,7 @@ export default function AddSaleInvoiceItems({
     switch (search.type) {
       case 'Barcode':
         {
+          //TODO check catch
           window.electron.ipcRenderer
             .invoke('getItemByBarcode', search.value)
             .then((result) => {
@@ -82,6 +86,7 @@ export default function AddSaleInvoiceItems({
         break
       case 'ID':
         {
+          //TODO check catch
           window.electron.ipcRenderer
             .invoke('getItemById', search.value)
             .then((result) => {
@@ -97,11 +102,13 @@ export default function AddSaleInvoiceItems({
           if (search.searchResults.length > 0 && search.searchResults[0]) {
             addItemFromScanner(search.searchResults[0].id)
           } else {
+            //TODO check error
             alert('error')
           }
         }
         break
       default: {
+        //TODO check error
         alert('error')
       }
     }
@@ -115,6 +122,7 @@ export default function AddSaleInvoiceItems({
       spliced[0].quantity += 1
       setItems([...spliced, ...tempItems])
     } else {
+      //TODO check catch
       window.electron.ipcRenderer.invoke('getItemById', itemId).then((result) => {
         const newItem = {
           itemId: result.id,
@@ -141,7 +149,7 @@ export default function AddSaleInvoiceItems({
             className="w-36 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200"
             type="button"
           >
-            {search.type}
+            {t(search.type)}
             <svg
               className="w-2.5 h-2.5 ms-2.5"
               aria-hidden="true"
@@ -180,7 +188,7 @@ export default function AddSaleInvoiceItems({
                             })
                           }
                         >
-                          {value}
+                          {t(value)}
                         </button>
                       </li>
                     )
@@ -238,13 +246,13 @@ export default function AddSaleInvoiceItems({
       </div>
       <div className="col-span-4 mt-3">
         <div className="grid grid-cols-7 text-gray-700 uppercase bg-gray-200 text-xs font-bold">
-          <div className="p-2">Barcode</div>
-          <div className="p-2">Name</div>
-          <div className="p-2">Unit</div>
-          <div className="p-2 text-center">Price per unit</div>
-          <div className="p-2 text-center">Quantity</div>
-          <div className="p-2 text-center">Total Tax</div>
-          <div className="p-2 text-center">Final Total</div>
+          <div className="p-2">{t('Barcode')}</div>
+          <div className="p-2">{t('Name')}</div>
+          <div className="p-2">{t('Unit')}</div>
+          <div className="p-2 text-center">{t('Price per unit')}</div>
+          <div className="p-2 text-center">{t('Quantity')}</div>
+          <div className="p-2 text-center">{t('Total Tax')}</div>
+          <div className="p-2 text-center">{t('Final Total')}</div>
         </div>
         <div className="h-[45vh] overflow-y-scroll bg-gray-300">
           {items.map((value) => {
@@ -263,7 +271,7 @@ export default function AddSaleInvoiceItems({
               >
                 <div className="text-gray-500 text-sm p-2">{value.barcode}</div>
                 <div className="text-gray-500 text-sm p-2">{value.name}</div>
-                <div className="text-gray-500 text-sm p-2">{value.unit}</div>
+                <div className="text-gray-500 text-sm p-2">{t(value.unit || '')}</div>
                 <div className="text-gray-500 text-sm p-2 text-center">{value.cost}</div>
                 <div className="text-gray-500 text-sm p-2 text-center">{value.quantity}</div>
                 <div className="text-gray-500 text-sm p-2 text-center">

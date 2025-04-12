@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { showHold, getHoldCount } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function Hold(): JSX.Element {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const show = useSelector((state: RootState) => state.page.hold.show)
   const count = useSelector((state: RootState) => state.page.hold.count)
@@ -30,11 +32,11 @@ export default function Hold(): JSX.Element {
     <>
       <div
         className={
-          'absolute top-0 left-0 z-40 w-64 h-screen p-4 overflow-y-auto transition-transform bg-white ' +
-          (show ? 'translate-x-0' : '-translate-x-full')
+          'absolute top-0 left-0 rtl:right-0 z-40 w-64 h-screen p-4 overflow-y-auto transition-transform bg-white ' +
+          (show ? 'translate-x-0 rtl:-translate-x-0' : '-translate-x-full rtl:translate-x-full')
         }
       >
-        <h5 className="text-base font-semibold text-gray-500 uppercase">Invoices On Hold</h5>
+        <h5 className="text-base font-semibold text-gray-500 uppercase">{t('Invoices On Hold')}</h5>
         <button
           onClick={() => dispatch(showHold(!show))}
           type="button"

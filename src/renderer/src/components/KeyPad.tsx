@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   keypadInfo: { itemId: number; name: string; value: number; discount: boolean }
@@ -7,6 +8,7 @@ type Props = {
 }
 
 export default function KeyPad({ keypadInfo, handleCancel, handleSubmit }: Props): JSX.Element {
+  const { t } = useTranslation()
   const [input, setInput] = useState(keypadInfo.value.toString())
   const [type, setType] = useState<'PERCENTAGE' | 'AMOUNT'>('AMOUNT')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -76,8 +78,9 @@ export default function KeyPad({ keypadInfo, handleCancel, handleSubmit }: Props
         <div className="relative p-4 text-center bg-white rounded-2xl shadow">
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-3 text-gray-600">
-              Please enter <span className="text-black font-bold text-xl">{keypadInfo.name}</span>{' '}
-              {keypadInfo.discount ? 'Discount' : 'Quantity'}
+              {keypadInfo.discount
+                ? t('Please enter x Discount', { name: keypadInfo.name })
+                : t('Please enter x Quantity', { name: keypadInfo.name })}
             </div>
             <input
               onChange={handleInputChange}
@@ -213,13 +216,13 @@ export default function KeyPad({ keypadInfo, handleCancel, handleSubmit }: Props
               onClick={handleCancel}
               className="py-5 rounded-lg border border-gray-200 bg-red-600 text-white"
             >
-              Cancel
+              {t('Cancel')}
             </div>
             <div
               onClick={() => handleSubmit(Number(input), type)}
               className="col-span-2 py-5 rounded-lg border border-gray-200"
             >
-              Enter
+              {t('Enter')}
             </div>
           </div>
         </div>

@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setPage, setLoading } from '../state/slices/PageSlice'
 import ItemForm from './componants/ItemForm'
+import { useTranslation } from 'react-i18next'
 
 export default function AddItems(): JSX.Element {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage('Add Item'))
+    dispatch(setPage(t('Add Item')))
   }, [dispatch])
 
   const onSubmit = (setError, _, data): void => {
@@ -21,6 +23,7 @@ export default function AddItems(): JSX.Element {
       })
       .catch((error) => {
         dispatch(setLoading(false))
+        //TODO check catch
         setError('root', { type: 'manual', message: error })
       })
   }

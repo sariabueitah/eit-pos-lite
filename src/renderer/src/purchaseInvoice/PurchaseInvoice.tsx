@@ -1,27 +1,31 @@
 import { calTotal, calTotalDiscount, calTotalTax, roundNum } from '../components/Math'
 import { setPage } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export default function PurchaseInvoice(): JSX.Element {
+  const { t } = useTranslation()
   const { id } = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(setPage(`Purchase Invoice #${id}`))
-  }, [dispatch, id])
+    dispatch(setPage(`${t('Purchase Invoice')} #${id}`))
+  }, [dispatch, id, t])
 
   const [purchaseInvoice, setPurchaseInvoice] = useState<PurchaseInvoice>()
   const [purchaseInvoiceItems, setPurchaseInvoiceItems] = useState<PurchaseInvoiceItem[]>([])
 
   useEffect(() => {
+    //TODO check catch
     window.electron.ipcRenderer
       .invoke('getPurchaseInvoiceById', id)
       .then((result) => {
         setPurchaseInvoice(result)
       })
       .catch()
+    //TODO check catch
     window.electron.ipcRenderer
       .invoke('getPurchaseInvoiceItemsByPurchaseInvoiceId', id)
       .then((results) => {
@@ -67,7 +71,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Invoice ID:
+              {t('Invoice ID')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -79,7 +83,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Date:
+              {t('Date')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -91,7 +95,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Supplier:
+              {t('supplier')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -103,7 +107,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Status:
+              {t('Status')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -115,7 +119,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Invoice Number:
+              {t('Invoice Number')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -127,7 +131,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Paid Amount:
+              {t('Paid Amount')}:
             </label>
             <p className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300">
               {purchaseInvoice?.paid}
@@ -137,7 +141,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Total Amount:
+              {t('Total Amount')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -149,7 +153,7 @@ export default function PurchaseInvoice(): JSX.Element {
         <div className="col-span-1 flex items-center">
           <div className="w-full flex relative">
             <label className="w-36 shrink-0 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200">
-              Balance:
+              {t('balance')}:
             </label>
             <div className="relative w-full">
               <p className="p-2.5 w-full min-h-10.5 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 cursor-not-allowed">
@@ -161,14 +165,14 @@ export default function PurchaseInvoice(): JSX.Element {
       </div>
       <div className="col-span-4 mt-3">
         <div className="grid grid-cols-8 text-gray-700 uppercase bg-gray-200 text-xs font-bold">
-          <div className="p-2">ID</div>
-          <div className="p-2">Barcode</div>
-          <div className="p-2">Name</div>
-          <div className="p-2">Unit</div>
-          <div className="p-2 text-center">Price per unit</div>
-          <div className="p-2 text-center">Quantity</div>
-          <div className="p-2 text-center">Total Tax</div>
-          <div className="p-2 text-center">Final Total</div>
+          <div className="p-2">{t('ID')}</div>
+          <div className="p-2">{t('Barcode')}</div>
+          <div className="p-2">{t('Name')}</div>
+          <div className="p-2">{t('Unit')}</div>
+          <div className="p-2 text-center">{t('Price per unit')}</div>
+          <div className="p-2 text-center">{t('Quantity')}</div>
+          <div className="p-2 text-center">{t('Total Tax')}</div>
+          <div className="p-2 text-center">{t('Final Total')}</div>
         </div>
         <div className="max-h-[45vh] overflow-y-scroll bg-gray-300">
           {purchaseInvoiceItems.map((value) => {
@@ -180,7 +184,7 @@ export default function PurchaseInvoice(): JSX.Element {
                 <div className="text-gray-500 text-sm p-2">{value.id}</div>
                 <div className="text-gray-500 text-sm p-2">{value.barcode}</div>
                 <div className="text-gray-500 text-sm p-2">{value.name}</div>
-                <div className="text-gray-500 text-sm p-2">{value.unit}</div>
+                <div className="text-gray-500 text-sm p-2">{value.unit ? t(value.unit) : ''}</div>
                 <div className="text-gray-500 text-sm p-2 text-center">{value.cost}</div>
                 <div className="text-gray-500 text-sm p-2 text-center">{value.quantity}</div>
                 <div className="text-gray-500 text-sm p-2 text-center">
@@ -196,17 +200,16 @@ export default function PurchaseInvoice(): JSX.Element {
       </div>
       <div className="flex justify-end">
         <div className="text-xl p-2">
-          Sub Total: <span className="p-2">{itemsTotal()}</span>
+          {t('Sub Total')}: <span className="p-2">{itemsTotal()}</span>
         </div>
         <div className="text-xl p-2">
-          Discount: <span className="p-2">{itemsTotalDiscount()}</span>
+          {t('discount')}: <span className="p-2">{itemsTotalDiscount()}</span>
         </div>
         <div className="text-xl p-2">
-          Tax: <span className="p-2">{itemsTotalTax()}</span>
+          {t('tax')}: <span className="p-2">{itemsTotalTax()}</span>
         </div>
         <div className="text-xl p-2 bg-gray-200">
-          Total:
-          <span className="p-2">{itemsFinalTotal()}</span>
+          {t('total')}:<span className="p-2">{itemsFinalTotal()}</span>
         </div>
       </div>
       <div className="flex m-4 justify-center">
@@ -214,7 +217,7 @@ export default function PurchaseInvoice(): JSX.Element {
           onClick={() => navigate('/purchaseInvoices', { replace: true })}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
-          Back
+          {t('Back')}
         </div>
       </div>
     </>

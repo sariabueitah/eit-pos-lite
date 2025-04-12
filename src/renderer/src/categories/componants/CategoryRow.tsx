@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Confirmation from '../../components/Confirmation'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   category: Category
@@ -8,6 +9,7 @@ type Props = {
 }
 
 export default function CategoryRow(props: Props): JSX.Element {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [confirm, setConfirm] = useState(false)
   const handleEdit = (): void => {
@@ -45,7 +47,7 @@ export default function CategoryRow(props: Props): JSX.Element {
         </button>
         {confirm && (
           <Confirmation
-            message={'Are you sure you want to delete this category?'}
+            message={t('Are you sure you want to delete this category?')}
             onCancel={() => setConfirm(false)}
             onConfirm={() => props.onDelete(props.category.id)}
           />

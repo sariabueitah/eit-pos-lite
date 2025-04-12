@@ -2,13 +2,23 @@ import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { showHold } from '../state/slices/PageSlice'
 import { RootState } from '../state/store'
+import { useTranslation } from 'react-i18next'
 
 function NavBar(): JSX.Element {
+  const { t, i18n } = useTranslation()
   const dispatch = useDispatch()
   const session = useSelector((state: RootState) => state.session.value)
   const pageTitle = useSelector((state: RootState) => state.page.pageTitle)
   const show = useSelector((state: RootState) => state.page.hold.show)
   const count = useSelector((state: RootState) => state.page.hold.count)
+
+  const switchLanguage = (): void => {
+    if (i18n.language === 'en') {
+      i18n.changeLanguage('ar')
+    } else {
+      i18n.changeLanguage('en')
+    }
+  }
 
   return (
     <>
@@ -59,10 +69,13 @@ function NavBar(): JSX.Element {
           <div className="align-middle">
             <h1>{pageTitle}</h1>
           </div>
-          <div>
+          <div className="flex items-center">
+            <button onClick={switchLanguage}>
+              <span className="text-center block">{t('Language')}</span>
+            </button>
             <NavLink to="/" onClick={() => window.electron.ipcRenderer.invoke('logout')}>
               <span className="text-center block">{session?.name}</span>
-              <span className="text-center block">Logout</span>
+              <span className="text-center block">{t('Logout')}</span>
             </NavLink>
           </div>
         </div>
