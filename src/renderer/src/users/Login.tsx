@@ -32,7 +32,7 @@ export default function Login(): JSX.Element {
     }
   }
   return (
-    <div className="flex justify-center items-center h-screen w-screen">
+    <div className="flex justify-center items-center h-screen w-screen -m-3">
       <form
         className="border rounded-2xl border-gray-400 p-4 w-80"
         onSubmit={handleSubmit(onSubmit)}
