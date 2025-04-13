@@ -10,13 +10,15 @@ const initialState: {
   alert: {
     show: boolean
     message: string
+    refocus: unknown | null
   }
 } = {
   pageTitle: '',
   loading: false,
   alert: {
     show: false,
-    message: ''
+    message: '',
+    refocus: null
   },
   hold: {
     show: false,
@@ -46,10 +48,16 @@ const pageSlice = createSlice({
     showAlert: (state, action: PayloadAction<string>) => {
       state.alert.show = true
       state.alert.message = action.payload
+      state.alert.refocus = document.activeElement as Element
     },
     hideAlert: (state) => {
       state.alert.show = false
       state.alert.message = ''
+
+      if (state.alert.refocus) {
+        const refocus = state.alert.refocus as HTMLElement
+        refocus.focus()
+      }
     }
   },
   extraReducers: (builder) => {

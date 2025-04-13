@@ -2,11 +2,25 @@ import { useTranslation } from 'react-i18next'
 import { hideAlert } from '../state/slices/PageSlice'
 import { RootState } from '../state/store'
 import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useRef } from 'react'
 
 export default function AlertComponent(): JSX.Element {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const alert = useSelector((state: RootState) => state.page.alert)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (buttonRef.current && alert.show) {
+      buttonRef.current.focus()
+    }
+  }, [alert.show])
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>): void => {
+    if (e.key === 'Enter') {
+      dispatch(hideAlert())
+    }
+  }
 
   return (
     <>
@@ -32,6 +46,8 @@ export default function AlertComponent(): JSX.Element {
                 </svg>
                 <h3 className="mb-5 text-lg font-normal text-gray-500">{alert.message}</h3>
                 <button
+                  onKeyDown={handleKeyDown}
+                  ref={buttonRef}
                   onClick={() => dispatch(hideAlert())}
                   type="button"
                   className="px-3 py-2 rounded-2xl bg-white hover:bg-gray-300 border border-gray-300 min-w-1/2"
