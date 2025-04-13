@@ -7,7 +7,7 @@ import {
   searchPurchaseInvoices
 } from '../db/purchaseInvoices'
 import { addPurchaseInvoiceItem } from '../db/purchaseInvoiceItems'
-import { updateSupplier } from '../db/suppliers'
+import { getSupplierById, updateSupplier } from '../db/suppliers'
 
 export function purchaseInvoicesHandlers(db: DatabaseType): void {
   ipcMain.handle('getAllPurchaseInvoices', () => {
@@ -28,9 +28,9 @@ export function purchaseInvoicesHandlers(db: DatabaseType): void {
         addPurchaseInvoiceItem(db, { ...invoiceItems[i], purchaseInvoiceId: purchaseInvoice.id })
       )
     }
-    updateSupplier(db, purchaseInvoice.supplierId, {
-      balance: roundNum(Number(purchaseInvoice.totalPrice) - Number(purchaseInvoice.paid))
-    })
+    const supplier = getSupplierById(db, purchaseInvoice.supplierId)
+    supplier.balance += roundNum(Number(purchaseInvoice.totalPrice) - Number(purchaseInvoice.paid))
+    updateSupplier(db, purchaseInvoice.supplierId, supplier)
     return { purchaseInvoice: purchaseInvoice, purchaseInvoiceItems: purchaseInvoiceItems }
   })
 

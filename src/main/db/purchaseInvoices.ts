@@ -10,6 +10,7 @@ export function setupPurchaseInvoicesTable(db: DatabaseType): void {
         'status' TEXT,
         'paid' REAL,
         'totalPrice' REAL,
+        'invoiceNumber' TEXT,
         'deleted' INTEGER DEFAULT 0,
         FOREIGN KEY('supplierId') REFERENCES 'suppliers'('id')
     );`
@@ -51,7 +52,7 @@ export function addPurchaseInvoice(
   )
   const result = db
     .prepare(
-      'INSERT INTO purchase_invoices (supplierId,date,status,paid,totalPrice) VALUES (:supplierId,:date,:status,:paid,:totalPrice);'
+      'INSERT INTO purchase_invoices (supplierId,date,status,paid,totalPrice,invoiceNumber) VALUES (:supplierId,:date,:status,:paid,:totalPrice,:invoiceNumber);'
     )
     .run(purchaseInvoice)
   return getPurchaseInvoiceById(db, result.lastInsertRowid)
@@ -91,7 +92,7 @@ export function searchPurchaseInvoices(
   })
 
   if (searchArray.length == 0) {
-    return db.prepare(query + whereClause).all() as [PurchaseInvoice]
+    return db.prepare(query + whereClause + ' ORDER BY p.date DESC').all() as [PurchaseInvoice]
   } else {
     searchArray = searchArray.map(function (e) {
       return '%' + e + '%'

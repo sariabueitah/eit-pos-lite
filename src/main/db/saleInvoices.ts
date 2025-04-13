@@ -81,7 +81,7 @@ export function searchSaleInvoices(
   })
 
   if (searchArray.length == 0) {
-    return db.prepare(query + whereClause).all() as [SaleInvoice]
+    return db.prepare(query + whereClause + ' ORDER BY s.date DESC').all() as [SaleInvoice]
   } else {
     searchArray = searchArray.map(function (e) {
       return '%' + e + '%'

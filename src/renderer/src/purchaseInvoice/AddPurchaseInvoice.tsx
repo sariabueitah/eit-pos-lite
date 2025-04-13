@@ -89,6 +89,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
     }
     let status = 'UNPAID'
     if ((invoiceData.paid ?? 0) >= itemsFinalTotal()) status = 'PAID'
+    const totalPrice = invoiceItemsData.length === 0 ? invoiceData.totalPrice : itemsFinalTotal()
     //TODO check catch
     window.electron.ipcRenderer
       .invoke(
@@ -99,7 +100,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
           status: status,
           paid: invoiceData.paid,
           invoiceNumber: invoiceData.invoiceNumber,
-          totalPrice: itemsFinalTotal()
+          totalPrice: totalPrice
         },
         invoiceItemsData
       )

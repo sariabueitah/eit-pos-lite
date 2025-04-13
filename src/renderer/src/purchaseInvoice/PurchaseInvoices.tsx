@@ -46,7 +46,7 @@ export default function PurchaseInvoices(): JSX.Element {
     <div className="">
       <NavLink
         className="absolute bottom-4 right-4 border border-gray-300 hover:bg-gray-300 rounded-2xl"
-        to="/saleInvoices/new"
+        to="/purchaseInvoices/new"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
