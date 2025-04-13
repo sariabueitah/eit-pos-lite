@@ -139,9 +139,9 @@ export function getItemByBarcode(db: DatabaseType, barcode: string): Item {
 }
 
 export function getItemByName(db: DatabaseType, name: string): [Item] {
-  return db.prepare('SELECT * FROM items WHERE deleted = 0 AND name = ?').all('%' + name + '%') as [
-    Item
-  ]
+  return db
+    .prepare('SELECT * FROM items WHERE deleted = 0 AND name like ?')
+    .all('%' + name + '%') as [Item]
 }
 
 export function addItem(db: DatabaseType, item: Item): Item {

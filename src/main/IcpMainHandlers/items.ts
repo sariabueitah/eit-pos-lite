@@ -7,7 +7,8 @@ import {
   addItem,
   updateItem,
   deleteItem,
-  searchItems
+  searchItems,
+  getItemByName
 } from '../db/items'
 
 export function itemHandlers(db: DatabaseType): void {
@@ -21,6 +22,10 @@ export function itemHandlers(db: DatabaseType): void {
 
   ipcMain.handle('getItemByBarcode', (_, barcode: string) => {
     return getItemByBarcode(db, barcode)
+  })
+
+  ipcMain.handle('getItemByName', (_, name: string) => {
+    return getItemByName(db, name)
   })
 
   ipcMain.handle('addItem', (_, item: Item) => {
