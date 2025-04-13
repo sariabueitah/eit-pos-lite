@@ -145,5 +145,6 @@
   "Purchase Invoice": "Purchase Invoice",
   "Total Amount": "Total Amount",
   "Please add items or an Invoice Number to save": "Please add items or an Invoice Number to save",
-  "Save": "Save"
+  "Save": "Save",
+  "Failed to create Record": "Failed to create Record"
 }

@@ -29,7 +29,6 @@ import AddPurchaseInvoice from './purchaseInvoice/AddPurchaseInvoice'
 import PurchaseInvoice from './purchaseInvoice/PurchaseInvoice'
 import { useTranslation } from 'react-i18next'
 
-//TODO Supplier Balance calculation issue
 //TODO Print recipt
 //TODO Create a queue for the Tax API
 //TODO Create a setup page
