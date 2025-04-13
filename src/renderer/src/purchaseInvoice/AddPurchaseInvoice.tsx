@@ -1,6 +1,6 @@
 import { calTotal, calTotalTax, roundNum } from '../components/Math'
 import AddPurchaseInvoiceItems from './componants/AddPurchaseInvoiceItems'
-import { setPage } from '@renderer/state/slices/PageSlice'
+import { setPage, showAlert } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -84,7 +84,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
 
   const save = (): void => {
     if (invoiceData.invoiceNumber === '' && invoiceItemsData.length === 0) {
-      alert('Please add items or an Invoice Number to save')
+      dispatch(showAlert('Please add items or an Invoice Number to save'))
       return
     }
     let status = 'UNPAID'
@@ -104,8 +104,8 @@ export default function AddPurchaseInvoice(): JSX.Element {
         },
         invoiceItemsData
       )
-      .then((result) => alert(result))
-      .catch((error) => alert(error))
+      .then(() => dispatch(showAlert('')))
+      .catch((error) => dispatch(showAlert(error.message)))
     resetForm()
   }
 

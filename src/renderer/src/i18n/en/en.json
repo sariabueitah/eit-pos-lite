@@ -146,5 +146,7 @@
   "Total Amount": "Total Amount",
   "Please add items or an Invoice Number to save": "Please add items or an Invoice Number to save",
   "Save": "Save",
-  "Failed to create Record": "Failed to create Record"
+  "Failed to create Record": "Failed to create Record",
+  "Invoice created with number": "Invoice created with number",
+  "Item not found": "Item not found"
 }

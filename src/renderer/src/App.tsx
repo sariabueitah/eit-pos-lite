@@ -24,6 +24,7 @@ import AddSaleInvoice from './saleInvoice/AddSaleInvoices'
 import NotFound from './NotFound'
 import Loading from './components/Loading'
 import Hold from './components/Hold'
+import Alert from './components/Alert'
 import PurchaseInvoices from './purchaseInvoice/PurchaseInvoices'
 import AddPurchaseInvoice from './purchaseInvoice/AddPurchaseInvoice'
 import PurchaseInvoice from './purchaseInvoice/PurchaseInvoice'
@@ -53,6 +54,7 @@ function App(): JSX.Element {
 
   return (
     <>
+      <Alert />
       <Loading />
       <Hold />
       <NavBar />

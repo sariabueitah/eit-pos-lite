@@ -146,5 +146,7 @@
   "Total Amount": "مجموع المبلغ",
   "Please add items or an Invoice Number to save": "يرجى إضافة المنتجات أو رقم الفاتورة للحفظ",
   "Save": "حفظ",
-  "Failed to create Record": "فشل في إنشاء السجل"
+  "Failed to create Record": "فشل في إنشاء السجل",
+  "Invoice created with number": "تم إنشاء الفاتورة برقم",
+  "Item not found": "المنتج غير موجود"
 }

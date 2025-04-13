@@ -2,6 +2,8 @@ import { useState } from 'react'
 import KeyPad from '../../components/KeyPad'
 import { calTotalDiscount, calTotalTax, calTotal } from '../../components/Math'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { showAlert } from '../../state/slices/PageSlice'
 
 type Search = {
   type: 'Barcode' | 'Name' | 'ID'
@@ -16,6 +18,7 @@ export default function AddSaleInvoiceItems({
   items: SaleInvoiceItem[]
   setItems: (items: SaleInvoiceItem[]) => void
 }): JSX.Element {
+  const dispatch = useDispatch()
   const { t } = useTranslation()
   const searchTypesArray: Array<Search['type']> = ['Barcode', 'Name', 'ID']
   const [search, setSearch] = useState<Search>({
@@ -39,14 +42,14 @@ export default function AddSaleInvoiceItems({
             spliced[0].discount = spliced[0].price * (value / 100)
           } else {
             if (value > spliced[0].price) {
-              alert(t('Discount value can not be greater than item price'))
+              dispatch(showAlert(t('Discount value can not be greater than item price')))
               return
             }
             spliced[0].discount = value
           }
         } else {
           if (spliced[0].unit == 'Units' && !Number.isInteger(value)) {
-            alert(t('Quantity must be an integer'))
+            dispatch(showAlert(t('Quantity must be an integer')))
             return
           }
           spliced[0].quantity = value
@@ -68,7 +71,7 @@ export default function AddSaleInvoiceItems({
         })
         .catch((e) => {
           //TODO check
-          alert(e)
+          dispatch(showAlert(e.message))
         })
     } else {
       setSearch((prev) => ({ ...prev, searchResults: [] }))
@@ -92,7 +95,7 @@ export default function AddSaleInvoiceItems({
             })
             .catch((e) => {
               //TODO check
-              alert(e)
+              dispatch(showAlert(e.message))
             })
         }
         break
@@ -105,7 +108,7 @@ export default function AddSaleInvoiceItems({
             })
             .catch((e) => {
               //TODO check
-              alert(e)
+              dispatch(showAlert(e.message))
             })
         }
         break
@@ -115,13 +118,13 @@ export default function AddSaleInvoiceItems({
             addItemFromScanner(search.searchResults[0].id)
           } else {
             //TODO check
-            alert('error')
+            dispatch(showAlert(t('Item not found')))
           }
         }
         break
       default: {
         //TODO check
-        alert('error')
+        dispatch(showAlert(t('Item not found')))
       }
     }
   }

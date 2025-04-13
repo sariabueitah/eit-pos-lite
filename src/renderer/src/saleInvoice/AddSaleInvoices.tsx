@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { setPage, addHold, removeHold } from '../state/slices/PageSlice'
+import { setPage, addHold, removeHold, showAlert } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import AddSaleInvoiceItems from './componants/AddSaleInvoiceItems'
 import { RootState } from '../state/store'
@@ -41,7 +41,7 @@ export default function AddSaleInvoices(): JSX.Element {
       })
       .catch((e) => {
         //TODO check catch
-        alert(e)
+        dispatch(showAlert(e.message))
       })
     window.electron.ipcRenderer
       .invoke('getTempSaleInvoiceById', holdId)
@@ -55,7 +55,7 @@ export default function AddSaleInvoices(): JSX.Element {
       })
       .catch((e) => {
         //TODO check catch
-        alert(e)
+        dispatch(showAlert(e.message))
       })
   }, [dispatch, holdId, navigate])
 
@@ -110,7 +110,7 @@ export default function AddSaleInvoices(): JSX.Element {
         status: 'WAITING'
       })
     } else {
-      alert(t('Please add items first'))
+      dispatch(showAlert(t('Please add items first')))
     }
   }
 
@@ -128,9 +128,9 @@ export default function AddSaleInvoices(): JSX.Element {
         },
         invoiceItemsData
       )
-      .then((result) => alert(result))
-      .catch((error) => alert(error))
-    alert(`Invoice: ${invoiceType}`)
+      .then(() => dispatch(showAlert('')))
+      .catch((error) => dispatch(showAlert(error.message)))
+    dispatch(showAlert(t('Invoice created with number') + ' ' + invoiceType))
     resetForm()
   }
 
@@ -150,14 +150,14 @@ export default function AddSaleInvoices(): JSX.Element {
           invoiceItemsData
         )
         .then((result) => {
-          alert(t('Invoice on Hold with number') + ' ' + result.tempSaleInvoice.id)
+          dispatch(showAlert(t('Invoice on Hold with number') + ' ' + result.tempSaleInvoice.id))
           resetForm()
           dispatch(addHold())
           if (holdId) navigate('/saleInvoices/new', { replace: true })
         })
-        .catch((error) => alert(error))
+        .catch((error) => dispatch(showAlert(error.message)))
     } else {
-      alert(t('Please add items first'))
+      dispatch(showAlert(t('Please add items first')))
     }
   }
 

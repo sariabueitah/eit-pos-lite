@@ -2,6 +2,8 @@ import { useState } from 'react'
 import KeyPad from '../../components/KeyPad'
 import { calTotalTax, calTotal } from '../../components/Math'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { showAlert } from '../../state/slices/PageSlice'
 
 type Search = {
   type: 'Barcode' | 'Name' | 'ID'
@@ -16,6 +18,7 @@ export default function AddSaleInvoiceItems({
   items: PurchaseInvoiceItem[]
   setItems: (items: PurchaseInvoiceItem[]) => void
 }): JSX.Element {
+  const dispatch = useDispatch()
   const { t } = useTranslation()
   const searchTypesArray: Array<Search['type']> = ['Barcode', 'Name', 'ID']
   const [search, setSearch] = useState<Search>({
@@ -35,7 +38,7 @@ export default function AddSaleInvoiceItems({
       if (itemIndex >= 0) {
         const spliced = tempItems.splice(itemIndex, 1)
         if (spliced[0].unit == 'Units' && !Number.isInteger(value)) {
-          alert('Quantity must be an integer')
+          dispatch(showAlert('Quantity must be an integer'))
           return
         }
         spliced[0].quantity = value
@@ -56,7 +59,7 @@ export default function AddSaleInvoiceItems({
           setSearch((prev) => ({ ...prev, searchResults: result }))
         })
         .catch((e) => {
-          alert(e)
+          dispatch(showAlert(e.message))
         })
     } else {
       setSearch((prev) => ({ ...prev, searchResults: [] }))
@@ -80,7 +83,7 @@ export default function AddSaleInvoiceItems({
               addItemFromScanner(result.id)
             })
             .catch((e) => {
-              alert(e)
+              dispatch(showAlert(e.message))
             })
         }
         break
@@ -93,7 +96,7 @@ export default function AddSaleInvoiceItems({
               addItemFromScanner(result.id)
             })
             .catch((e) => {
-              alert(e)
+              dispatch(showAlert(e.message))
             })
         }
         break
@@ -103,13 +106,13 @@ export default function AddSaleInvoiceItems({
             addItemFromScanner(search.searchResults[0].id)
           } else {
             //TODO check error
-            alert('error')
+            dispatch(showAlert('Item not found'))
           }
         }
         break
       default: {
         //TODO check error
-        alert('error')
+        dispatch(showAlert('Item not found'))
       }
     }
   }
