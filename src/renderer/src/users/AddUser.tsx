@@ -27,8 +27,7 @@ export default function AddUser(): JSX.Element {
         dispatch(setLoading(false))
       })
       .catch((error) => {
-        //TODO check catch
-        setError('root', { type: 'manual', message: error })
+        setError('root', { type: 'manual', message: t('Failed to create Record') + ' ' + error })
         dispatch(setLoading(false))
       })
   }

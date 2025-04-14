@@ -40,8 +40,7 @@ export default function AddSaleInvoices(): JSX.Element {
         setInvoiceItemsData(results)
       })
       .catch((e) => {
-        //TODO check catch
-        dispatch(showAlert(e.message))
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
       })
     window.electron.ipcRenderer
       .invoke('getTempSaleInvoiceById', holdId)
@@ -54,10 +53,9 @@ export default function AddSaleInvoices(): JSX.Element {
         })
       })
       .catch((e) => {
-        //TODO check catch
-        dispatch(showAlert(e.message))
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
       })
-  }, [dispatch, holdId, navigate])
+  }, [dispatch, holdId, navigate, t])
 
   const handleInvoiceItemsData = (items): void => {
     setInvoiceItemsData(items)
@@ -115,7 +113,6 @@ export default function AddSaleInvoices(): JSX.Element {
   }
 
   const completePayment = (invoiceType: string): void => {
-    //TODO check catch
     window.electron.ipcRenderer
       .invoke(
         'createSaleInvoiceWithItems',
@@ -129,14 +126,15 @@ export default function AddSaleInvoices(): JSX.Element {
         invoiceItemsData
       )
       .then(() => dispatch(showAlert('')))
-      .catch((error) => dispatch(showAlert(error.message)))
+      .catch((e) => {
+        dispatch(showAlert(`${t('Error creating Record')}: ` + e.message))
+      })
     dispatch(showAlert(t('Invoice created with number') + ' ' + invoiceType))
     resetForm()
   }
 
   const holdInvoice = (): void => {
     if (invoiceItemsData.length > 0) {
-      //TODO check catch
       window.electron.ipcRenderer
         .invoke(
           'createTempSaleInvoiceWithItems',
@@ -155,7 +153,9 @@ export default function AddSaleInvoices(): JSX.Element {
           dispatch(addHold())
           if (holdId) navigate('/saleInvoices/new', { replace: true })
         })
-        .catch((error) => dispatch(showAlert(error.message)))
+        .catch((e) => {
+          dispatch(showAlert(`${t('Error creating Record')}: ` + e.message))
+        })
     } else {
       dispatch(showAlert(t('Please add items first')))
     }

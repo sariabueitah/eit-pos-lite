@@ -26,9 +26,8 @@ export default function AddSupplier(): JSX.Element {
         navigate('/suppliers', { replace: true })
       })
       .catch((error) => {
-        //TODO check catch
         dispatch(setLoading(false))
-        setError('root', { type: 'manual', message: error })
+        setError('root', { type: 'manual', message: `${t('Failed to create Record')} : ${error}` })
       })
   }
 

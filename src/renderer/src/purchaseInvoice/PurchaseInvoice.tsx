@@ -1,5 +1,5 @@
 import { calTotal, calTotalDiscount, calTotalTax, roundNum } from '../components/Math'
-import { setPage } from '../state/slices/PageSlice'
+import { setPage, showAlert } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -18,21 +18,23 @@ export default function PurchaseInvoice(): JSX.Element {
   const [purchaseInvoiceItems, setPurchaseInvoiceItems] = useState<PurchaseInvoiceItem[]>([])
 
   useEffect(() => {
-    //TODO check catch
     window.electron.ipcRenderer
       .invoke('getPurchaseInvoiceById', id)
       .then((result) => {
         setPurchaseInvoice(result)
       })
-      .catch()
-    //TODO check catch
+      .catch((e) => {
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+      })
     window.electron.ipcRenderer
       .invoke('getPurchaseInvoiceItemsByPurchaseInvoiceId', id)
       .then((results) => {
         setPurchaseInvoiceItems(results)
       })
-      .catch()
-  }, [id])
+      .catch((e) => {
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+      })
+  }, [dispatch, id, t])
 
   const itemsTotal = (): number => {
     let total = 0

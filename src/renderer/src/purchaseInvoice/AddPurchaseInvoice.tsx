@@ -20,34 +20,35 @@ export default function AddPurchaseInvoice(): JSX.Element {
   })
   const [invoiceItemsData, setInvoiceItemsData] = useState<PurchaseInvoiceItem[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const [total, setTotal] = useState('0')
+  const [paid, setPaid] = useState('0')
 
   const handlePaidChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const re = /^([0-9]+([.][0-9]*)?|[.][0-9]+)$/
     if (e.target.value === '' || re.test(e.target.value)) {
-      //TODO check this
-      //@ts-ignore TODO check later
-      setInvoiceData({ ...invoiceData, paid: e.target.value })
+      setPaid(e.target.value)
+      setInvoiceData({ ...invoiceData, paid: Number(e.target.value) })
     }
   }
 
   const handleTotalPriceChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const re = /^([0-9]+([.][0-9]*)?|[.][0-9]+)$/
     if (e.target.value === '' || re.test(e.target.value)) {
-      //TODO check this
-      //@ts-ignore TODO check later
-      setInvoiceData({ ...invoiceData, totalPrice: e.target.value })
+      setTotal(e.target.value)
+      setInvoiceData({ ...invoiceData, totalPrice: Number(e.target.value) })
     }
   }
 
   useEffect(() => {
-    //TODO check catch
     window.electron.ipcRenderer
       .invoke('getAllSuppliers')
       .then((results) => {
         setSuppliers(results)
       })
-      .catch()
-  }, [])
+      .catch((e) => {
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+      })
+  }, [dispatch, t])
 
   const handleInvoiceItemsData = (items): void => {
     setInvoiceItemsData(items)
@@ -90,7 +91,6 @@ export default function AddPurchaseInvoice(): JSX.Element {
     let status = 'UNPAID'
     if ((invoiceData.paid ?? 0) >= itemsFinalTotal()) status = 'PAID'
     const totalPrice = invoiceItemsData.length === 0 ? invoiceData.totalPrice : itemsFinalTotal()
-    //TODO check catch
     window.electron.ipcRenderer
       .invoke(
         'createPurchaseInvoiceWithItems',
@@ -105,7 +105,9 @@ export default function AddPurchaseInvoice(): JSX.Element {
         invoiceItemsData
       )
       .then(() => dispatch(showAlert('')))
-      .catch((error) => dispatch(showAlert(error.message)))
+      .catch((error) => {
+        dispatch(showAlert(`${t('Error creating Record')}: ` + error.message))
+      })
     resetForm()
   }
 
@@ -117,6 +119,8 @@ export default function AddPurchaseInvoice(): JSX.Element {
       paid: 0
     })
     setInvoiceItemsData([])
+    setPaid('0')
+    setTotal('0')
   }
 
   return (
@@ -168,7 +172,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
             <input
               onBlur={handlePaidChange}
               onChange={handlePaidChange}
-              value={invoiceData.paid}
+              value={paid}
               type="text"
               name="paid"
               id="paid"
@@ -184,7 +188,7 @@ export default function AddPurchaseInvoice(): JSX.Element {
             <input
               onBlur={handleTotalPriceChange}
               onChange={handleTotalPriceChange}
-              value={invoiceData.totalPrice}
+              value={total}
               type="text"
               name="totalPrice"
               id="totalPrice"

@@ -11,7 +11,7 @@ export default function EditCategory(): JSX.Element {
   const navigate = useNavigate()
   useEffect(() => {
     dispatch(setPage(t('Edit Category')))
-  }, [dispatch])
+  }, [dispatch, t])
 
   const onSubmit = (setError, id, data): void => {
     dispatch(setLoading(true))
@@ -23,10 +23,12 @@ export default function EditCategory(): JSX.Element {
         dispatch(setLoading(false))
         navigate('/categories', { replace: true })
       })
-      .catch((error) => {
-        //TODO check catch
+      .catch((e) => {
         dispatch(setLoading(false))
-        setError('root', { type: 'manual', message: error })
+        setError('root', {
+          type: 'manual',
+          message: `${t('Failed to update Record')} : ${e.message}`
+        })
       })
   }
   return (

@@ -148,5 +148,7 @@
   "Save": "حفظ",
   "Failed to create Record": "فشل في إنشاء السجل",
   "Invoice created with number": "تم إنشاء الفاتورة برقم",
-  "Item not found": "المنتج غير موجود"
+  "Item not found": "المنتج غير موجود",
+  "Error deleting Record": "خطأ في حذف السجل",
+  "Failed to update Record": "فشل في تحديث السجل"
 }

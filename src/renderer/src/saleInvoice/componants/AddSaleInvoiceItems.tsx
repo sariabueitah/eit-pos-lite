@@ -70,8 +70,7 @@ export default function AddSaleInvoiceItems({
           setSearch((prev) => ({ ...prev, searchResults: result }))
         })
         .catch((e) => {
-          //TODO check
-          dispatch(showAlert(e.message))
+          dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
         })
     } else {
       setSearch((prev) => ({ ...prev, searchResults: [] }))
@@ -93,9 +92,8 @@ export default function AddSaleInvoiceItems({
             .then((result) => {
               addItemFromScanner(result.id)
             })
-            .catch((e) => {
-              //TODO check
-              dispatch(showAlert(e.message))
+            .catch(() => {
+              dispatch(showAlert(t('Item not found')))
             })
         }
         break
@@ -106,9 +104,8 @@ export default function AddSaleInvoiceItems({
             .then((result) => {
               addItemFromScanner(result.id)
             })
-            .catch((e) => {
-              //TODO check
-              dispatch(showAlert(e.message))
+            .catch(() => {
+              dispatch(showAlert(t('Item not found')))
             })
         }
         break
@@ -117,13 +114,11 @@ export default function AddSaleInvoiceItems({
           if (search.searchResults.length > 0 && search.searchResults[0]) {
             addItemFromScanner(search.searchResults[0].id)
           } else {
-            //TODO check
             dispatch(showAlert(t('Item not found')))
           }
         }
         break
       default: {
-        //TODO check
         dispatch(showAlert(t('Item not found')))
       }
     }

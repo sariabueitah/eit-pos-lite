@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { setPage } from '../state/slices/PageSlice'
+import { setPage, showAlert } from '../state/slices/PageSlice'
 import CategoryRow from './componants/CategoryRow'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -22,22 +22,23 @@ export default function Categories(): JSX.Element {
         setCategoryData(result)
       })
       .catch((error) => {
-        //TODO check catch
-        console.log(error)
+        dispatch(showAlert(error.message))
       })
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      //TODO add catch
       window.electron.ipcRenderer
         .invoke('searchCategories', search.trim(), deleted)
         .then((result) => {
           setCategoryData(result)
         })
+        .catch((e) => {
+          dispatch(showAlert(e.message))
+        })
     }, 500)
     return (): void => clearTimeout(timeoutId)
-  }, [search, deleted])
+  }, [search, deleted, dispatch])
 
   const handleDelete = (id: number): void => {
     window.electron.ipcRenderer
@@ -45,9 +46,8 @@ export default function Categories(): JSX.Element {
       .then(() => {
         setCategoryData((l) => (l ? l.filter((item) => item.id !== id) : []))
       })
-      .catch((error) => {
-        //TODO check catch
-        console.log(error)
+      .catch((e) => {
+        dispatch(showAlert(`${t('Error deleting Record')}: ` + e.message))
       })
   }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { setPage } from '../state/slices/PageSlice'
+import { setPage, showAlert } from '../state/slices/PageSlice'
 import SupplierRow from './componants/SupplierRow'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -21,33 +21,33 @@ export default function Suppliers(): JSX.Element {
       .then((result) => {
         setSupplierData(result)
       })
-      .catch((error) => {
-        //TODO check catch
-        console.log(error)
+      .catch((e) => {
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
       })
-  }, [])
+  }, [dispatch, t])
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      //TODO check catch
       window.electron.ipcRenderer
         .invoke('searchSuppliers', search.trim(), deleted)
         .then((result) => {
           setSupplierData(result)
         })
+        .catch((e) => {
+          dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+        })
     }, 500)
     return (): void => clearTimeout(timeoutId)
-  }, [search, deleted])
+  }, [search, deleted, dispatch, t])
 
   const handleDelete = (id: number): void => {
-    //TODO check catch
     window.electron.ipcRenderer
       .invoke('deleteSupplier', id)
       .then(() => {
         setSupplierData((l) => (l ? l.filter((item) => item.id !== id) : []))
       })
-      .catch((error) => {
-        console.log(error)
+      .catch((e) => {
+        dispatch(showAlert(`${t('Error deleting Record')}: ` + e.message))
       })
   }
 

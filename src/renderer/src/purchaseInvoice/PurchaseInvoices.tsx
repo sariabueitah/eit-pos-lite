@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { setPage } from '../state/slices/PageSlice'
+import { setPage, showAlert } from '../state/slices/PageSlice'
 import { NavLink } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import PurchaseInvoiceRow from './componants/PurchaseInvoiceRow'
@@ -20,27 +20,28 @@ export default function PurchaseInvoices(): JSX.Element {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      //TODO check catch
       window.electron.ipcRenderer
         .invoke('searchPurchaseInvoices', search.trim(), deleted, dateFrom, dateTo)
         .then((result) => {
           seInvoiceData(result)
         })
+        .catch((e) => {
+          dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+        })
     }, 500)
     return (): void => clearTimeout(timeoutId)
-  }, [search, deleted, dateFrom, dateTo])
+  }, [search, deleted, dateFrom, dateTo, dispatch, t])
 
   useEffect(() => {
-    //TODO check catch
     window.electron.ipcRenderer
       .invoke('getAllPurchaseInvoices')
       .then((result) => {
         seInvoiceData(result)
       })
-      .catch((error) => {
-        console.log(error)
+      .catch((e) => {
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
       })
-  }, [])
+  }, [dispatch, t])
 
   return (
     <div className="">

@@ -52,14 +52,13 @@ export default function AddSaleInvoiceItems({
   const handleSearchOnChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearch((prev) => ({ ...prev, value: e.target.value }))
     if (search.type == 'Name') {
-      //TODO check catch
       window.electron.ipcRenderer
         .invoke('getItemByName', e.target.value)
         .then((result) => {
           setSearch((prev) => ({ ...prev, searchResults: result }))
         })
         .catch((e) => {
-          dispatch(showAlert(e.message))
+          dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
         })
     } else {
       setSearch((prev) => ({ ...prev, searchResults: [] }))
@@ -76,27 +75,25 @@ export default function AddSaleInvoiceItems({
     switch (search.type) {
       case 'Barcode':
         {
-          //TODO check catch
           window.electron.ipcRenderer
             .invoke('getItemByBarcode', search.value)
             .then((result) => {
               addItemFromScanner(result.id)
             })
-            .catch((e) => {
-              dispatch(showAlert(e.message))
+            .catch(() => {
+              dispatch(showAlert(t('Item not found')))
             })
         }
         break
       case 'ID':
         {
-          //TODO check catch
           window.electron.ipcRenderer
             .invoke('getItemById', search.value)
             .then((result) => {
               addItemFromScanner(result.id)
             })
-            .catch((e) => {
-              dispatch(showAlert(e.message))
+            .catch(() => {
+              dispatch(showAlert(t('Item not found')))
             })
         }
         break
@@ -105,14 +102,12 @@ export default function AddSaleInvoiceItems({
           if (search.searchResults.length > 0 && search.searchResults[0]) {
             addItemFromScanner(search.searchResults[0].id)
           } else {
-            //TODO check error
-            dispatch(showAlert('Item not found'))
+            dispatch(showAlert(t('Item not found')))
           }
         }
         break
       default: {
-        //TODO check error
-        dispatch(showAlert('Item not found'))
+        dispatch(showAlert(t('Item not found')))
       }
     }
   }
@@ -125,19 +120,23 @@ export default function AddSaleInvoiceItems({
       spliced[0].quantity += 1
       setItems([...spliced, ...tempItems])
     } else {
-      //TODO check catch
-      window.electron.ipcRenderer.invoke('getItemById', itemId).then((result) => {
-        const newItem = {
-          itemId: result.id,
-          barcode: result.barcode,
-          name: result.name,
-          unit: result.unit,
-          quantity: 1,
-          tax: result.tax,
-          cost: result.cost
-        } as PurchaseInvoiceItem
-        setItems([newItem, ...tempItems])
-      })
+      window.electron.ipcRenderer
+        .invoke('getItemById', itemId)
+        .then((result) => {
+          const newItem = {
+            itemId: result.id,
+            barcode: result.barcode,
+            name: result.name,
+            unit: result.unit,
+            quantity: 1,
+            tax: result.tax,
+            cost: result.cost
+          } as PurchaseInvoiceItem
+          setItems([newItem, ...tempItems])
+        })
+        .catch(() => {
+          dispatch(showAlert(t('Item not found')))
+        })
     }
     setSearch((prev) => ({ ...prev, value: '', searchResults: [] }))
   }

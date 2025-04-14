@@ -27,9 +27,8 @@ export default function EditUser(): JSX.Element {
         navigate('/users', { replace: true })
       })
       .catch((error) => {
-        //TODO check catch
         dispatch(setLoading(false))
-        setError('root', { type: 'manual', message: error })
+        setError('root', { type: 'manual', message: t('Failed to update Record') + ' ' + error })
       })
   }
 

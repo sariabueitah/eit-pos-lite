@@ -11,7 +11,7 @@ export default function AddItems(): JSX.Element {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setPage(t('Add Item')))
-  }, [dispatch])
+  }, [dispatch, t])
 
   const onSubmit = (setError, _, data): void => {
     dispatch(setLoading(true))
@@ -23,8 +23,7 @@ export default function AddItems(): JSX.Element {
       })
       .catch((error) => {
         dispatch(setLoading(false))
-        //TODO check catch
-        setError('root', { type: 'manual', message: error })
+        setError('root', { type: 'manual', message: `${t('Failed to create Record')} : ${error}` })
       })
   }
 

@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import FormAlerts from '../../components/FormAlerts'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { showAlert } from '../../state/slices/PageSlice'
 
 interface IFormInput {
   name: string
@@ -22,19 +24,29 @@ export default function ItemForm(props: {
   onSubmit: (setError, id, data) => void
   onBack: () => void
 }): JSX.Element {
+  const dispatch = useDispatch()
   const { t } = useTranslation()
   const [categories, setCategories] = useState<Category[]>([])
   const [suppliers, setSuppliers] = useState<Supplier[]>([])
 
   useEffect(() => {
-    //TODO add catch
-    window.electron.ipcRenderer.invoke('getAllCategories').then((categories) => {
-      setCategories(categories)
-    })
-    window.electron.ipcRenderer.invoke('getAllSuppliers').then((suppliers) => {
-      setSuppliers(suppliers)
-    })
-  }, [])
+    window.electron.ipcRenderer
+      .invoke('getAllCategories')
+      .then((categories) => {
+        setCategories(categories)
+      })
+      .catch((e) => {
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+      })
+    window.electron.ipcRenderer
+      .invoke('getAllSuppliers')
+      .then((suppliers) => {
+        setSuppliers(suppliers)
+      })
+      .catch((e) => {
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+      })
+  }, [dispatch, t])
   const { id } = useParams()
 
   const {
