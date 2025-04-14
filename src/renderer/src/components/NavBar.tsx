@@ -66,17 +66,34 @@ function NavBar(): JSX.Element {
             </button>
           </div>
 
-          <div className="align-middle">
-            <h1>{pageTitle}</h1>
+          <div className="align-middle flex flex-col">
+            <h2 className="text-center">{session?.name}</h2>
+            <h1 className="text-center">{pageTitle}</h1>
           </div>
-          <div className="flex items-center">
-            <button onClick={switchLanguage}>
-              <span className="text-center block">{t('Language')}</span>
+          <div className="flex items-center gap-2">
+            <button className="relative" onClick={switchLanguage}>
+              <div
+                className={
+                  'p-3 rounded-2xl hover:bg-gray-300 border border-gray-300 ' +
+                  (show ? 'bg-gray-300' : 'bg-white')
+                }
+              >
+                {t('Language')}
+              </div>
             </button>
-            <NavLink to="/" onClick={() => window.electron.ipcRenderer.invoke('logout')}>
-              <span className="text-center block">{session?.name}</span>
-              <span className="text-center block">{t('Logout')}</span>
-            </NavLink>
+            <button
+              className="relative"
+              onClick={() => window.electron.ipcRenderer.invoke('logout')}
+            >
+              <div
+                className={
+                  'p-3 rounded-2xl hover:bg-gray-300 border border-gray-300 ' +
+                  (show ? 'bg-gray-300' : 'bg-white')
+                }
+              >
+                {t('Logout')}
+              </div>
+            </button>
           </div>
         </div>
       )}
