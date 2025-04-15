@@ -32,7 +32,7 @@ export default function Hold(): JSX.Element {
     <>
       <div
         className={
-          'absolute top-0 left-0 rtl:right-0 z-40 w-64 h-screen p-4 overflow-y-auto transition-transform bg-white ' +
+          'absolute top-0 left-0 rtl:right-0 z-30 w-64 h-screen p-4 overflow-y-auto transition-transform bg-white ' +
           (show ? 'translate-x-0 rtl:-translate-x-0' : '-translate-x-full rtl:translate-x-full')
         }
       >
@@ -85,7 +85,7 @@ export default function Hold(): JSX.Element {
       {show && (
         <div
           onClick={() => dispatch(showHold(!show))}
-          className="bg-gray-900/50 fixed inset-0 z-30"
+          className="bg-gray-900/50 fixed inset-0 z-20"
         ></div>
       )}
     </>

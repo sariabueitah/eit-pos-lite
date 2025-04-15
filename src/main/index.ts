@@ -1,11 +1,12 @@
-import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, screen, dialog, nativeImage } from 'electron'
 import { Database as DataBaseType } from 'better-sqlite3'
-import { join } from 'path'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { setupDB } from './db'
 import { authenticateUser } from './db/users'
 import { defineIcpHandlers } from './IcpMainHandlers/index'
+import fs from 'fs'
 
 let db: DataBaseType
 let session: Session | null
@@ -99,4 +100,34 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   app.quit()
+})
+
+ipcMain.on('changeLogo', (event) => {
+  const result = dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg'] }]
+  })
+
+  result.then(({ canceled, filePaths }) => {
+    if (canceled) return
+    let imagePath = path.join(app.getPath('userData'), 'logo.png')
+    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+      imagePath = './resources/logo.png'
+    }
+
+    const image = nativeImage.createFromPath(filePaths[0])
+    const imageResized = image.resize({ width: 256, height: 256 })
+    fs.writeFileSync(imagePath, imageResized.toPNG())
+
+    event.reply('changeLogo', imageResized.toDataURL())
+  })
+})
+
+ipcMain.handle('loadLogo', () => {
+  let imagePath = path.join(app.getPath('userData'), 'logo.png')
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    imagePath = './resources/logo.png'
+  }
+  const image = nativeImage.createFromPath(imagePath)
+  return image.toDataURL()
 })

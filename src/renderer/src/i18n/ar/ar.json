@@ -19,7 +19,6 @@
   "Purchase Invoices": "فواتير الشراء",
   "Loading": "تحميل",
   "Invoices On Hold": "الفواتير المعلقة",
-  "Language": "English",
   "All": "الكل",
   "Active": "مفعل",
   "Deleted": "محذوف",
@@ -150,5 +149,11 @@
   "Invoice created with number": "تم إنشاء الفاتورة برقم",
   "Item not found": "المنتج غير موجود",
   "Error deleting Record": "خطأ في حذف السجل",
-  "Failed to update Record": "فشل في تحديث السجل"
+  "Failed to update Record": "فشل في تحديث السجل",
+  "Configuration": "الإعدادات",
+  "address": "العنوان",
+  "Default Language": "تحديد اللغة",
+  "Arabic": "العربية",
+  "English": "الإنجليزية",
+  "logo": "الشعار"
 }

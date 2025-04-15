@@ -9,6 +9,7 @@ import { saleInvoiceHandlers } from './saleInvoices'
 import { saleInvoiceItemsHandlers } from './saleInvoiceItems'
 import { tempSaleInvoiceHandlers } from './tempSaleInvoices'
 import { tempSaleInvoiceItemsHandlers } from './tempSaleInvoiceItems'
+import { configHandlers } from './config'
 
 export function defineIcpHandlers(db: DatabaseType): void {
   categoriesHandlers(db)
@@ -21,4 +22,5 @@ export function defineIcpHandlers(db: DatabaseType): void {
   saleInvoiceItemsHandlers(db)
   tempSaleInvoiceHandlers(db)
   tempSaleInvoiceItemsHandlers(db)
+  configHandlers(db)
 }

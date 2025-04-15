@@ -1,6 +1,11 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
 declare global {
+  type Config = {
+    id: number
+    name: string
+    value: string
+  }
   type User = {
     id: number
     name: string

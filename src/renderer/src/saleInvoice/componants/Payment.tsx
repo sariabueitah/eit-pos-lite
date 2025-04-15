@@ -72,7 +72,7 @@ export default function Payment(props: Props): JSX.Element {
   }
 
   return (
-    <div className="absolute bg-gray-700/75 w-screen h-screen z-50 top-0 left-0">
+    <div className="absolute bg-gray-700/75 w-screen h-screen z-20 top-0 left-0">
       <div className="flex justify-center items-center h-screen w-screen">
         <div className="flex p-4 text-center bg-white rounded-2xl shadow">
           <div className="grid grid-cols-2 auto-rows-min m-2 min-w-30 rtl:border-l border-gray-300 rtl:pl-4">

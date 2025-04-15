@@ -12,6 +12,7 @@ import { setupSaleInvoicesTable } from './saleInvoices'
 import { setupSaleInvoiceItemsTable } from './saleInvoiceItems'
 import { setupTempSaleInvoicesTable } from './tempSaleInvoices'
 import { setupTempSaleInvoiceItemsTable } from './tempSaleInvoiceItems'
+import { setupConfigTable } from './config'
 
 export function setupDB(): DatabaseType {
   let dbPath = path.join(app.getPath('userData'), 'app.db')
@@ -32,6 +33,7 @@ export function setupDB(): DatabaseType {
   setupTempSaleInvoiceItemsTable(db)
   setupSaleInvoicesTable(db)
   setupSaleInvoiceItemsTable(db)
+  setupConfigTable(db)
 
   return db
 }

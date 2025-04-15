@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { setPage } from '../state/slices/PageSlice'
+import { setLoading, setPage, showAlert } from '../state/slices/PageSlice'
 import UserRow from './componants/UserRow'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -17,24 +17,32 @@ export default function Users(): JSX.Element {
   }, [dispatch, t])
 
   useEffect(() => {
+    dispatch(setLoading(true))
     window.electron.ipcRenderer
       .invoke('getAllUsers')
       .then((result) => {
         setUserData(result)
+        dispatch(setLoading(false))
       })
-      .catch((error) => {
-        console.log(error)
+      .catch((e) => {
+        dispatch(setLoading(false))
+        dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
       })
-  }, [])
+  }, [dispatch, t])
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      window.electron.ipcRenderer.invoke('searchUsers', search.trim(), deleted).then((result) => {
-        setUserData(result)
-      })
+      window.electron.ipcRenderer
+        .invoke('searchUsers', search.trim(), deleted)
+        .then((result) => {
+          setUserData(result)
+        })
+        .catch((e) => {
+          dispatch(showAlert(`${t('Data not retrieved')}: ` + e.message))
+        })
     }, 500)
     return (): void => clearTimeout(timeoutId)
-  }, [search, deleted])
+  }, [search, deleted, dispatch, t])
 
   const handleDelete = (id: number): void => {
     window.electron.ipcRenderer
@@ -42,8 +50,8 @@ export default function Users(): JSX.Element {
       .then(() => {
         setUserData((l) => (l ? l.filter((item) => item.id !== id) : []))
       })
-      .catch((error) => {
-        console.log(error)
+      .catch((e) => {
+        dispatch(showAlert(`${t('Error deleting Record')}: ` + e.message))
       })
   }
 

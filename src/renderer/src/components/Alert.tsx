@@ -25,7 +25,7 @@ export default function AlertComponent(): JSX.Element {
   return (
     <>
       {alert.show && (
-        <div className="absolute z-50 top-0 left-0 w-screen h-screen bg-gray-700/75">
+        <div className="absolute z-20 top-0 left-0 w-screen h-screen bg-gray-700/75">
           <div className="flex justify-center h-screen items-center">
             <div className="relative p-4 text-center bg-white rounded-xl shadow min-w-[300px]">
               <div className="p-4 md:p-5 text-center">

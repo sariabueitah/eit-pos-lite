@@ -19,7 +19,6 @@
   "Purchase Invoices": "Purchase Invoices",
   "Loading": "Loading",
   "Invoices On Hold": "Invoices On Hold",
-  "Language": "العربية",
   "All": "All",
   "Active": "Active",
   "Deleted": "Deleted",
@@ -150,5 +149,11 @@
   "Invoice created with number": "Invoice created with number",
   "Item not found": "Item not found",
   "Error deleting Record": "Error deleting Record",
-  "Failed to update Record": "Failed to update Record"
+  "Failed to update Record": "Failed to update Record",
+  "Configuration": "Configuration",
+  "address": "Address",
+  "Default Language": "Default Language",
+  "Arabic": "Arabic",
+  "English": "English",
+  "logo": "Logo"
 }

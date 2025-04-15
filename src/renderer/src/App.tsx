@@ -29,10 +29,10 @@ import PurchaseInvoices from './purchaseInvoice/PurchaseInvoices'
 import AddPurchaseInvoice from './purchaseInvoice/AddPurchaseInvoice'
 import PurchaseInvoice from './purchaseInvoice/PurchaseInvoice'
 import { useTranslation } from 'react-i18next'
+import Config from './config/Config'
 
 //TODO Print recipt
 //TODO Create a queue for the Tax API
-//TODO Create a setup page
 //TODO fix all styles unifiing the buttons maybe spruce up the style
 
 function App(): JSX.Element {
@@ -65,6 +65,7 @@ function App(): JSX.Element {
           {session && (
             <>
               <Route path="/" element={<Home />} />
+              <Route path="/config" element={<Config />} />
               <Route path="*" element={<NotFound />} />
               <Route path="/users" element={<Users />} />
               <Route path="/users/new" element={<AddUser />} />

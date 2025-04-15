@@ -9,7 +9,7 @@ export default function Loading(): JSX.Element {
   return (
     <>
       {loading && (
-        <div className="absolute top-0 left-0 w-screen h-screen bg-gray-700/75">
+        <div className="z-20 absolute top-0 left-0 w-screen h-screen bg-gray-700/75">
           <div className="flex justify-center h-screen items-center">
             <div className="bg-white flex justify-center items-center p-10 rounded-xl gap-5">
               <div>Loading.....</div>
