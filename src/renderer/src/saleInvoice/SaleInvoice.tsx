@@ -204,13 +204,17 @@ export default function SaleInvoice(): JSX.Element {
           {t('Back')}
         </div>
         <div
-          onClick={() => {}}
+          onClick={() => {
+            window.electron.ipcRenderer.invoke('print', saleInvoice?.id)
+          }}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
           {t('Print Invoice')}
         </div>
         <div
-          onClick={() => {}}
+          onClick={() => {
+            window.electron.ipcRenderer.invoke('print', saleInvoice?.id)
+          }}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
           {t('Print Invoice(A4)')}

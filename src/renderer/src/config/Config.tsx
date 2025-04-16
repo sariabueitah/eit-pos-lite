@@ -10,6 +10,8 @@ interface IFormInput {
   name: string
   address: string
   phoneNumber: string
+  email: string
+  taxId: string
 }
 
 export default function Config(): JSX.Element {
@@ -146,6 +148,28 @@ export default function Config(): JSX.Element {
         <div className="mb-5">
           <label
             className={
+              errors.email
+                ? 'block mb-2 text-sm font-medium text-red-900'
+                : 'block mb-2 text-sm font-medium text-gray-900'
+            }
+          >
+            {t('email')}
+          </label>
+          <input
+            {...register('email')}
+            type="text"
+            name="email"
+            id="email"
+            className={
+              errors.email
+                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+            }
+          />
+        </div>
+        <div className="mb-5">
+          <label
+            className={
               errors.phoneNumber
                 ? 'block mb-2 text-sm font-medium text-red-900'
                 : 'block mb-2 text-sm font-medium text-gray-900'
@@ -160,6 +184,28 @@ export default function Config(): JSX.Element {
             id="phoneNumber"
             className={
               errors.phoneNumber
+                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+            }
+          />
+        </div>
+        <div className="mb-5">
+          <label
+            className={
+              errors.taxId
+                ? 'block mb-2 text-sm font-medium text-red-900'
+                : 'block mb-2 text-sm font-medium text-gray-900'
+            }
+          >
+            {t('Tax ID')}
+          </label>
+          <input
+            {...register('taxId')}
+            type="text"
+            name="taxId"
+            id="taxId"
+            className={
+              errors.taxId
                 ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }

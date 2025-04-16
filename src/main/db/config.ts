@@ -19,15 +19,23 @@ export function setupConfigTable(db: DatabaseType): void {
     const defualtUsers = [
       {
         name: 'name',
-        value: ''
+        value: 'Company Name'
+      },
+      {
+        name: 'email',
+        value: 'info@companyname.com'
       },
       {
         name: 'address',
-        value: ''
+        value: '123 Business Avenue'
       },
       {
         name: 'phoneNumber',
-        value: ''
+        value: '(123) 456-7890'
+      },
+      {
+        name: 'taxId',
+        value: '123123'
       }
     ]
 

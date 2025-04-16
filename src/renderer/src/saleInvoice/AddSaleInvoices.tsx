@@ -125,7 +125,12 @@ export default function AddSaleInvoices(): JSX.Element {
         },
         invoiceItemsData
       )
-      .then(() => dispatch(showAlert('')))
+      .then((result) => {
+        //TODO Temp for testing
+        if (invoiceType == 'A4 Invoice' || invoiceType == 'Normal Invoice')
+          window.electron.ipcRenderer.invoke('print', result.saleInvoice.id)
+        dispatch(showAlert(`printing invoice ${result.saleInvoice.id}`))
+      })
       .catch((e) => {
         dispatch(showAlert(`${t('Error creating Record')}: ` + e.message))
       })

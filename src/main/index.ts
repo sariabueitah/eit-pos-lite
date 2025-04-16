@@ -1,12 +1,13 @@
 import { app, shell, BrowserWindow, ipcMain, screen, dialog, nativeImage } from 'electron'
-import { Database as DataBaseType } from 'better-sqlite3'
-import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import fs from 'fs'
+import path, { join } from 'path'
+import { Database as DataBaseType } from 'better-sqlite3'
 import { setupDB } from './db'
 import { authenticateUser } from './db/users'
 import { defineIcpHandlers } from './IcpMainHandlers/index'
-import fs from 'fs'
+import icon from '../../resources/icon.png?asset'
+import { printSaleInvoice } from './print'
 
 let db: DataBaseType
 let session: Session | null
@@ -130,4 +131,8 @@ ipcMain.handle('loadLogo', () => {
   }
   const image = nativeImage.createFromPath(imagePath)
   return image.toDataURL()
+})
+
+ipcMain.handle('print', (_, invoiceId) => {
+  printSaleInvoice(db, invoiceId)
 })
