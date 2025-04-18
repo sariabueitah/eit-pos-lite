@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { setPage, addHold, removeHold, showAlert } from '../state/slices/PageSlice'
+import { setPage, addHold, removeHold, showAlert, setLoading } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import AddSaleInvoiceItems from './componants/AddSaleInvoiceItems'
 import { RootState } from '../state/store'
@@ -112,7 +112,7 @@ export default function AddSaleInvoices(): JSX.Element {
     }
   }
 
-  const completePayment = (invoiceType: string): void => {
+  const completePayment = (print: boolean): void => {
     window.electron.ipcRenderer
       .invoke(
         'createSaleInvoiceWithItems',
@@ -126,15 +126,22 @@ export default function AddSaleInvoices(): JSX.Element {
         invoiceItemsData
       )
       .then((result) => {
-        //TODO Temp for testing
-        if (invoiceType == 'A4 Invoice' || invoiceType == 'Normal Invoice')
-          window.electron.ipcRenderer.invoke('print', result.saleInvoice.id)
-        dispatch(showAlert(`printing invoice ${result.saleInvoice.id}`))
+        if (print) {
+          dispatch(setLoading(true))
+          window.electron.ipcRenderer
+            .invoke('printSaleInvoice', result.saleInvoice.id)
+            .then(() => {
+              dispatch(setLoading(false))
+            })
+            .catch((e) => {
+              dispatch(setLoading(false))
+              dispatch(showAlert(t(e.message)))
+            })
+        }
       })
       .catch((e) => {
         dispatch(showAlert(`${t('Error creating Record')}: ` + e.message))
       })
-    dispatch(showAlert(t('Invoice created with number') + ' ' + invoiceType))
     resetForm()
   }
 

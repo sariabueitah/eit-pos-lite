@@ -7,7 +7,7 @@ import { setupDB } from './db'
 import { authenticateUser } from './db/users'
 import { defineIcpHandlers } from './IcpMainHandlers/index'
 import icon from '../../resources/icon.png?asset'
-import { printSaleInvoice } from './print'
+import { printSaleInvoice } from './print/saleInvoice'
 
 let db: DataBaseType
 let session: Session | null
@@ -68,6 +68,10 @@ function createWindow(): void {
   ipcMain.handle('getSession', () => session)
 
   defineIcpHandlers(db)
+
+  ipcMain.handle('getPrinters', async () => {
+    return await mainWindow.webContents.getPrintersAsync()
+  })
 }
 
 // This method will be called when Electron has finished
@@ -133,6 +137,11 @@ ipcMain.handle('loadLogo', () => {
   return image.toDataURL()
 })
 
-ipcMain.handle('print', (_, invoiceId) => {
-  printSaleInvoice(db, invoiceId)
+ipcMain.handle('printSaleInvoice', async (_, invoiceId) => {
+  const result = await printSaleInvoice(db, invoiceId)
+  if (!result.success) {
+    throw new Error(result.error)
+  } else {
+    return true
+  }
 })

@@ -36,6 +36,14 @@ export function setupConfigTable(db: DatabaseType): void {
       {
         name: 'taxId',
         value: '123123'
+      },
+      {
+        name: 'printer',
+        value: ''
+      },
+      {
+        name: 'printSize',
+        value: 'A4'
       }
     ]
 

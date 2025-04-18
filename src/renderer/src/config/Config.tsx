@@ -12,6 +12,8 @@ interface IFormInput {
   phoneNumber: string
   email: string
   taxId: string
+  printer: string
+  printSize: string
 }
 
 export default function Config(): JSX.Element {
@@ -47,6 +49,7 @@ export default function Config(): JSX.Element {
   }
 
   const [src, setSrc] = useState('')
+  const [printers, setPrinters] = useState<Electron.PrinterInfo[]>([])
 
   useEffect(() => {
     dispatch(setLoading(true))
@@ -72,6 +75,9 @@ export default function Config(): JSX.Element {
         dispatch(showAlert(`${t('Data not retrieved')} : ${error}`))
         dispatch(setLoading(false))
       })
+    window.electron.ipcRenderer.invoke('getPrinters').then((data: Electron.PrinterInfo[]) => {
+      setPrinters(data)
+    })
   }, [dispatch, setValue, t])
 
   useEffect(() => {
@@ -210,6 +216,64 @@ export default function Config(): JSX.Element {
                 : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
             }
           />
+        </div>
+        <div className="mb-5">
+          <label
+            className={
+              errors.printer
+                ? 'block mb-2 text-sm font-medium text-red-900'
+                : 'block mb-2 text-sm font-medium text-gray-900'
+            }
+          >
+            {t('Printer')}
+          </label>
+          <select
+            {...register('printer')}
+            name="printer"
+            id="printer"
+            className={
+              errors.printer
+                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+            }
+          >
+            <option key="PDF" value="">
+              {t('Default Printer')}
+            </option>
+            {printers.map((printer) => (
+              <option key={printer.name} value={printer.name}>
+                {printer.displayName}
+              </option>
+            ))}
+            <option key="PDF" value="PDF">
+              PDF
+            </option>
+          </select>
+        </div>
+        <div className="mb-5">
+          <label
+            className={
+              errors.printSize
+                ? 'block mb-2 text-sm font-medium text-red-900'
+                : 'block mb-2 text-sm font-medium text-gray-900'
+            }
+          >
+            {t('Print Size')}
+          </label>
+          <select
+            {...register('printSize')}
+            name="printSize"
+            id="printSize"
+            className={
+              errors.printSize
+                ? 'bg-gray-50 border border-red-500 text-red-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5'
+                : 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
+            }
+          >
+            <option value="A4">A4</option>
+            <option value="80">80mm</option>
+            <option value="58">58mm</option>
+          </select>
         </div>
       </div>
       <div>

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 type Props = {
   payment: { paymentMethod: 'CASH' | 'CREDIT'; total: number }
-  paymentComplete: (invoiceType: string) => void
+  paymentComplete: (print: boolean) => void
   handleCancel: () => void
 }
 
@@ -90,19 +90,13 @@ export default function Payment(props: Props): JSX.Element {
             )}
             <hr className="my-5 h-0.25 border-t-0 bg-gray-200 col-span-2" />
             <div
-              onClick={() => props.paymentComplete('Normal Invoice')}
+              onClick={() => props.paymentComplete(true)}
               className="mt-2 col-span-2 py-5 border rounded-lg border-gray-200"
             >
               {t('Print Invoice')}
             </div>
             <div
-              onClick={() => props.paymentComplete('A4 Invoice')}
-              className="mt-2 col-span-2 py-5 border rounded-lg border-gray-200"
-            >
-              {t('Print Invoice(A4)')}
-            </div>
-            <div
-              onClick={() => props.paymentComplete('No Invoice')}
+              onClick={() => props.paymentComplete(false)}
               className="mt-2 col-span-2 py-5 border rounded-lg border-gray-200"
             >
               {t('No Invoice')}

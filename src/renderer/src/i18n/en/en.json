@@ -157,5 +157,9 @@
   "English": "English",
   "logo": "Logo",
   "email": "Email",
-  "Tax ID": "Tax ID"
+  "Tax ID": "Tax ID",
+  "Error invoking remote method 'printSaleInvoice': Error: No printers detected": "No Printers Detected",
+  "Default Printer": "Default Printer",
+  "Printer": "Printer",
+  "Printing Size": "Printing Size"
 }

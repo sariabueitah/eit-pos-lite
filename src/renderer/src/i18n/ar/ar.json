@@ -157,5 +157,9 @@
   "English": "الإنجليزية",
   "logo": "الشعار",
   "email": "البريد الإلكتروني",
-  "Tax ID": "رقم الضريبة"
+  "Tax ID": "رقم الضريبة",
+  "Error invoking remote method 'printSaleInvoice': Error: No printers detected": "لم يتم التعرف على طابعات",
+  "Default Printer": "طابعة النظام",
+  "Printer": "الطابعة",
+  "Printing Size": "حجم الطباعة"
 }

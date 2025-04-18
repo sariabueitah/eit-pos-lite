@@ -1,5 +1,5 @@
 import { calTotal, calTotalDiscount, calTotalTax, roundNum } from '../components/Math'
-import { setPage, showAlert } from '../state/slices/PageSlice'
+import { setLoading, setPage, showAlert } from '../state/slices/PageSlice'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -66,6 +66,19 @@ export default function SaleInvoice(): JSX.Element {
       total += calTotal(item.price, item.quantity, item.discount, item.tax)
     })
     return roundNum(total)
+  }
+
+  const handlePrint = (): void => {
+    dispatch(setLoading(true))
+    window.electron.ipcRenderer
+      .invoke('printSaleInvoice', saleInvoice?.id)
+      .then(() => {
+        dispatch(setLoading(false))
+      })
+      .catch((e) => {
+        dispatch(setLoading(false))
+        dispatch(showAlert(t(e.message)))
+      })
   }
   return (
     <>
@@ -204,20 +217,10 @@ export default function SaleInvoice(): JSX.Element {
           {t('Back')}
         </div>
         <div
-          onClick={() => {
-            window.electron.ipcRenderer.invoke('print', saleInvoice?.id)
-          }}
+          onClick={handlePrint}
           className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
         >
           {t('Print Invoice')}
-        </div>
-        <div
-          onClick={() => {
-            window.electron.ipcRenderer.invoke('print', saleInvoice?.id)
-          }}
-          className="cursor-pointer bg-white hover:bg-gray-300 border-gray-300 border rounded-2xl w-1/3 max-w-40 text-center mx-4 text-xl py-3"
-        >
-          {t('Print Invoice(A4)')}
         </div>
         <div
           onClick={() => {}}

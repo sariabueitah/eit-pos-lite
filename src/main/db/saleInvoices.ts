@@ -35,6 +35,14 @@ export function getSaleInvoiceById(db: DatabaseType, id: number | bigint): SaleI
   return db.prepare('SELECT * FROM sale_invoices WHERE id = ?').get(id) as SaleInvoice
 }
 
+export function getSaleInvoiceWithDetailsById(db: DatabaseType, id: number | bigint): SaleInvoice {
+  return db
+    .prepare(
+      'SELECT s.*, u.name as userName FROM sale_invoices s INNER JOIN users u ON s.userId = u.id WHERE s.id = ?'
+    )
+    .get(id) as SaleInvoice
+}
+
 export function addSaleInvoice(db: DatabaseType, saleInvoice: SaleInvoice): SaleInvoice {
   Object.keys(saleInvoice).forEach(
     (k) =>
